@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AVB Forge — Rigorously tested Bitcoin self-custody tools. Coming before June 15th, 2026.">
+    <meta name="description" content="AVB Forge — Verified Bitcoin self-custody tools. Rigorously tested, open-source, value-for-value. Launching starting June 15th, 2026.">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="AVB Forge | Bitcoin Custody Tools">
-    <meta property="og:description" content="Self-custody tools forged on the bench. Reviewed, fuzzed, and verified. Coming before June 15th, 2026.">
+    <meta property="og:description" content="AVB Forge creates verified Bitcoin tools. Launching starting June 15th, 2026.">
     <meta property="og:image" content="/img/forge2.jpg">
-    <title>AVB Forge | Bitcoin Custody Tools — Coming Before June 15th, 2026</title>
+    <title>AVB Forge | Bitcoin Custody Tools — Launching June 15th, 2026</title>
 
     <style>
         :root {
@@ -52,18 +52,19 @@
             width: 100%;
             height: auto;
             display: block;
-            filter: contrast(1.08) saturate(1.2);
+            filter: contrast(1.08) saturate(1.18);
         }
 
         .hero::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 55%, rgba(10,10,10,0.92) 80%, var(--bg) 100%);
+            background: linear-gradient(to bottom, transparent 55%, rgba(10,10,10,0.92) 82%, var(--bg) 100%);
+            pointer-events: none;
         }
 
         header {
-            margin-bottom: 2rem;
+            margin-bottom: 2.25rem;
         }
 
         .mark {
@@ -88,19 +89,27 @@
         }
 
         main {
-            max-width: 680px;
+            max-width: 720px;
             margin-bottom: 4rem;
         }
 
         .lede {
-            font-size: 1.25rem;
-            line-height: 1.8;
-            max-width: 58ch;
-            margin: 0 auto 2.5rem;
+            font-size: 1.22rem;
+            line-height: 1.85;
+            max-width: 62ch;
+            margin: 0 auto 2.75rem;
+        }
+
+        .lede p {
+            margin-bottom: 1.4rem;
+        }
+
+        .lede p:last-child {
+            margin-bottom: 0;
         }
 
         .blurb {
-            max-width: 56ch;
+            max-width: 58ch;
             color: var(--muted);
             font-size: 1.05rem;
             margin: 0 auto;
@@ -124,7 +133,7 @@
 <body>
 
     <div class="hero">
-        <img src="/img/forge2.jpg" alt="AVB Forge - Bitcoin self-custody tools">
+        <img src="/img/forge2.jpg" alt="AVB Forge - Bitcoin self-custody tools being forged">
     </div>
 
     <header>
@@ -135,12 +144,16 @@
 
     <main>
         <div class="lede">
-            <p>Arsenal Verified Bitcoin is building rigorously tested self-custody tools, forged through exhaustive review, fuzzing, and verification.</p>
-            <p>These tools will launch before June 15th, 2026.</p>
+            <p>AVB Forge creates verified Bitcoin tools.</p>
+            <p>We build rigorously tested self-custody tools, forged through exhaustive review and verification.</p>
+            <p>Everything we bring is value-for-value, open-source and serving the Bitcoin community.</p>
+            <p>We don't sell "credit as a product" — we create "products as our credit".</p>
+            <p>We don't ship anything we wouldn’t trust with our own sats.</p>
+            <p>These tools will start to launch June 15th, 2026.</p>
         </div>
 
         <p class="blurb">
-            We refuse to ship anything we wouldn’t trust with our own sats — because in Bitcoin self-custody, there is no room for silent failure.
+            Because in Bitcoin self-custody, there is no room for silent failure.
         </p>
     </main>
 
