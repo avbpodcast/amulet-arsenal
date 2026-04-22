@@ -3,59 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AVB Forge builds rigorously tested Bitcoin custody tools. Reviewed, fuzzed, and verified. Coming in 2026.">
+    <meta name="description" content="AVB Forge — Rigorously tested Bitcoin self-custody tools. Reviewed, fuzzed, and verified. Coming in 2026.">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="AVB Forge | Bitcoin Custody Tools">
-    <meta property="og:description" content="Rigorously tested Bitcoin custody tools, forged on the bench. Coming soon.">
-    <title>AVB Forge | Bitcoin Custody Tools — Coming Soon</title>
+    <meta property="og:description" content="Self-custody tools forged on the bench. Reviewed, fuzzed, and verified. Coming 2026.">
+    <meta property="og:image" content="/img/forge2.jpg">
+    <title>AVB Forge | Bitcoin Custody Tools — Coming 2026</title>
+
     <style>
         :root {
             --bg: #0a0a0a;
             --text: #e0e0e0;
             --accent: #f7931a;
-            --muted: #888;
+            --accent-dark: #e07e00;
+            --muted: #aaaaaa;
+            --border: #333;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            line-height: 1.65;
+            line-height: 1.7;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1rem;
             text-align: center;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            position: relative;
+            width: 100%;
+            max-width: 820px;
+            margin-bottom: 2.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: contrast(1.05) saturate(1.15);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 60%,
+                rgba(10, 10, 10, 0.85) 85%,
+                var(--bg) 100%
+            );
+            pointer-events: none;
+        }
+
+        header {
+            margin-bottom: 1.5rem;
         }
 
         .mark {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
+            font-size: 3.2rem;
+            margin-bottom: 0.4rem;
+            opacity: 0.95;
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
+            font-size: clamp(2.4rem, 7vw, 4rem);
+            font-weight: 700;
             color: var(--accent);
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.04em;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        main {
+            max-width: 620px;
+            margin-bottom: 3rem;
         }
 
         .lede {
-            max-width: 58ch;
-            margin-bottom: 1.5rem;
-            font-size: 1.125rem;
+            font-size: 1.2rem;
+            line-height: 1.75;
+            margin-bottom: 2rem;
         }
 
         .lede p {
-            margin-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
         }
 
         .lede p:last-child {
@@ -63,38 +115,80 @@
         }
 
         .blurb {
-            max-width: 60ch;
+            max-width: 58ch;
             color: var(--muted);
-            font-size: 0.95rem;
+            font-size: 1.02rem;
+            font-style: italic;
+        }
+
+        .cta {
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: transparent;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .cta:hover {
+            background: var(--accent);
+            color: #0a0a0a;
+            transform: translateY(-2px);
         }
 
         footer {
             margin-top: auto;
-            padding-top: 3rem;
+            padding-top: 4rem;
             font-size: 0.875rem;
             color: var(--muted);
+            width: 100%;
+            max-width: 620px;
+        }
+
+        .footer-line {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
         }
     </style>
 </head>
 <body>
 
+    <div class="hero">
+        <img src="/img/forge2.jpg" alt="AVB Forge - Bitcoin self-custody tools being forged">
+    </div>
+
     <header>
         <div class="mark" aria-hidden="true">⚒️</div>
         <h1>AVB Forge</h1>
+        <div class="tagline">BITCOIN CUSTODY TOOLS</div>
     </header>
 
     <main>
         <div class="lede">
-            <p>Arsenal Verified Bitcoin builds self-custody tools forged through rigorous review, fuzzing, and exhaustive testing.</p>
-            <p>We refuse to ship code we wouldn't trust with our own sats.</p>
-            <p>The first utilities are being hardened now and will be released in 2026.</p>
+            <p>Arsenal Verified Bitcoin builds self-custody tools <strong>rigorously forged</strong> through code review, fuzzing, formal verification, and real-world hardening.</p>
+            <p>We only ship what we would trust with our own sats — no exceptions.</p>
+            <p>The first tools are currently being tempered on the bench and will be released in <strong>2026</strong>.</p>
         </div>
 
-        <p class="blurb">Until then, the bench stays hot — because in self-custody, there is no room for silent failure.</p>
+        <p class="blurb">
+            Until then, the forge stays hot.<br>
+            Because in Bitcoin self-custody, there is no room for silent failure.
+        </p>
+
+        <button onclick="window.location.href='mailto:hello@avbforge.com'" class="cta">
+            GET NOTIFIED WHEN WE SHIP
+        </button>
     </main>
 
     <footer>
-        <p>&copy; 2026 AVB Forge. Built for those who take self-custody seriously.</p>
+        <div class="footer-line">
+            <p>&copy; 2026 AVB Forge • Built for sovereign Bitcoiners who take self-custody seriously</p>
+        </div>
     </footer>
 
 </body>
