@@ -1,0 +1,2 @@
+amulet_shamir_relic.py
+SHA256: 1f828afc8fa478426dc4580e10195427f226fdf506ab4cdb41824dfd9dd7a82c

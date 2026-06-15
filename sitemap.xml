@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://avbforge.com/</loc><lastmod>2026-06-07</lastmod><priority>1.0</priority></url>
+  <url><loc>https://avbforge.com/about.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
+  <url><loc>https://avbforge.com/verify.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
+  <url><loc>https://avbforge.com/recovery.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Main/AmuletMain_v1.36.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Wallet%20Generator/amulet_1_51.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Vault/amulet_vault_v1.74.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Shamir%20Shared%20Split/amulet_shamir_shared_split_v0.11.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Scryer/arsenal-scryer_v1.18.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Transaction%20Creator/amulet_tx_v0.22.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Broadcaster/amulet_broadcast_v1.01.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Timelock/timelockbtc_RC2_002.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet%20Silent/silent_amulet_1_21.html</loc><priority>0.7</priority></url>
+  <url><loc>https://avbforge.com/Amulet-passphrase-gen/Amulet%20Picker%20v16.html</loc><priority>0.7</priority></url>
+</urlset>

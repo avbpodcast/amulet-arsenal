@@ -1,0 +1,2 @@
+AmuletMain_v1.23.html
+SHA256: a76c8fc6bdc455a0b0ab116e6a90330737064d9ac79e3bd6e9232e9bbab1cd83

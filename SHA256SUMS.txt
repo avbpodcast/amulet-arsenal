@@ -1,0 +1,46 @@
+# Amulet Arsenal — SHA-256 of every published tool
+#
+# Verify a file you downloaded matches what we published:
+#   Linux:    sha256sum -c SHA256SUMS.txt          (run from the site root)
+#   macOS:    shasum -a 256 -c SHA256SUMS.txt
+#   Windows:  Get-FileHash "<file>" -Algorithm SHA256   (compare by hand)
+#
+# Lines starting with "#" are labels and are ignored by sha256sum -c.
+# Full how-to: https://avbforge.com/verify.html
+# Source:      https://codeberg.org/avbforge/pages
+
+# 01 · Amulet Main (launcher)
+65155b5792cf01cc4548778d2c178e41f0509d50b9a566a1090382287aef0cf0  Amulet Main/AmuletMain_v1.36.html
+
+# 02 · Amulet Generator (wallet generator)
+9db958799d73ef56a9e9aa893ad357a24f9bc21ac8f311e22defbee47e9b9d36  Amulet Wallet Generator/amulet_1_51.html
+
+# 03 · Amulet Vault
+6d3adc0ea1e2bc27b4dc5fee4f779e4ee4dbdddfeb20af1e36d8c2ae84580797  Amulet Vault/amulet_vault_v1.74.html
+
+# 04 · Amulet Scryer
+19f280e53d2bdfaed5ae09f4b63ba473ca145e08799797a5fd9835dc933a273d  Amulet Scryer/arsenal-scryer_v1.18.html
+
+# 05 · Amulet Transaction Creator
+b4ae03e81531f42ea4b0a5297a04ed48c404fe2190a3139ffc6e8fdef3450baf  Amulet Transaction Creator/amulet_tx_v0.22.html
+
+# 06 · Amulet Broadcaster
+06db6e5544edff5b1736a889d12441bb9f24c2a3737be9d1440baf78b69bb94f  Amulet Broadcaster/amulet_broadcast_v1.01.html
+
+# 07 · Amulet Timelock
+fc790c9f3717cc9b1a731d7f87c2bb0cebea44b1b75b70038828b337021e0cc0  Amulet Timelock/timelockbtc_RC2_002.html
+
+# 08 · Amulet Silent (silent-payment wallet)
+ff4b7fc8462be42f7ca20c7b2c5f807e1d21931b133f88400508d1dadb3f78b9  Amulet Silent/silent_amulet_1_21.html
+
+# 09 · Amulet Shamir Split
+4c89f129a12a9858b50c4d3ed48f959dfa54de8886d8b23013d4edb77014efcc  Amulet Shamir Shared Split/amulet_shamir_shared_split_v0.11.html
+
+# 10 · Amulet Picker (passphrase generator)
+48f85e732f9a6ed1ed8c3393c1aaf56387cc62b5e0d5d103576a1083bb8b5d86  Amulet-passphrase-gen/Amulet Picker v16.html
+
+# 11 · Amulet Relic (recovery script, pure Python)
+cb57fc2f6aceaefb3efc4d8e628490246574caaaf3384283e50be8617139bc64  amulet_relic.py
+
+# 12 · Amulet Shamir Relic (Shamir share recovery script, pure Python)
+1f828afc8fa478426dc4580e10195427f226fdf506ab4cdb41824dfd9dd7a82c  amulet_shamir_relic.py

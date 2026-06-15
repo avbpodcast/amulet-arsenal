@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amulet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        .card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .icon-bg {
+            background: linear-gradient(135deg, #1e2937, #334155);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-16">
+            <div class="flex items-center gap-x-4">
+                <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-3xl shadow-inner">
+                    🪬
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tighter">Amulet</h1>
+                    <p class="text-zinc-500 text-sm">Bitcoin sovereignty tools</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-xs uppercase tracking-widest text-zinc-500">Locally run • Air-gapped ready</div>
+            </div>
+        </div>
+
+        <!-- Hero Explanation -->
+        <div class="max-w-2xl mb-20">
+            <h2 class="text-5xl font-bold tracking-tighter leading-none mb-6">
+                Your personal Bitcoin<br>toolbox
+            </h2>
+            <p class="text-xl text-zinc-400">
+                A suite of minimal, secure, offline-first tools for generating, securing, recovering, and managing Bitcoin.
+            </p>
+        </div>
+
+        <!-- Tools Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Wallet Generator -->
+            <a href="#" onclick="alert('Wallet Generator coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    🔑
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">Wallet Generator</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Secure offline wallet generator</p>
+                </div>
+            </a>
+
+            <!-- Vault -->
+            <a href="#" onclick="alert('Vault coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    🏦
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">Vault</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Wallets + timelocks collection</p>
+                </div>
+            </a>
+
+            <!-- Relic -->
+            <a href="#" onclick="alert('Relic coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    🪦
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">Relic</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Recovery Python script</p>
+                </div>
+            </a>
+
+            <!-- Scryer -->
+            <a href="#" onclick="alert('Scryer coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    🔮
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">Scryer</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Balance viewer (zpub / xpub)</p>
+                </div>
+            </a>
+
+            <!-- Silent -->
+            <a href="#" onclick="alert('Silent coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    🤫
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">Silent</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Silent Payment wallet</p>
+                </div>
+            </a>
+
+            <!-- TimelockBTC -->
+            <a href="#" onclick="alert('TimelockBTC coming soon — link to local HTML when ready')" 
+               class="card group bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+                <div class="h-48 icon-bg flex items-center justify-center text-7xl">
+                    ⏳
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-x-3 mb-3">
+                        <span class="text-2xl">TimelockBTC</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm line-clamp-2">Timelocked Bitcoin tool</p>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-24 text-center text-xs text-zinc-500">
+            All tools run locally • No telemetry • Your keys never leave your machine
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script already loaded
+    </script>
+</body>
+</html>

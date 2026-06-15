@@ -1,0 +1,2925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Amulet Scryer v1.08 · watch-only balance viewer</title>
+<meta name="description" content="A viewing glass for extended public keys. Derive addresses, sum balances, peer at the chain without surrendering spend access." />
+<!-- v1.02: Google Fonts dropped. The new CSS uses the system-ui sans
+     stack (matching Amulet Vault), so no third-party font fetch happens
+     at page load — same trust-zone hygiene as the rest of the brand. -->
+<style>
+  :root {
+    --bg0:#070b18; --bg1:#0d1326;
+    --panel:#111935; --panel-2:#0b1226;
+    --line:#1e284f; --line-2:#2a3663;
+    --ink:#eaf0ff; --ink-dim:#c3cdee; --muted:#7d88a8;
+    --accent:#f7931a; --accent-2:#ffc069; --accent-deep:#c96f00;
+    --vault:#7be0ff; --vault-2:#a6efff; --vault-deep:#1d7a9c;
+    --ok:#35d39a; --warn:#ffb86b; --err:#ff7a7a;
+    --input-bg:#070b1d; --btn-bg:#19224a; --btn-bg-hover:#1f2a58;
+    --code-bg:#0b1226; --chip-bg:#1a2450;
+    --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono: ui-monospace,"SF Mono","Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+    --shadow: 0 30px 80px rgba(0,0,0,.45);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink);
+    font-family:var(--sans); font-size:15px; line-height:1.55;
+    background:
+      radial-gradient(1000px 600px at 85% -10%, rgba(247,147,26,.06), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(80,160,220,.13), transparent 60%),
+      linear-gradient(180deg, var(--bg0), var(--bg1));
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:1100px; margin:0 auto; padding:32px 24px}
+
+  /* ===== v1.07 — top loading bar ===== */
+  /* Subtle 3px bar at the very top of the page, fixed-position so it's visible regardless
+     of scroll. Two modes: determinate (width set by JS as a % of estimated total) and
+     indeterminate (animated shimmer for when total is unknown / soft-cap exceeded). */
+  #scry-progress{
+    position:fixed; top:0; left:0; right:0; height:3px;
+    background:transparent; z-index:200;
+    pointer-events:none;
+    opacity:0; transition:opacity .25s ease;
+  }
+  #scry-progress.active{ opacity:1 }
+  #scry-progress .bar{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--vault), var(--vault-2));
+    box-shadow: 0 0 12px rgba(123,224,255,.55);
+    transition:width .35s ease;
+    border-radius:0 2px 2px 0;
+  }
+  #scry-progress.indeterminate .bar{
+    width:30% !important;
+    animation: scry-indet 1.4s linear infinite;
+  }
+  @keyframes scry-indet{
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(360%); }
+  }
+  #scry-progress.error .bar{
+    background:linear-gradient(90deg, #f5a5a5, #d97070);
+    box-shadow: 0 0 10px rgba(245,165,165,.45);
+    width:100% !important;
+    animation:none;
+  }
+
+  /* ===== Top bar ===== */
+  header.top{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:24px; padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .mark{
+    display:flex; align-items:center; gap:14px; min-width:0;
+  }
+  .mark svg{
+    width:46px; height:46px;
+    border-radius:12px; padding:7px;
+    background: linear-gradient(135deg, var(--vault-2), var(--vault));
+    color:#051822; flex:0 0 auto;
+    box-shadow: 0 10px 24px rgba(123,224,255,.18);
+  }
+  .mark span{
+    display:flex; flex-direction:column; gap:2px;
+    font-weight:700; font-size:19px; letter-spacing:.2px; color:var(--ink);
+    line-height:1.1;
+  }
+  .mark span::after{
+    content:"watch-only balance viewer";
+    font-size:11px; color:var(--muted);
+    font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+  }
+
+  /* The header-aggregate from the old layout is now redundant with the
+     prominent balance card below; hide it but keep the DOM live so any
+     JS update doesn't crash. */
+  .header-aggregate{ display:none }
+
+  .header-actions{ margin-left:auto; display:flex; align-items:center; gap:10px }
+
+  .denom-toggle{
+    display:inline-flex; border:1px solid var(--line); border-radius:999px;
+    overflow:hidden; background:var(--panel-2);
+  }
+  .denom-toggle button{
+    background:transparent; border:0; color:var(--muted);
+    font-family:var(--mono); font-size:11.5px; font-weight:600;
+    padding:6px 13px; cursor:pointer; letter-spacing:.05em;
+    transition:color .15s, background .15s;
+  }
+  .denom-toggle button + button{ border-left:1px solid var(--line) }
+  .denom-toggle button:hover{ color:var(--ink-dim) }
+  .denom-toggle button.on{ background:var(--btn-bg); color:var(--vault-2) }
+
+  .gear{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--ink-dim);
+    padding:7px 9px; cursor:pointer; border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:background .15s, border .15s, color .15s;
+  }
+  .gear svg{width:18px;height:18px}
+  .gear:hover{ background:var(--btn-bg-hover); color:var(--vault-2); border-color:var(--vault-2) }
+
+  /* ===== Hero — pared down to a heading + lede ===== */
+  .hero{
+    padding:0; margin:18px 0 18px;
+    text-align:left; position:relative;
+  }
+  .sigil{ display:none }
+  .hero-eyebrow{ display:none }
+  .hero h1{
+    margin:0 0 6px; font-size:24px; font-weight:700; color:var(--ink);
+    letter-spacing:.15px;
+  }
+  .hero h1 em{ font-style:normal; color:var(--vault-2) }
+  .hero-lede{
+    color:var(--muted); font-size:14px; line-height:1.6;
+    max-width:640px; margin:0;
+  }
+  .hero-lede em{ font-style:normal; color:var(--accent-2); font-weight:600 }
+  .hero-lede .mono{ font-family:var(--mono); font-size:12px; color:var(--accent) }
+
+  /* ===== Stats card — the aggregate balance is the headline ===== */
+  .stats{
+    display:grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap:0;
+    background: linear-gradient(180deg, rgba(255,255,255,.015), transparent), var(--panel);
+    border:1px solid var(--line); border-radius:20px;
+    box-shadow: var(--shadow);
+    padding:26px 28px; margin-bottom:18px;
+  }
+  .stat{
+    padding:0 22px 0 0;
+    border-right:1px solid var(--line);
+    min-width:0;
+  }
+  .stat:last-child{ border-right:0; padding-right:0 }
+  .stat:not(:first-child){ padding-left:22px; padding-right:22px }
+  .stat:nth-child(4){ padding-right:0 }
+  .stat .label{
+    font-size:11px; color:var(--muted);
+    letter-spacing:.12em; text-transform:uppercase;
+    font-weight:600; margin-bottom:8px;
+  }
+  .stat .value{
+    font-family:var(--mono); font-size:18px; font-weight:600;
+    color:var(--ink); letter-spacing:.02em; word-break:break-word;
+  }
+  .stat .value.gold{ color:var(--accent) }
+  .stat .sub{
+    font-size:11.5px; color:var(--muted); margin-top:4px;
+    letter-spacing:.02em;
+  }
+  /* Make the cell carrying the aggregate (.value.gold) the dominant element. */
+  .stat:has(.value.gold){
+    background: linear-gradient(135deg, rgba(247,147,26,.10), rgba(247,147,26,0) 70%);
+    border-radius:14px; margin:-8px 14px -8px -8px;
+    padding:14px 24px; border-right:0;
+  }
+  .stat:has(.value.gold) .label{
+    color:var(--accent-2); margin-bottom:10px;
+  }
+  .stat:has(.value.gold) .value{
+    font-size:38px; line-height:1.05;
+    color:var(--accent); font-weight:700;
+    text-shadow: 0 2px 12px rgba(247,147,26,.18);
+  }
+  .stat:has(.value.gold) .sub{
+    color:var(--accent-2);
+  }
+  .stat .value .unit{
+    font-family:var(--mono); font-weight:500;
+    color:var(--muted); font-size:.55em; margin-left:8px;
+    letter-spacing:.08em;
+  }
+  /* v1.07 — non-wrapping balance display with Bitcoin-convention 2-3-3 grouping */
+  .num{
+    white-space:nowrap;
+    font-variant-numeric: tabular-nums;
+    display:inline-block;
+  }
+  .grp{ margin-left:.22em; }
+  .grp-a{ /* cBTC: closest to the dot, no left margin needed */ margin-left:0; }
+  .dec-zero{ opacity:.42; font-weight:500; }
+  /* Stat cells force their value onto one line and let it shrink if absolutely needed */
+  .stat .value{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat:has(.value.gold) .value{ overflow:visible; }   /* hero balance never truncated */
+
+  @media (max-width:760px){
+    .stats{ grid-template-columns: 1fr 1fr; gap:6px 10px; padding:18px 20px }
+    .stat, .stat:not(:first-child){ padding:8px 0; border-right:0 }
+    .stat:has(.value.gold){
+      grid-column: 1 / -1; margin:0 0 8px; padding:14px 18px;
+    }
+    .stat:has(.value.gold) .value{ font-size:32px }
+  }
+
+  /* ===== Chart card ===== */
+  .chart-card{
+    background: linear-gradient(180deg, var(--panel-2), transparent), var(--panel);
+    border:1px solid var(--line); border-radius:14px;
+    padding:18px 22px; margin-bottom:24px;
+    box-shadow: 0 14px 30px rgba(0,0,0,.18);
+    position:relative;
+  }
+  .chart-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:12px; gap:10px; flex-wrap:wrap;
+  }
+  .chart-head h3{
+    margin:0; font-size:12px; font-weight:700; color:var(--ink-dim);
+    text-transform:uppercase; letter-spacing:.18em;
+  }
+  .chart-head .meta{ font-size:11.5px; color:var(--muted); font-family:var(--mono) }
+  .chart-svg{ width:100%; height:160px; display:block }
+  .chart-svg .axis{ stroke:var(--line); stroke-width:1 }
+  .chart-svg .tick{ fill:var(--muted); font-family:var(--mono); font-size:10px; letter-spacing:.05em }
+  .chart-svg .line{ stroke:var(--accent); stroke-width:1.6; fill:none }
+  .chart-svg .area{ fill:url(#gold-grad); opacity:.6 }
+  .chart-svg .dot{ fill:var(--accent) }
+  .chart-svg .dot-pulse{ fill:var(--accent); opacity:.3 }
+
+  /* ===== Section heading ===== */
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin: 28px 0 14px; gap:10px; flex-wrap:wrap;
+  }
+  .section-head h2{
+    margin:0; font-size:13px; font-weight:700; color:var(--ink);
+    text-transform:uppercase; letter-spacing:.18em;
+  }
+  .section-head h2 em{ font-style:normal; color:var(--vault-2) }
+  .section-head .counter{
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:.05em;
+  }
+
+  /* ===== Instruments list ===== */
+  .instruments{ display:flex; flex-direction:column; gap:10px }
+  .instrument{
+    background: linear-gradient(180deg, var(--panel-2), transparent), var(--panel);
+    border:1px solid var(--line); border-radius:12px;
+    padding:14px 18px;
+    display:grid; grid-template-columns: auto 1fr auto auto;
+    gap:14px; align-items:center;
+    transition: border-color .15s, box-shadow .2s, transform .1s;
+  }
+  .instrument:hover{
+    border-color: rgba(123,224,255,.35);
+    box-shadow: 0 14px 30px rgba(0,0,0,.18);
+    transform: translateY(-1px);
+  }
+  .instrument .idx{
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:.05em; flex:0 0 auto;
+  }
+  .instrument .body{ min-width:0 }
+  .instrument .head-row{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-bottom:3px;
+  }
+  .instrument .name{
+    font-weight:700; font-size:14.5px; color:var(--ink);
+  }
+  .instrument .key{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    word-break:break-all; display:block; max-width:560px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .instrument .meta{
+    font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    margin-top:4px; letter-spacing:.05em;
+  }
+  .instrument .tag{
+    display:inline-block; padding:2px 8px; border-radius:6px;
+    background:var(--chip-bg);
+    font-family:var(--mono); font-size:10.5px; color:var(--ink-dim);
+    border:1px solid var(--line-2); letter-spacing:.05em;
+  }
+  .instrument .tag.zpub{ color:var(--vault-2); border-color: rgba(123,224,255,.35) }
+  .instrument .tag.xpub{ color:#d2a8d2; border-color: rgba(202,162,202,.35) }
+  .instrument .tag.ypub{ color:var(--accent-2); border-color: rgba(247,147,26,.35) }
+  .instrument .tag.addr{ color:var(--ok); border-color: rgba(53,211,154,.35) }
+  .instrument .tag.timelock{ color:var(--accent); border-color: rgba(247,147,26,.4) }
+
+  .instrument .bal-col{ text-align:right; flex:0 0 auto; min-width:0 }
+  .instrument .balance{
+    font-family:var(--mono); font-size:16px; font-weight:600; color:var(--ink);
+    letter-spacing:.02em;
+    white-space:nowrap;                       /* v1.07 — never wrap a balance line */
+  }
+  .instrument .balance.empty{ color:var(--muted); font-weight:500 }
+  .instrument .balance .unit{ color:var(--muted); margin-left:6px; font-size:11.5px }
+  .instrument .scan-meta{
+    font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    margin-top:4px; letter-spacing:.05em;
+  }
+
+  .instrument .row-actions{ display:flex; gap:6px }
+  .icon-btn{
+    background:var(--btn-bg); border:1px solid var(--line); color:var(--ink-dim);
+    padding:6px 8px; cursor:pointer; border-radius:9px;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition: background .15s, border .15s, color .15s;
+  }
+  .icon-btn:hover{ background:var(--btn-bg-hover); color:var(--vault-2); border-color:var(--vault-2) }
+  .icon-btn.danger:hover{ color:var(--err); border-color: rgba(255,122,122,.5) }
+  .icon-btn svg{ width:14px; height:14px }
+
+  .empty-state{
+    border:1px dashed var(--line-2); border-radius:14px;
+    padding:40px 20px; text-align:center; color:var(--muted);
+    background: var(--panel-2);
+  }
+  .empty-state .big{ font-size:34px; margin-bottom:8px }
+  .empty-state .t{ color:var(--ink-dim); font-size:15px; font-weight:600; margin-bottom:4px }
+
+  /* ===== Add-instrument card ===== */
+  .add-card{
+    background: linear-gradient(180deg, var(--panel-2), transparent), var(--panel);
+    border:1px solid var(--line); border-radius:14px;
+    padding:22px 24px; margin-top:18px;
+    box-shadow: 0 14px 30px rgba(0,0,0,.18);
+  }
+  .add-card h3{
+    margin:0 0 4px; font-size:13px; font-weight:700; color:var(--ink);
+    text-transform:uppercase; letter-spacing:.18em;
+  }
+  .add-card .hint{
+    color:var(--muted); font-size:13.5px; margin-bottom:14px; line-height:1.55;
+  }
+  .add-card .add-row{
+    display:grid; grid-template-columns: 1.2fr 2fr auto; gap:8px; align-items:stretch;
+  }
+  .add-card .divider{
+    margin: 18px 0 14px; display:flex; align-items:center; gap:12px;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+    color:var(--muted); text-transform:uppercase; font-weight:600;
+  }
+  .add-card .divider::before, .add-card .divider::after{
+    content:""; flex:1; border-top:1px solid var(--line);
+  }
+  .import-row{
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  }
+  .import-row .btn{ flex:0 0 auto }
+  .import-row .help{
+    font-family:var(--sans); font-size:13px; color:var(--muted);
+    flex:1; min-width:200px; line-height:1.55;
+  }
+  .help{ color:var(--muted); font-size:12.5px; margin-top:4px; line-height:1.5 }
+
+  @media (max-width:680px){
+    .add-card .add-row{ grid-template-columns: 1fr }
+  }
+
+  /* ===== Inputs ===== */
+  .field{
+    background: var(--input-bg); border:1px solid var(--line);
+    color:var(--ink); padding:10px 12px;
+    font-family:var(--mono); font-size:13px;
+    border-radius:9px; outline:none; width:100%;
+    transition: border .15s, background .15s;
+  }
+  .field:focus{ border-color: var(--vault-2) }
+  .field::placeholder{ color: var(--muted) }
+
+  /* ===== Buttons ===== */
+  .btn{
+    font-family:var(--sans); font-size:13.5px; font-weight:600;
+    color:var(--ink); background:var(--btn-bg);
+    border:1px solid var(--line); border-radius:10px;
+    padding:9px 15px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    transition: background .15s, border .15s, transform .1s;
+  }
+  .btn:hover:not(:disabled){
+    background:var(--btn-bg-hover); border-color:var(--vault-2);
+  }
+  .btn:active:not(:disabled){ transform: translateY(1px) }
+  .btn:disabled{ opacity:.45; cursor:not-allowed }
+  .btn-primary{
+    background: linear-gradient(180deg, var(--vault-2), var(--vault));
+    color:#052029; border-color: #2a7e9e;
+    box-shadow: 0 10px 22px rgba(123,224,255,.18);
+  }
+  .btn-primary:hover:not(:disabled){
+    background: linear-gradient(180deg, #c1f0ff, var(--vault-2));
+    border-color: var(--vault-deep);
+  }
+  .btn-ghost{
+    background:transparent; color:var(--muted); border-color:var(--line);
+  }
+  .btn-ghost:hover:not(:disabled){
+    color:var(--ink); border-color:var(--vault-2);
+  }
+
+  /* ===== Banners (status messages) ===== */
+  .banner{
+    border-radius:10px; padding:10px 13px; margin:8px 0;
+    font-size:13px; line-height:1.5; border:1px solid;
+  }
+  .banner.error{
+    background: rgba(255,122,122,.08); border-color: rgba(255,122,122,.35);
+    color: var(--err);
+  }
+  .banner.info{
+    background: rgba(123,224,255,.08); border-color: rgba(123,224,255,.35);
+    color: var(--vault-2);
+  }
+
+  /* ===== Modal ===== */
+  .modal-scrim{
+    position:fixed; inset:0; background: rgba(4,8,20,.72);
+    backdrop-filter: blur(6px);
+    z-index:100;
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-scrim.show{ display:flex }
+  .modal{
+    background: var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:26px 28px; width:min(520px,100%);
+    box-shadow: var(--shadow); max-height:90vh;
+    overflow-y:auto; overflow-x:hidden;
+    scrollbar-width:thin;
+  }
+  .modal h2{
+    margin:0 0 4px; font-size:18px; font-weight:700; color:var(--ink);
+  }
+  .modal h2 em{ font-style:normal; color:var(--vault-2) }
+  .modal .sub{
+    font-size:13px; color:var(--muted); margin-bottom:18px;
+  }
+  .modal label{
+    display:block; font-size:11.5px; color:var(--muted); margin:14px 0 6px;
+    text-transform:uppercase; letter-spacing:.1em; font-weight:600;
+  }
+  .modal-actions{
+    display:flex; gap:10px; justify-content:flex-end;
+    margin-top:22px; flex-wrap:wrap;
+  }
+
+  /* ===== Import modal extras (carried from v1.01, restyled) ===== */
+  .import-dropzone{
+    border:2px dashed var(--line-2); border-radius:12px;
+    padding:26px 16px; text-align:center;
+    color:var(--muted); font-family:var(--sans); font-size:13.5px;
+    cursor:pointer;
+    transition: border .15s, background .15s, color .15s;
+    background: var(--panel-2);
+  }
+  .import-dropzone:hover{ border-color: var(--vault-2); color: var(--ink-dim) }
+  .import-dropzone.over{
+    border-color: var(--vault); background: rgba(123,224,255,.05);
+    color: var(--vault-2);
+  }
+  .import-dropzone .big{ font-size:28px; margin-bottom:6px }
+  .import-preview{
+    background: var(--panel-2); border:1px solid var(--line);
+    border-radius:8px; padding:12px 14px;
+    margin: 10px 0; font-family:var(--mono); font-size:12px;
+    color:var(--ink-dim);
+  }
+  .import-preview dt{
+    color:var(--muted); font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.12em;
+    margin-top:6px; font-weight:600;
+  }
+  .import-preview dd{
+    color:var(--ink); word-break:break-all; margin:.15rem 0 0;
+  }
+  .import-status-list{
+    margin-top:8px; font-family:var(--mono); font-size:12.5px;
+    max-height:240px; overflow-y:auto;
+  }
+  .import-status-list .item{
+    display:flex; gap:10px; padding:6px 0;
+    border-top:1px solid var(--line);
+  }
+  .import-status-list .item:first-child{ border-top:0 }
+  .import-status-list .item .mark{
+    flex:0 0 1.2rem; background:none; box-shadow:none;
+    padding:0; width:auto; height:auto; border-radius:0;
+    color:inherit;
+  }
+  .import-status-list .item.ok .mark{ color:var(--ok) }
+  .import-status-list .item.skip .mark{ color:var(--muted) }
+  .import-status-list .item.err .mark{ color:var(--err) }
+  .privkey-notice{
+    background: rgba(53,211,154,.08); border-left: 3px solid var(--ok);
+    padding: 12px 14px; margin: 10px 0 14px;
+    font-size:13px; color:var(--ink-dim); line-height:1.55;
+    border-radius: 0 8px 8px 0;
+  }
+  .privkey-notice strong{ color: var(--ok) }
+
+  /* v1.03: per-wallet passwords stage */
+  .bulk-pw-row{
+    display:flex; gap:8px; align-items:stretch; margin-bottom:14px;
+  }
+  .bulk-pw-row .field{ flex:1; min-width:0 }
+  .bulk-pw-row .btn{ flex:0 0 auto }
+  .wallet-list{
+    display:flex; flex-direction:column; gap:6px;
+    max-height:340px; overflow-y:auto;
+    padding:2px;
+  }
+  .wallet-row{
+    display:grid; grid-template-columns: auto 1fr minmax(160px, 220px);
+    gap:10px; align-items:center;
+    background: var(--panel-2); border:1px solid var(--line);
+    border-radius:9px; padding:8px 12px;
+  }
+  .wallet-row.timelock{
+    background: linear-gradient(135deg, rgba(247,147,26,.06), transparent 80%), var(--panel-2);
+    border-color: rgba(247,147,26,.22);
+  }
+  .wallet-row .tag{
+    display:inline-block; padding:2px 7px; border-radius:6px;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.05em;
+    border:1px solid var(--line-2); background:var(--chip-bg);
+    color:var(--ink-dim); flex:0 0 auto;
+  }
+  .wallet-row .tag.wallet{ color:var(--vault-2); border-color:rgba(123,224,255,.35) }
+  .wallet-row .tag.timelock{ color:var(--accent); border-color:rgba(247,147,26,.4) }
+  .wallet-row .name{
+    font-size:13.5px; color:var(--ink); font-weight:600;
+    word-break:break-word; line-height:1.35;
+  }
+  .wallet-row .name .filename{
+    display:block; font-family:var(--mono); font-size:10.5px;
+    color:var(--muted); font-weight:500; margin-top:2px; letter-spacing:.04em;
+  }
+  .wallet-row .field{
+    font-family:var(--mono); font-size:12.5px; padding:7px 9px;
+  }
+  .wallet-row.no-pw .field{ display:none }
+  .wallet-row.no-pw::after{
+    content:"no password needed";
+    font-family:var(--mono); font-size:10.5px;
+    color:var(--ok); letter-spacing:.05em; text-align:right;
+  }
+  @media (max-width:560px){
+    .wallet-row{ grid-template-columns: 1fr; gap:6px }
+    .wallet-row.no-pw::after{ text-align:left }
+  }
+
+  /* ===== Footer ===== */
+  .foot{
+    margin-top:36px; padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:11.5px; color:var(--muted);
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    font-family:var(--mono); letter-spacing:.05em;
+  }
+  .foot a{ color:var(--muted); text-decoration:none }
+  .foot a:hover{ color:var(--vault-2) }
+
+  /* ===== Reveal animation: simplified (immediate, no stagger) ===== */
+  .reveal{ opacity:1; transform:none }
+</style>
+</head>
+<body>
+
+<!-- v1.07: top progress bar — animates while a scan is in flight -->
+<div id="scry-progress" aria-hidden="true"><div class="bar"></div></div>
+
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header class="top reveal">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="5"/>
+        <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+        <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+      </svg>
+      <span>Amulet Scryer</span>
+    </div>
+
+    <div class="header-aggregate">
+      <div class="label">Aggregate</div>
+      <!-- v1.08 — pre-grouped to match the post-scan layout exactly (no flash on first paint) -->
+      <div class="value" id="total-balance"><span class="num"><span class="int">0</span>.<span class="grp grp-a"><span class="dec-zero">00</span></span><span class="grp grp-b"><span class="dec-zero">000</span></span><span class="grp grp-c"><span class="dec-zero">000</span></span></span><span class="unit" id="total-unit">BTC</span></div>
+    </div>
+
+    <div class="header-actions">
+      <div class="denom-toggle">
+        <button id="btc-toggle" class="on">BTC</button>
+        <button id="sats-toggle">sats</button>
+      </div>
+      <button class="gear" id="gear-btn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <svg class="sigil" viewBox="0 0 200 200" fill="none" stroke="#c9a227" stroke-width="0.6">
+      <circle cx="100" cy="100" r="98"/>
+      <circle cx="100" cy="100" r="75"/>
+      <circle cx="100" cy="100" r="52"/>
+      <circle cx="100" cy="100" r="29"/>
+      <circle cx="100" cy="100" r="3" fill="#c9a227"/>
+      <path d="M100 2v196M2 100h196"/>
+      <path d="M30 30l140 140M170 30L30 170"/>
+      <!-- Eye-like overlay: the scrying glass -->
+      <ellipse cx="100" cy="100" rx="75" ry="35" stroke-width="0.8"/>
+      <circle cx="100" cy="100" r="18" stroke-width="0.8"/>
+      <circle cx="100" cy="100" r="7" fill="#c9a227" fill-opacity="0.3"/>
+    </svg>
+
+    <div class="hero-eyebrow reveal d1">&nbsp;</div>
+    <h1 class="reveal d2">Amulet <em>Scryer</em></h1>
+    <p class="hero-lede reveal d3">
+      A viewing glass for <em>watch-only</em> wallets. Paste an extended public key &mdash; <span class="mono" style="font-family:var(--mono);font-size:0.9rem;color:var(--gold);">zpub</span>,
+      <span style="font-family:var(--mono);font-size:0.9rem;color:#c9a2c9;">ypub</span>, or
+      <span style="font-family:var(--mono);font-size:0.9rem;color:#c9aa8a;">xpub</span> &mdash; and the Scryer derives addresses, sums balances, and peers at the chain
+      <em>without ever asking for a key that can spend.</em>
+    </p>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats reveal d4">
+    <div class="stat">
+      <div class="label">Instruments</div>
+      <div class="value" id="stat-instruments">&mdash;</div>
+      <div class="sub">watched</div>
+    </div>
+    <div class="stat">
+      <div class="label">Addresses</div>
+      <div class="value" id="stat-addresses">&mdash;</div>
+      <div class="sub">derived &amp; scanned</div>
+    </div>
+    <div class="stat">
+      <div class="label">Aggregate</div>
+      <div class="value gold" id="stat-balance">&mdash;</div>
+      <div class="sub" id="stat-balance-sub">&nbsp;</div>
+    </div>
+    <div class="stat">
+      <div class="label">Last Consult</div>
+      <div class="value" id="stat-last" style="font-size:1.2rem;">never</div>
+      <div class="sub" id="stat-oracle">oracle: mempool.space</div>
+    </div>
+  </section>
+
+  <!-- ============ CHART ============ -->
+  <div class="chart-card">
+    <div class="chart-head">
+      <h3>Aggregate over time</h3>
+      <span class="meta" id="chart-range">Last 7 consultations</span>
+    </div>
+    <svg class="chart-svg" id="chart" viewBox="0 0 700 180" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="gold-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c9a227" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#c9a227" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- rendered by JS -->
+    </svg>
+  </div>
+
+  <!-- ============ INSTRUMENTS ============ -->
+  <section>
+    <div class="section-head">
+      <h2>Watched <em>instruments</em></h2>
+      <span class="counter" id="glass-counter">&mdash;</span>
+    </div>
+
+    <div id="status-area"></div>
+
+    <div class="instruments" id="instruments-list">
+      <!-- rendered by JS -->
+    </div>
+
+    <div class="add-card">
+      <h3>Add an instrument</h3>
+      <div class="hint">Extended public key only &mdash; never a private key, mnemonic, or seed. A single address is also accepted.</div>
+      <div class="add-row">
+        <input type="text" class="field" id="add-name" placeholder="Label (e.g. &quot;Cold savings&quot;)">
+        <input type="text" class="field" id="add-key" placeholder="zpub… / ypub… / xpub… / bc1…">
+        <button class="btn btn-primary" id="add-btn">Add</button>
+      </div>
+
+      <div class="divider">or &mdash; import from a vault file</div>
+      <div class="import-row">
+        <button class="btn" id="import-btn">📥 Import file…</button>
+        <div class="help">
+          Accepts a vault backup <span class="mono" style="font-family:var(--mono);font-size:0.82rem;color:var(--gold);">.zip</span>,
+          a single wallet or timelock <span class="mono" style="font-family:var(--mono);font-size:0.82rem;color:var(--gold);">.enc</span>,
+          or a timelock <span class="mono" style="font-family:var(--mono);font-size:0.82rem;color:var(--gold);">.txt</span>.
+          The Scryer derives only extended public keys and addresses — seeds and private keys are discarded immediately after derivation.
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:center;">
+      <button class="btn btn-primary" id="consult-btn" title="Contacts the configured block-explorer to read balances. No private keys are sent.">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Refresh balances <span style="opacity:.65; font-weight:500; margin-left:.35rem;">(online)</span>
+      </button>
+      <div style="font-family:var(--mono); font-size:0.7rem; color:var(--paper-faint); letter-spacing:0.05em; text-align:right;">
+        Will contact <span id="endpoint-note" style="color:var(--vault-2);">…</span><br>
+        <span style="opacity:.78">Watch-only. No private keys leave this device. You'll be asked to confirm the first time.</span>
+      </div>
+    </div>
+
+    <!-- v1.07: set expectations — this is intentionally slow -->
+    <div style="margin-top:14px; padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:var(--panel-2); font-size:12.5px; line-height:1.55; color:var(--ink-dim);">
+      <strong style="color:var(--vault-2);">⏳ Paced, not live.</strong>
+      The Scryer grinds through addresses one at a time, spaced apart to keep block-explorers happy. A typical refresh of a few wallets can take <em>several minutes</em>. That's by design — this is a tool for long-term holders, not a live ticker. You can leave the page open in the background; the loading bar at the top of the screen will show progress.
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div>
+      Amulet Scryer &middot; v1.08 &middot; watch-only. No keys. No telemetry.
+    </div>
+    <div style="display:flex; gap:1.5rem;">
+      <a href="#" data-github>GitHub</a>
+      <a href="https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki" target="_blank" rel="noopener">BIP 84</a>
+      <a href="#" id="reset-link">Reset local data</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal-scrim" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+  <div class="modal">
+    <h2 id="settings-title"><em>Oracle</em> &amp; scrying</h2>
+    <div class="sub">Local configuration &middot; stored only on this device</div>
+
+    <label for="endpoint-list">Explorer endpoints (rotation)</label>
+    <textarea id="endpoint-list" class="field" rows="3" style="width:100%; font-family:var(--mono); font-size:12.5px; resize:vertical; min-height:72px;" placeholder="One URL per line"></textarea>
+    <div class="help">One mempool.space-compatible REST endpoint per line. The Scryer rotates between them in round-robin order, so each explorer sees only its share of your addresses &mdash; lower rate-limit pressure, better privacy, and resilience if one is degraded. <strong>Replace with your own node URL</strong> for full privacy.</div>
+    <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+      <button class="btn btn-ghost" id="test-connection" type="button" style="font-size:12px;">Test all endpoints</button>
+      <span id="test-connection-result" style="font-family:var(--mono); font-size:12px; color:var(--paper-faint); white-space:pre-line;"></span>
+    </div>
+
+    <label for="gap-limit">Gap limit (BIP-44)</label>
+    <input id="gap-limit" class="field" type="number" value="20" min="1" max="100" style="width:100%;">
+    <div class="help">The <strong>only</strong> stopping condition: scan continues per chain until this many <em>consecutive</em> empty addresses are seen. Standard is 20. A wallet with continuous activity tolerates a small gap (e.g. 3); a sparsely used one needs the full 20.</div>
+
+    <label for="rate-delay">Rate delay</label>
+    <input id="rate-delay" class="field" type="number" value="1100" min="0" max="5000" step="50" style="width:100%;">
+    <div class="help">Milliseconds between calls. mempool.space's public API limits to <strong>~60/minute</strong>, so anything below 1000&nbsp;ms risks an <code style="font-family:var(--mono);color:var(--gold)">HTTP 429</code> blackout for several minutes. Set to 0 only if you are pointing at your own node.</div>
+    <div id="rate-delay-warn" class="banner error" style="display:none; margin-top:8px; padding:8px 12px; font-size:12px;">
+      <span><strong>⚠ Below the public rate limit.</strong> mempool.space will refuse further calls for several minutes if it sees more than ~60 per minute. Use this setting only with your own node.</span>
+    </div>
+
+    <label>Privacy &amp; consent</label>
+    <div id="consent-list" class="help" style="margin-top:0; line-height:1.6;">No explorer consents recorded.</div>
+    <button class="btn btn-ghost" id="clear-consents" style="margin-top:8px; font-size:12px;" type="button">Clear all explorer consents</button>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="settings-cancel">Cancel</button>
+      <button class="btn btn-primary" id="settings-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IMPORT MODAL (v1.01) ============ -->
+<div class="modal-scrim" id="import-modal" role="dialog" aria-modal="true" aria-labelledby="import-title">
+  <div class="modal" style="max-width:640px">
+    <h2 id="import-title"><em>Import</em> from vault file</h2>
+    <div class="sub">Watch-only extraction &middot; seeds and private keys never enter Scryer state</div>
+
+    <div class="privkey-notice" id="import-privkey-notice">
+      <strong>Read-only by design.</strong> Even when a file contains a seed or a private key, the Scryer derives only the public material (extended public keys, addresses) and immediately discards the rest. Nothing that could spend your coins is retained or transmitted.
+    </div>
+
+    <!-- Stage: pick file -->
+    <div id="import-stage-pick">
+      <div class="import-dropzone" id="import-drop" role="button" tabindex="0">
+        <div class="big">📥</div>
+        <div>Drop a vault <code style="font-family:var(--mono);color:var(--gold)">.zip</code>, a wallet <code style="font-family:var(--mono);color:var(--gold)">.enc</code>, or a timelock <code style="font-family:var(--mono);color:var(--gold)">.txt</code> here</div>
+        <div style="margin-top:0.4rem;font-size:0.7rem;color:var(--paper-faint)">or click to choose a file</div>
+      </div>
+      <div class="import-status-list" id="import-zip-preview" style="display:none"></div>
+    </div>
+
+    <!-- Stage: single password (standalone .enc, AMLT binary, or zip without vault.meta) -->
+    <div id="import-stage-password" style="display:none">
+      <div class="import-preview" id="import-file-summary"></div>
+      <label for="import-password">Password</label>
+      <input type="password" id="import-password" class="field" placeholder="wallet password" autocomplete="off" spellcheck="false">
+      <div class="help" style="margin-top:0.3rem">Decrypts a single wallet or timelock file. The Scryer derives only watch-only material and discards seed/private-key bytes immediately afterwards.</div>
+    </div>
+
+    <!-- v1.03: Stage A — vault master password (only for zips that contain a vault.meta) -->
+    <div id="import-stage-master" style="display:none">
+      <div class="import-preview" id="import-master-summary"></div>
+      <label for="import-master-password">Vault master password</label>
+      <input type="password" id="import-master-password" class="field" placeholder="master password (the one for the vault as a whole)" autocomplete="off" spellcheck="false">
+      <div class="help" style="margin-top:0.3rem">
+        The master password unlocks the vault's index — it gives the Scryer the names of every wallet inside. Each wallet has its <em>own</em> separate password, which you'll enter in the next step.
+      </div>
+    </div>
+
+    <!-- v1.03: Stage B — per-wallet passwords (after master password succeeded) -->
+    <div id="import-stage-wallets" style="display:none">
+      <div class="import-preview" id="import-wallets-summary"></div>
+      <div class="help" style="margin-bottom:10px">
+        Enter the password for each wallet you want to track. Leave a row blank to skip it. Plaintext timelocks (no password) are added automatically — they don't appear in this list.
+      </div>
+      <div class="bulk-pw-row">
+        <input type="password" id="import-bulk-pw" class="field" placeholder="optional: same password for several wallets" autocomplete="off" spellcheck="false">
+        <button class="btn btn-ghost" id="import-bulk-apply" type="button">Apply to all</button>
+      </div>
+      <div class="wallet-list" id="import-wallet-list"></div>
+    </div>
+
+    <!-- Stage: results -->
+    <div id="import-stage-results" style="display:none">
+      <div class="import-preview" id="import-results-summary"></div>
+      <div class="import-status-list" id="import-results-list"></div>
+    </div>
+
+    <div id="import-error" class="banner error" style="display:none;margin-top:0.8rem"></div>
+    <div id="import-progress" class="sub" style="display:none;margin-top:0.6rem">Working… this may take a moment for encrypted files.</div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="import-cancel">Close</button>
+      <button class="btn" id="import-back" style="display:none">Back</button>
+      <button class="btn btn-primary" id="import-decrypt" style="display:none">Decrypt &amp; derive watch-only</button>
+      <button class="btn btn-primary" id="import-master-decrypt" style="display:none">Unlock vault index</button>
+      <button class="btn btn-primary" id="import-wallets-decrypt" style="display:none">Decrypt selected wallets</button>
+      <button class="btn btn-primary" id="import-accept" style="display:none">Add to Scryer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONSENT MODAL (v1.04 / v1.06 multi-endpoint) ============ -->
+<div class="modal-scrim" id="consent-modal" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+  <div class="modal" style="max-width:560px">
+    <h2 id="consent-title">About to contact <em>third-party</em> servers</h2>
+    <div class="sub">Watch-only balance lookup &middot; no private keys are ever transmitted</div>
+
+    <div class="privkey-notice" style="margin-bottom:14px">
+      The Scryer is offline by default. To read balances it has to query public block-explorers with each of your <strong>watch-only addresses</strong>. The Scryer rotates between the listed endpoints to spread the load and avoid rate limits. Each operator sees only the share of addresses that lands on their server, plus your IP address. None of them can see, derive, or spend anything.
+    </div>
+
+    <label style="margin-top:0">Endpoints in rotation</label>
+    <div id="consent-endpoints" style="font-family:var(--mono); font-size:13px; color:var(--vault-2); padding:8px 10px; background:var(--panel-2); border:1px solid var(--line); border-radius:8px; line-height:1.6;">
+      &mdash;
+    </div>
+
+    <label>What will be sent</label>
+    <div id="consent-summary" style="font-family:var(--mono); font-size:12.5px; color:var(--ink-dim); line-height:1.55;">
+      <span id="consent-addrs">—</span> address lookups, paced at <span id="consent-pace">—</span> ms apart, split across <span id="consent-epcount">—</span> endpoint(s).<br>
+      Estimated time: <span id="consent-eta">—</span>.
+    </div>
+
+    <label>For privacy-conscious users</label>
+    <div class="help" style="margin-top:0">
+      Replace the rotation set with <strong>your own node</strong> in Settings (a self-hosted mempool.space, Esplora, or Electrs is fine). When you query your own node, no third party sees anything.
+    </div>
+
+    <div style="margin-top:14px; display:flex; align-items:flex-start; gap:8px;">
+      <input type="checkbox" id="consent-remember" style="margin-top:3px; accent-color:var(--vault-2);">
+      <label for="consent-remember" style="margin:0; text-transform:none; letter-spacing:0; font-size:12.5px; color:var(--ink-dim); font-weight:500;">
+        Remember this choice for the listed endpoints (you can clear consent in Settings).
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="consent-cancel">Cancel</button>
+      <button class="btn btn-primary" id="consent-ok">Contact the explorers</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     Argon2id runtime (v1.01)
+     Verbatim UMD bundle from TimeSeed v3.0 (argon2-browser with
+     base64-inlined WASM). Exposes window.argon2 for decryption of
+     vault-native .enc files. Seeds derived from these decryptions
+     are handled inside convertPayloadToWatchOnly() only, and are
+     zeroed in its finally block before that function returns.
+     ============================================================ -->
+<script>
+  !function(A,I){"object"==typeof exports&&"object"==typeof module?module.exports=I():"function"==typeof define&&define.amd?define([],I):"object"==typeof exports?exports.argon2=I():A.argon2=I()}(this,(function(){return(()=>{var A,I,g={773:(A,I,g)=>{var B,Q="undefined"!=typeof self&&void 0!==self.Module?self.Module:{},C={};for(B in Q)Q.hasOwnProperty(B)&&(C[B]=Q[B]);var E,i,o,D,e=[];E="object"==typeof window,i="function"==typeof importScripts,o="object"==typeof process&&"object"==typeof process.versions&&"string"==typeof process.versions.node,D=!E&&!o&&!i;var n,t,a,r,s,y="";o?(y=i?g(967).dirname(y)+"/":"//",n=function(A,I){return r||(r=g(145)),s||(s=g(967)),A=s.normalize(A),r.readFileSync(A,I?null:"utf8")},a=function(A){var I=n(A,!0);return I.buffer||(I=new Uint8Array(I)),G(I.buffer),I},process.argv.length>1&&process.argv[1].replace(/\\/g,"/"),e=process.argv.slice(2),A.exports=Q,process.on("uncaughtException",(function(A){if(!(A instanceof V))throw A})),process.on("unhandledRejection",u),Q.inspect=function(){return"[Emscripten Module object]"}):D?("undefined"!=typeof read&&(n=function(A){return read(A)}),a=function(A){var I;return"function"==typeof readbuffer?new Uint8Array(readbuffer(A)):(G("object"==typeof(I=read(A,"binary"))),I)},"undefined"!=typeof scriptArgs?e=scriptArgs:void 0!==arguments&&(e=arguments),"undefined"!=typeof print&&("undefined"==typeof console&&(console={}),console.log=print,console.warn=console.error="undefined"!=typeof printErr?printErr:print)):(E||i)&&(i?y=self.location.href:"undefined"!=typeof document&&document.currentScript&&(y=document.currentScript.src),y=0!==y.indexOf("blob:")?y.substr(0,y.lastIndexOf("/")+1):"",n=function(A){var I=new XMLHttpRequest;return I.open("GET",A,!1),I.send(null),I.responseText},i&&(a=function(A){var I=new XMLHttpRequest;return I.open("GET",A,!1),I.responseType="arraybuffer",I.send(null),new Uint8Array(I.response)}),t=function(A,I,g){var B=new XMLHttpRequest;B.open("GET",A,!0),B.responseType="arraybuffer",B.onload=function(){200==B.status||0==B.status&&B.response?I(B.response):g()},B.onerror=g,B.send(null)}),Q.print||console.log.bind(console);var F,c,w=Q.printErr||console.warn.bind(console);for(B in C)C.hasOwnProperty(B)&&(Q[B]=C[B]);C=null,Q.arguments&&(e=Q.arguments),Q.thisProgram&&Q.thisProgram,Q.quit&&Q.quit,Q.wasmBinary&&(F=Q.wasmBinary),Q.noExitRuntime,"object"!=typeof WebAssembly&&u("no native wasm support detected");var h=!1;function G(A,I){A||u("Assertion failed: "+I)}var N,R,f="undefined"!=typeof TextDecoder?new TextDecoder("utf8"):void 0;function U(A){N=A,Q.HEAP8=new Int8Array(A),Q.HEAP16=new Int16Array(A),Q.HEAP32=new Int32Array(A),Q.HEAPU8=R=new Uint8Array(A),Q.HEAPU16=new Uint16Array(A),Q.HEAPU32=new Uint32Array(A),Q.HEAPF32=new Float32Array(A),Q.HEAPF64=new Float64Array(A)}Q.INITIAL_MEMORY;var M,Y=[],S=[],H=[],d=0,k=null,J=null;function u(A){throw Q.onAbort&&Q.onAbort(A),w(A+=""),h=!0,A="abort("+A+"). Build with -s ASSERTIONS=1 for more info.",new WebAssembly.RuntimeError(A)}function p(A){return A.startsWith("data:application/octet-stream;base64,")}function L(A){return A.startsWith("file://")}Q.preloadedImages={},Q.preloadedAudios={};var l,K="argon2.wasm";function q(A){try{if(A==K&&F)return new Uint8Array(F);if(a)return a(A);throw"both async and sync fetching of the wasm failed"}catch(A){u(A)}}function b(A){for(;A.length>0;){var I=A.shift();if("function"!=typeof I){var g=I.func;"number"==typeof g?void 0===I.arg?M.get(g)():M.get(g)(I.arg):g(void 0===I.arg?null:I.arg)}else I(Q)}}function x(A){try{return c.grow(A-N.byteLength+65535>>>16),U(c.buffer),1}catch(A){}}p(K)||(l=K,K=Q.locateFile?Q.locateFile(l,y):y+l);var m,X={a:function(A,I,g){R.copyWithin(A,I,I+g)},b:function(A){var I,g=R.length,B=2147418112;if((A>>>=0)>B)return!1;for(var Q=1;Q<=4;Q*=2){var C=g*(1+.2/Q);if(C=Math.min(C,A+100663296),x(Math.min(B,((I=Math.max(A,C))%65536>0&&(I+=65536-I%65536),I))))return!0}return!1}},W=(function(){var A={a:X};function I(A,I){var g,B=A.exports;Q.asm=B,U((c=Q.asm.c).buffer),M=Q.asm.k,g=Q.asm.d,S.unshift(g),function(A){if(d--,Q.monitorRunDependencies&&Q.monitorRunDependencies(d),0==d&&(null!==k&&(clearInterval(k),k=null),J)){var I=J;J=null,I()}}()}function g(A){I(A.instance)}function B(I){return function(){if(!F&&(E||i)){if("function"==typeof fetch&&!L(K))return fetch(K,{credentials:"same-origin"}).then((function(A){if(!A.ok)throw"failed to load wasm binary file at '"+K+"'";return A.arrayBuffer()})).catch((function(){return q(K)}));if(t)return new Promise((function(A,I){t(K,(function(I){A(new Uint8Array(I))}),I)}))}return Promise.resolve().then((function(){return q(K)}))}().then((function(I){return WebAssembly.instantiate(I,A)})).then(I,(function(A){w("failed to asynchronously prepare wasm: "+A),u(A)}))}if(d++,Q.monitorRunDependencies&&Q.monitorRunDependencies(d),Q.instantiateWasm)try{return Q.instantiateWasm(A,I)}catch(A){return w("Module.instantiateWasm callback failed with error: "+A),!1}F||"function"!=typeof WebAssembly.instantiateStreaming||p(K)||L(K)||"function"!=typeof fetch?B(g):fetch(K,{credentials:"same-origin"}).then((function(I){return WebAssembly.instantiateStreaming(I,A).then(g,(function(A){return w("wasm streaming compile failed: "+A),w("falling back to ArrayBuffer instantiation"),B(g)}))}))}(),Q.___wasm_call_ctors=function(){return(Q.___wasm_call_ctors=Q.asm.d).apply(null,arguments)},Q._argon2_hash=function(){return(Q._argon2_hash=Q.asm.e).apply(null,arguments)},Q._malloc=function(){return(W=Q._malloc=Q.asm.f).apply(null,arguments)}),T=(Q._free=function(){return(Q._free=Q.asm.g).apply(null,arguments)},Q._argon2_verify=function(){return(Q._argon2_verify=Q.asm.h).apply(null,arguments)},Q._argon2_error_message=function(){return(Q._argon2_error_message=Q.asm.i).apply(null,arguments)},Q._argon2_encodedlen=function(){return(Q._argon2_encodedlen=Q.asm.j).apply(null,arguments)},Q._argon2_hash_ext=function(){return(Q._argon2_hash_ext=Q.asm.l).apply(null,arguments)},Q._argon2_verify_ext=function(){return(Q._argon2_verify_ext=Q.asm.m).apply(null,arguments)},Q.stackAlloc=function(){return(T=Q.stackAlloc=Q.asm.n).apply(null,arguments)});function V(A){this.name="ExitStatus",this.message="Program terminated with exit("+A+")",this.status=A}function j(A){function I(){m||(m=!0,Q.calledRun=!0,h||(b(S),Q.onRuntimeInitialized&&Q.onRuntimeInitialized(),function(){if(Q.postRun)for("function"==typeof Q.postRun&&(Q.postRun=[Q.postRun]);Q.postRun.length;)A=Q.postRun.shift(),H.unshift(A);var A;b(H)}()))}A=A||e,d>0||(function(){if(Q.preRun)for("function"==typeof Q.preRun&&(Q.preRun=[Q.preRun]);Q.preRun.length;)A=Q.preRun.shift(),Y.unshift(A);var A;b(Y)}(),d>0||(Q.setStatus?(Q.setStatus("Running..."),setTimeout((function(){setTimeout((function(){Q.setStatus("")}),1),I()}),1)):I()))}if(Q.allocate=function(A,I){var g;return g=1==I?T(A.length):W(A.length),A.subarray||A.slice?R.set(A,g):R.set(new Uint8Array(A),g),g},Q.UTF8ToString=function(A,I){return A?function(A,I,g){for(var B=I+g,Q=I;A[Q]&&!(Q>=B);)++Q;if(Q-I>16&&A.subarray&&f)return f.decode(A.subarray(I,Q));for(var C="";I<Q;){var E=A[I++];if(128&E){var i=63&A[I++];if(192!=(224&E)){var o=63&A[I++];if((E=224==(240&E)?(15&E)<<12|i<<6|o:(7&E)<<18|i<<12|o<<6|63&A[I++])<65536)C+=String.fromCharCode(E);else{var D=E-65536;C+=String.fromCharCode(55296|D>>10,56320|1023&D)}}else C+=String.fromCharCode((31&E)<<6|i)}else C+=String.fromCharCode(E)}return C}(R,A,I):""},Q.ALLOC_NORMAL=0,J=function A(){m||j(),m||(J=A)},Q.run=j,Q.preInit)for("function"==typeof Q.preInit&&(Q.preInit=[Q.preInit]);Q.preInit.length>0;)Q.preInit.pop()();j(),A.exports=Q,Q.unloadRuntime=function(){"undefined"!=typeof self&&delete self.Module,Q=c=M=N=R=void 0,delete A.exports}},631:function(A,I,g){var B,Q;"undefined"!=typeof self&&self,void 0===(Q="function"==typeof(B=function(){const A="undefined"!=typeof self?self:this,I={Argon2d:0,Argon2i:1,Argon2id:2};function B(I){if(B._promise)return B._promise;if(B._module)return Promise.resolve(B._module);let C;return C=A.process&&A.process.versions&&A.process.versions.node?Q().then((A=>new Promise((I=>{A.postRun=()=>I(A)})))):(A.loadArgon2WasmBinary?A.loadArgon2WasmBinary():Promise.resolve(g(721)).then((A=>function(A){const I=atob(A),g=new Uint8Array(new ArrayBuffer(I.length));for(let A=0;A<I.length;A++)g[A]=I.charCodeAt(A);return g}(A)))).then((g=>function(I,g){return new Promise((B=>(A.Module={wasmBinary:I,wasmMemory:g,postRun(){B(Module)}},Q())))}(g,I?function(A){const I=1024,g=64*I,B=(1024*I*1024*2-64*I)/g,Q=Math.min(Math.max(Math.ceil(A*I/g),256)+256,B);return new WebAssembly.Memory({initial:Q,maximum:B})}(I):void 0))),B._promise=C,C.then((A=>(B._module=A,delete B._promise,A)))}function Q(){return A.loadArgon2WasmModule?A.loadArgon2WasmModule():Promise.resolve(g(773))}function C(A,I){return A.allocate(I,"i8",A.ALLOC_NORMAL)}function E(A,I){return C(A,new Uint8Array([...I,0]))}function i(A){if("string"!=typeof A)return A;if("function"==typeof TextEncoder)return(new TextEncoder).encode(A);if("function"==typeof Buffer)return Buffer.from(A);throw new Error("Don't know how to encode UTF8")}return{ArgonType:I,hash:function(A){const g=A.mem||1024;return B(g).then((B=>{const Q=A.time||1,o=A.parallelism||1,D=i(A.pass),e=E(B,D),n=D.length,t=i(A.salt),a=E(B,t),r=t.length,s=A.type||I.Argon2d,y=B.allocate(new Array(A.hashLen||24),"i8",B.ALLOC_NORMAL),F=A.secret?C(B,A.secret):0,c=A.secret?A.secret.byteLength:0,w=A.ad?C(B,A.ad):0,h=A.ad?A.ad.byteLength:0,G=A.hashLen||24,N=B._argon2_encodedlen(Q,g,o,r,G,s),R=B.allocate(new Array(N+1),"i8",B.ALLOC_NORMAL);let f,U,M;try{U=B._argon2_hash_ext(Q,g,o,e,n,a,r,y,G,R,N,s,F,c,w,h,19)}catch(A){f=A}if(0!==U||f){try{f||(f=B.UTF8ToString(B._argon2_error_message(U)))}catch(A){}M={message:f,code:U}}else{let A="";const I=new Uint8Array(G);for(let g=0;g<G;g++){const Q=B.HEAP8[y+g];I[g]=Q,A+=("0"+(255&Q).toString(16)).slice(-2)}M={hash:I,hashHex:A,encoded:B.UTF8ToString(R)}}try{B._free(e),B._free(a),B._free(y),B._free(R),w&&B._free(w),F&&B._free(F)}catch(A){}if(f)throw M;return M}))},verify:function(A){return B().then((g=>{const B=i(A.pass),Q=E(g,B),o=B.length,D=A.secret?C(g,A.secret):0,e=A.secret?A.secret.byteLength:0,n=A.ad?C(g,A.ad):0,t=A.ad?A.ad.byteLength:0,a=E(g,i(A.encoded));let r,s,y,F=A.type;if(void 0===F){let g=A.encoded.split("$")[1];g&&(g=g.replace("a","A"),F=I[g]||I.Argon2d)}try{s=g._argon2_verify_ext(a,Q,o,D,e,n,t,F)}catch(A){r=A}if(s||r){try{r||(r=g.UTF8ToString(g._argon2_error_message(s)))}catch(A){}y={message:r,code:s}}try{g._free(Q),g._free(a)}catch(A){}if(r)throw y;return y}))},unloadRuntime:function(){B._module&&(B._module.unloadRuntime(),delete B._promise,delete B._module)}}})?B.apply(I,[]):B)||(A.exports=Q)},721:function(A,I){A.exports="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DwtBixEPC0GeEyEBCyABC48DAQF/IwBBgANrIgQkACAEQQA2AowBIARBjAFqIAEQBwJAIAFBwABNBEAgBEGQAWogARAYQQBIDQEgBEGQAWogBEGMAWpBBBAGQQBIDQEgBEGQAWogAiADEAZBAEgNASAEQZABaiAAIAEQEhoMAQsgBEGQAWpBwAAQGEEASA0AIARBkAFqIARBjAFqQQQQBkEASA0AIARBkAFqIAIgAxAGQQBIDQAgBEGQAWogBEFAa0HAABASQQBIDQAgACAEKQNANwAAIAAgBCkDSDcACCAAIAQpA1g3ABggACAEKQNQNwAQIABBIGohACABQSBrIgJBwQBPBEADQCAEIARBQGtBwAAQBSIBQUBrQcAAIAEQMUEASA0CIAAgASkDQDcAACAAIAEpA0g3AAggACAEKQNYNwAYIAAgBCkDUDcAECAAQSBqIQAgAkEgayICQcAASw0ACwsgBCAEQUBrQcAAEAUiAUFAayACIAEQMUEASA0AIAAgAUFAayACEAUaCyAEQZABakHwARAEIARBgANqJAALAwABC5kCACAARQRAQQAPCwJ/AkAgAAR/IAFB/wBNDQECQEGgHigCACgCAEUEQCABQYB/cUGAvwNGDQMMAQsgAUH/D00EQCAAIAFBP3FBgAFyOgABIAAgAUEGdkHAAXI6AABBAgwECyABQYCwA09BACABQYBAcUGAwANHG0UEQCAAIAFBP3FBgAFyOgACIAAgAUEMdkHgAXI6AAAgACABQQZ2QT9xQYABcjoAAUEDDAQLIAFBgIAEa0H//z9NBEAgACABQT9xQYABcjoAAyAAIAFBEnZB8AFyOgAAIAAgAUEGdkE/cUGAAXI6AAIgACABQQx2QT9xQYABcjoAAUEEDAQLC0HcHkEZNgIAQX8FQQELDAELIAAgAToAAEEBCwtQAQN/AkAgACgCACwAABAPRQRADAELA0AgACgCACICLAAAIQMgACACQQFqNgIAIAEgA2pBMGshASACLAABEA9FDQEgAUEKbCEBDAALAAsgAQu7AgACQCABQRRLDQACQAJAAkACQAJAAkACQAJAAkACQCABQQlrDgoAAQIDBAUGBwgJCgsgAiACKAIAIgFBBGo2AgAgACABKAIANgIADwsgAiACKAIAIgFBBGo2AgAgACABNAIANwMADwsgAiACKAIAIgFB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AUHjFEEDEBANACABQQNqIANBDGoQFSIBRQ0AIAAgAygCDDYCKCABQecUQQMQEA0AIAFBA2ogA0EMahAVIgFFDQAgACADKAIMIgQ2AjAgACAENgI0IAEtAABBJEcNACADIAc2AgwgACgCECADQQxqIAFBAWoQLCIBRQ0AIAAgAygCDDYCFCABLQAAQSRHDQAgAyAGNgIMIAAoAgAgA0EMaiABQQFqECwiAUUNACAAIAMoAgw2AgQgAEEANgJEIABCADcCPCAAQgA3AhggAEIANwIgIAAQHCICDQBBYEEAIAEtAAAbIQILIANBEGokACACCykBAn8DQCAAIAJBA3QiA2ogASADaikAADcDACACQQFqIgJBgAFHDQALCwwAIABBAEGACBALGgtlAQJ/IAAgAhAeIgIEfyACBUFdQQACfyAAKAIAIQRBACECIAAoAgQiAAR/A0AgAyACIARqLQAAIAEgAmotAABzciEDIAJBAWoiAiAARw0ACyADQQFrQQh2QQFxQQFrBUEACwsbCwtdAQJ/IwBB8AFrIgMkAEF/IQQCQCACRSAARSABRXJyIAFBwABLcg0AIAMgARAYQQBIDQAgAyACQcAAEAZBAEgNACADIAAgARASIQQLIANB8AEQBCADQfABaiQAIAQLCQAgACABNwAACxAAIwAgAGtBcHEiACQAIAALMwEBfyAAKAIUIgMgASACIAAoAhAgA2siASABIAJLGyIBEAUaIAAgACgCFCABajYCFCACC9oBAQR/IwBB0ABrIggkAAJAIABFBEBBYCEADAELIAggABAKIgk2AgwgCCAJNgIcIAggCRAJIgo2AhggCCAJEAkiCzYCCEEAIQkCQAJAIApFIAtFcg0AIAggAjYCFCAIIAE2AhAgCEEIaiAAIAcQLSIADQEgCCgCCCEJIAggCCgCDBAJIgA2AgggAEUNACAIIAY2AiwgCCAFNgIoIAggBDYCJCAIIAM2AiAgCEEIaiAJIAcQMCEADAELQWohAAsgCCgCGBAIIAgoAggQCCAJEAgLIAhB0ABqJAAgAAuQAgEDfyMAQdAAayIRJABBfiETAkAgCEEESQ0AIAgQCSISRQRAQWohEwwBCyARQQA2AkwgEUIANwJEIBEgAjYCPCARIAI2AjggESABNgI0IBEgADYCMCARIA82AiwgESAONgIoIBEgDTYCJCAR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IGxvbmcgb3IgdG9vIHNob3J0AE1pc3NpbmcgYXJndW1lbnRzAFRvbyBtYW55IGxhbmVzAFRvbyBmZXcgbGFuZXMAVG9vIG1hbnkgdGhyZWFkcwBOb3QgZW5vdWdoIHRocmVhZHMATWVtb3J5IGFsbG9jYXRpb24gZXJyb3IATWVtb3J5IGNvc3QgaXMgdG9vIHNtYWxsAFRpbWUgY29zdCBpcyB0b28gc21hbGwAYXJnb24yaQBBcmdvbjJpAFRoZSBwYXNzd29yZCBkb2VzIG5vdCBtYXRjaCB0aGUgc3VwcGxpZWQgaGFzaABPdXRwdXQgcG9pbnRlciBtaXNtYXRjaABPdXRwdXQgaXMgdG9vIGxvbmcAU2FsdCBpcyB0b28gbG9uZwBTZWNyZXQgaXMgdG9vIGxvbmcAUGFzc3dvcmQgaXMgdG9vIGxvbmcAQXNzb2NpYXRlZCBkYXRhIGlzIHRvbyBsb25nAFRocmVhZGluZyBmYWlsdXJlAE1lbW9yeSBjb3N0IGlzIHRvbyBsYXJnZQBUaW1lIGNvc3QgaXMgdG9vIGxhcmdlAFVua25vd24gZXJyb3IgY29kZQBhcmdvbjJpZABBcmdvbjJpZABFbmNvZGluZyBmYWlsZWQARGVjb2RpbmcgZmFpbGVkAGFyZ29uMmQAQXJnb24yZABBcmdvbjJfQ29udGV4dCBjb250ZXh0IGlzIE5VTEwAT3V0cHV0IHBvaW50ZXIgaXMgTlVMTABUaGUgYWxsb2NhdGUgbWVtb3J5IGNhbGxiYWNrIGlzIE5VTEwAVGhlIGZyZWUgbWVtb3J5IGNhbGxiYWNrIGlzIE5VTEwAT0sAJHY9ACx0PQAscD0AJG09AFRoZXJlIGlzIG5vIHN1Y2ggdmVyc2lvbiBvZiBBcmdvbjIAU2FsdCBwb2ludGVyIGlzIE5VTEwsIGJ1dCBzYWx0IGxlbmd0aCBpcyBub3QgMABTZWNyZXQgcG9pbnRlciBpcyBOVUxMLCBidXQgc2VjcmV0IGxlbmd0aCBpcyBub3QgMABQYXNzd29yZCBwb2ludGVyIGlzIE5VTEwsIGJ1dCBwYXNzd29yZCBsZW5ndGggaXMgbm90IDAAQXNzb2NpYXRlZCBkYXRhIHBvaW50ZXIgaXMgTlVMTCwgYnV0IGFkIGxlbmd0aCBpcyBub3QgMAAobnVsbCkAAACbCAAAuwcAAEkJAADACQAAsAkAAPAHAAAfCAAAMAgAAMkIAABvCgAA4AkAABYKAAA7CgAAQwgAACsLAADBCgAAkgoAAPQKAAACCAAAEQgAAFsJAABbCAAAdAkAAHQIAAAFCQAAdAcAAC0JAACeBwAA9AgAAGIHAAAYCQAAiAcAAOEIAABOBwAA/wkAAFwKAAABAEGkGAsBAgBByxgLBf//////AEGQGQtBEQAKABEREQAAAAAFAAAAAAAACQAAAAALAAAAAAAAAAARAA8KERERAwoHAAEACQsLAAAJBgsAAAsABhEAAAAREREAQeEZCyELAAAAAAAAAAARAAoKERERAAoAAAIACQsAAAAJAAsAAAsAQZsaCwEMAEGnGgsVDAAAAAAMAAAAAAkMAAAAAAAMAAAMAEHVGgsBDgBB4RoLFQ0AAAAEDQAAAAAJDgAAAAAADgAADgBBjxsLARAAQZsbCx4PAAAAAA8AAAAACRAAAAAAABAAABAAABIAAAASEhIAQdIbCw4SAAAAEhISAAAAAAAACQBBgxwLAQsAQY8cCxUKAAAAAAoAAAAACQsAAAAAAAsAAAsAQb0cCwEMAEHJHAsnDAAAAAAMAAAAAAkMAAAAAAAMAAAMAAAwMTIzNDU2Nzg5QUJDREVGAEHwHAsBAQBBoB4LAogPAEHYHgsDkBFQ"},145:()=>{},967:()=>{}},B={};function Q(A){var I=B[A];if(void 0!==I)return I.exports;var C=B[A]={exports:{}};return g[A].call(C.exports,C,C.exports,Q),C.exports}return I=Object.getPrototypeOf?A=>Object.getPrototypeOf(A):A=>A.__proto__,Q.t=function(g,B){if(1&B&&(g=this(g)),8&B)return g;if("object"==typeof g&&g){if(4&B&&g.__esModule)return g;if(16&B&&"function"==typeof g.then)return g}var C=Object.create(null);Q.r(C);var E={};A=A||[null,I({}),I([]),I(I)];for(var i=2&B&&g;"object"==typeof i&&!~A.indexOf(i);i=I(i))Object.getOwnPropertyNames(i).forEach((A=>E[A]=()=>g[A]));return E.default=()=>g,Q.d(C,E),C},Q.d=(A,I)=>{for(var g in I)Q.o(I,g)&&!Q.o(A,g)&&Object.defineProperty(A,g,{enumerable:!0,get:I[g]})},Q.o=(A,I)=>Object.prototype.hasOwnProperty.call(A,I),Q.r=A=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(A,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(A,"__esModule",{value:!0})},Q(631)})()}));
+</script>
+
+<script type="module">
+  import { HDKey } from 'https://esm.sh/@scure/bip32@1.7.0';
+  import { base58check, bech32 } from 'https://esm.sh/@scure/base@1.2.1';
+  import { sha256 } from 'https://esm.sh/@noble/hashes@1.6.1/sha256';
+  import { ripemd160 } from 'https://esm.sh/@noble/hashes@1.6.1/ripemd160';
+
+  /* ═══════════════════════════════════════════════════════════════
+     CRYPTO UTILITIES
+     ═══════════════════════════════════════════════════════════════ */
+
+  const b58c = base58check(sha256);
+  const XPUB_VERSION = new Uint8Array([0x04, 0x88, 0xb2, 0x1e]);
+
+  function hash160(buf) { return ripemd160(sha256(buf)); }
+
+  // Detect extended key prefix → address type
+  function detectKeyType(k) {
+    if (!k || typeof k !== 'string') return null;
+    if (k.startsWith('zpub')) return { kind: 'extended', addr: 'p2wpkh', badge: 'zpub', path: "m/84'/0'/0'" };
+    if (k.startsWith('ypub')) return { kind: 'extended', addr: 'p2sh-p2wpkh', badge: 'ypub', path: "m/49'/0'/0'" };
+    if (k.startsWith('xpub')) return { kind: 'extended', addr: 'p2pkh',  badge: 'xpub', path: "m/44'/0'/0'" };
+    // Plain addresses
+    if (/^bc1[ac-hj-np-z02-9]{25,87}$/i.test(k)) return { kind: 'address', addr: 'p2wpkh', badge: 'addr', path: '' };
+    if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(k)) return { kind: 'address', addr: 'legacy', badge: 'addr', path: '' };
+    return null;
+  }
+
+  // Swap any y/zpub version bytes to xpub so @scure/bip32 can import it
+  function toXpub(extKey) {
+    if (extKey.startsWith('xpub')) return extKey;
+    const decoded = b58c.decode(extKey);
+    const out = new Uint8Array(decoded.length);
+    out.set(XPUB_VERSION, 0);
+    out.set(decoded.slice(4), 4);
+    return b58c.encode(out);
+  }
+
+  // P2WPKH — native SegWit (bc1q…)
+  function p2wpkhAddress(pubkey) {
+    const h = hash160(pubkey);
+    const words = bech32.toWords(h);
+    return bech32.encode('bc', [0, ...words], 90);
+  }
+
+  // P2PKH — legacy (1…)
+  function p2pkhAddress(pubkey) {
+    const h = hash160(pubkey);
+    const buf = new Uint8Array(21);
+    buf[0] = 0x00;
+    buf.set(h, 1);
+    return b58c.encode(buf);
+  }
+
+  // P2SH-P2WPKH — wrapped SegWit (3…)
+  function p2shP2wpkhAddress(pubkey) {
+    const pkh = hash160(pubkey);
+    const redeem = new Uint8Array(22);
+    redeem[0] = 0x00;  // OP_0
+    redeem[1] = 0x14;  // push 20 bytes
+    redeem.set(pkh, 2);
+    const sh = hash160(redeem);
+    const buf = new Uint8Array(21);
+    buf[0] = 0x05;  // mainnet P2SH
+    buf.set(sh, 1);
+    return b58c.encode(buf);
+  }
+
+  function deriveForType(pubkey, addrType) {
+    if (addrType === 'p2wpkh')      return p2wpkhAddress(pubkey);
+    if (addrType === 'p2pkh')       return p2pkhAddress(pubkey);
+    if (addrType === 'p2sh-p2wpkh') return p2shP2wpkhAddress(pubkey);
+    throw new Error('Unknown address type: ' + addrType);
+  }
+
+  // Derive `depth` addresses on each chain (receive=0, change=1)
+  function deriveAddresses(extKey, addrType, depth) {
+    const xpub = toXpub(extKey);
+    const node = HDKey.fromExtendedKey(xpub);
+    const result = [];
+    for (let chain = 0; chain <= 1; chain++) {
+      for (let i = 0; i < depth; i++) {
+        const child = node.derive(`m/${chain}/${i}`);
+        result.push({
+          address: deriveForType(child.publicKey, addrType),
+          chain, index: i
+        });
+      }
+    }
+    return result;
+  }
+
+  // v1.04 — derive a contiguous range on a single chain so the gap-limit scan can
+  // request batches lazily and stop early as soon as the gap closes.
+  function deriveAddressesRange(extKey, addrType, chain, fromIndex, count) {
+    const xpub = toXpub(extKey);
+    const node = HDKey.fromExtendedKey(xpub);
+    const out = [];
+    for (let i = fromIndex; i < fromIndex + count; i++) {
+      const child = node.derive(`m/${chain}/${i}`);
+      out.push({
+        address: deriveForType(child.publicKey, addrType),
+        chain, index: i
+      });
+    }
+    return out;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     STATE
+     ═══════════════════════════════════════════════════════════════ */
+
+  const STORE_KEY = 'arsenal-scryer-v1';
+  const SCHEMA_VERSION = 3;          // v1.06: bumped from 2 → 3 (oracle:string → endpoints:string[])
+
+  // v1.06 — default rotation set. All esplora-compatible (verified that they return identical
+  // JSON for /address/{addr} and /blocks/tip/height). Adding more = more headroom against
+  // any single explorer's rate limiter and resilience if one is degraded.
+  const DEFAULT_ENDPOINTS = [
+    'https://mempool.space/api',
+    'https://blockstream.info/api',
+  ];
+
+  // Public block-explorer endpoints we recognise — used to apply rate-limit-safe defaults
+  // even after migrating older state. A self-hosted node won't match this list, so the
+  // user's manually chosen rateDelay against their own node is preserved.
+  const PUBLIC_EXPLORER_HOSTS = new Set([
+    'mempool.space',
+    'blockstream.info',
+  ]);
+
+  const defaultState = {
+    schemaVersion: SCHEMA_VERSION,   // v1.05: tracks state shape so we can migrate cleanly
+    denom: 'btc',
+    endpoints: [...DEFAULT_ENDPOINTS], // v1.06: rotation set — round-robin per call
+    rateDelay: 1100,                 // v1.04: above mempool.space's ~60/min limit by default
+    gapLimit: 20,                    // v1.06: BIP-44 gap (consecutive empty addresses) — now the SOLE stop condition
+    hardCap: 500,                    // v1.04: defensive ceiling per chain so a misconfigured key can't run away
+    consentedEndpoints: [],          // v1.04: list of endpoint origins the user has agreed to contact
+    lastConsult: null,
+    history: [],                     // [{t:ISO, total:number}]
+    instruments: []                  // [{id, name, key, type, addrType, balance, lastScan, error}]
+  };
+
+  function isPublicExplorer(url) {
+    try { return PUBLIC_EXPLORER_HOSTS.has(new URL(url).hostname); } catch { return false; }
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return structuredClone(defaultState);
+      const saved = JSON.parse(raw);
+      // CRITICAL — read the SAVED schemaVersion before the merge. defaultState provides the
+      // current schemaVersion, so post-merge the field would always look current and migration
+      // would silently skip. Pre-v1.05 saved states have no schemaVersion (treated as 0).
+      const savedSchema = (saved && typeof saved.schemaVersion === 'number') ? saved.schemaVersion : 0;
+      const merged = { ...structuredClone(defaultState), ...saved };
+
+      // v1.05 migration (schema <2): older state from v1.01-v1.03 has rateDelay:250,
+      // ~4× above mempool.space's public limit. Lift to safe default for public explorers.
+      if (savedSchema < 2) {
+        if (saved && saved.oracle && isPublicExplorer(saved.oracle) && (merged.rateDelay | 0) < 1000) {
+          merged.rateDelay = 1100;
+        }
+        if (!Array.isArray(merged.consentedEndpoints)) merged.consentedEndpoints = [];
+        if (!(merged.gapLimit > 0))  merged.gapLimit = 20;
+        if (!(merged.hardCap > 0))   merged.hardCap = 500;
+      }
+
+      // v1.06 migration (schema <3): replace single `oracle` string with `endpoints[]` array.
+      // If the user had pointed at a self-hosted (non-public) endpoint, preserve it as the SOLE
+      // entry — they chose privacy, don't add public explorers behind their back.
+      if (savedSchema < 3) {
+        const savedOracle = saved && typeof saved.oracle === 'string' ? saved.oracle.trim() : '';
+        if (savedOracle && !isPublicExplorer(savedOracle)) {
+          merged.endpoints = [savedOracle];           // self-hosted: preserve verbatim, no rotation
+        } else {
+          merged.endpoints = [...DEFAULT_ENDPOINTS];  // public default: rotation set
+        }
+        delete merged.oracle;                          // schema-3 has no oracle field
+        delete merged.depth;                           // v1.06 drops the redundant minDepth gate
+      }
+
+      // Always-on defensive cleanup: drop blank/duplicate endpoints
+      if (Array.isArray(merged.endpoints)) {
+        const seen = new Set();
+        merged.endpoints = merged.endpoints
+          .map(s => (typeof s === 'string' ? s.trim() : ''))
+          .filter(s => s && !seen.has(s) && (seen.add(s), true));
+        if (merged.endpoints.length === 0) merged.endpoints = [...DEFAULT_ENDPOINTS];
+      } else {
+        merged.endpoints = [...DEFAULT_ENDPOINTS];
+      }
+
+      merged.schemaVersion = SCHEMA_VERSION;
+      return merged;
+    } catch { return structuredClone(defaultState); }
+  }
+  function saveState() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  let state = loadState();
+
+  // Seed demo instruments on first load (BIP84 test vector — real, derivable, zero balance)
+  if (state.instruments.length === 0 && !localStorage.getItem(STORE_KEY + ':seeded')) {
+    state.instruments = [
+      {
+        id: crypto.randomUUID(),
+        name: 'BIP84 test vector',
+        key: 'zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs',
+        type: 'extended', addrType: 'p2wpkh', badge: 'zpub', path: "m/84'/0'/0'",
+        balance: null, lastScan: null
+      },
+      {
+        id: crypto.randomUUID(),
+        name: 'BIP44 test vector',
+        key: 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+        type: 'extended', addrType: 'p2pkh', badge: 'xpub', path: "m/44'/0'/0'",
+        balance: null, lastScan: null
+      }
+    ];
+    localStorage.setItem(STORE_KEY + ':seeded', '1');
+    saveState();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     BALANCE FETCHING
+     ═══════════════════════════════════════════════════════════════ */
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // v1.04 — derive a stable origin tag so consents stick to a host, not a path
+  function endpointOrigin(url) {
+    try { return new URL(url).origin; } catch { return url; }
+  }
+
+  // v1.04 — friendlier label of the configured endpoint for UI ("mempool.space")
+  function endpointLabel(url) {
+    try { return new URL(url).host || url; } catch { return url; }
+  }
+
+  // v1.04 — class to mark rate-limit hits; surfaces actionable error text in the banner
+  class RateLimitError extends Error {
+    constructor(msg) { super(msg); this.name = 'RateLimitError'; }
+  }
+
+  // v1.05 — explorers like mempool.space silently DROP connections when the limiter
+  // trips, instead of returning HTTP 429. Firefox surfaces that as `NetworkError`,
+  // Chrome as `Failed to fetch`. We classify "fetch threw AFTER at least one success
+  // on this run" as a likely rate-limit drop and route it to the same friendly banner.
+  class ConnectionDropLikelyRateLimitError extends RateLimitError {
+    constructor(msg) { super(msg); this.name = 'ConnectionDropLikelyRateLimitError'; }
+  }
+
+  // v1.05 — module-level success counter; reset by consultAll at the start of each run.
+  let _runSuccessfulCalls = 0;
+
+  // v1.06 — round-robin rotation across state.endpoints. Per-endpoint failure tally so a
+  // single bad explorer can't cascade — see explorerFetch for the failover path.
+  let _rrIndex = 0;
+  const _endpointStrikes = new Map();   // origin → consecutive failure count this run
+
+  function nextEndpoint() {
+    const eps = state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS;
+    const ep = eps[_rrIndex % eps.length];
+    _rrIndex = (_rrIndex + 1) % eps.length;
+    return ep;
+  }
+
+  function liveEndpoints() {
+    const eps = state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS;
+    return eps.filter(ep => (_endpointStrikes.get(endpointOrigin(ep)) | 0) < 3);
+  }
+
+  function noteEndpointFailure(ep) {
+    const o = endpointOrigin(ep);
+    _endpointStrikes.set(o, (_endpointStrikes.get(o) | 0) + 1);
+  }
+  function noteEndpointSuccess(ep) {
+    _endpointStrikes.set(endpointOrigin(ep), 0);
+  }
+
+  // v1.05 — defensive fetch options. Some Firefox configurations + tracking-protection
+  // setups treat third-party fetches from file:// pages stricter than expected; making
+  // intent explicit helps. credentials:'omit' also keeps us truly anonymous.
+  const FETCH_OPTS = { mode: 'cors', credentials: 'omit', cache: 'no-store' };
+
+  // v1.06 — central wrapper. Picks the next endpoint via round-robin; if it fails,
+  // tries the remaining live endpoints once each before giving up. This means a single
+  // mempool.space cooldown no longer aborts a scan that blockstream.info could finish.
+  async function explorerFetch(path, opts = {}) {
+    const tried = new Set();
+    let lastError = null;
+    let lastEndpoint = null;
+
+    const explicit = opts.endpoint ? [opts.endpoint] : null;
+    const allEndpoints = state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS;
+    // Bound by total endpoint count so that, even after some get parked between calls,
+    // we still get a fair chance to try every remaining live endpoint exactly once.
+    const totalAttempts = explicit ? 1 : Math.max(1, allEndpoints.length);
+
+    for (let attempts = 0; attempts < totalAttempts; attempts++) {
+      const live = explicit ? explicit : liveEndpoints();
+      if (live.length === 0) break;
+      // round-robin: pick next live endpoint we haven't yet tried this call
+      let ep = null;
+      for (let k = 0; k < allEndpoints.length; k++) {
+        const cand = explicit ? live[0] : nextEndpoint();
+        if (live.includes(cand) && !tried.has(cand)) { ep = cand; break; }
+      }
+      if (!ep) break;
+      tried.add(ep);
+      lastEndpoint = ep;
+
+      const url = `${ep.replace(/\/$/, '')}${path}`;
+      let res;
+      try {
+        res = await fetch(url, FETCH_OPTS);
+      } catch (e) {
+        noteEndpointFailure(ep);
+        const msg = e && e.message ? e.message : String(e);
+        // Save error context but try the next endpoint in the rotation if any remain
+        if (_runSuccessfulCalls > 0) {
+          lastError = new ConnectionDropLikelyRateLimitError(
+            `${endpointLabel(ep)} dropped the connection mid-scan after ${_runSuccessfulCalls} successful calls across the rotation. ` +
+            `This is how public explorers' nginx limiters behave when they see too many requests from one IP. ` +
+            `Wait 5–10 minutes for cooldown, raise Rate delay to 1500 ms or higher, or add more endpoints to the rotation.`
+          );
+        } else {
+          lastError = new Error(
+            `Could not reach ${endpointLabel(ep)}: ${msg}. ` +
+            `Check the endpoint URL, your network, or any browser extension/tracking-protection that may be blocking the request.`
+          );
+        }
+        continue;
+      }
+      if (res.status === 429) {
+        noteEndpointFailure(ep);
+        lastError = new RateLimitError(`${endpointLabel(ep)} rejected the request (HTTP 429). Rotation will try other endpoints; raise Rate delay if this persists.`);
+        continue;
+      }
+      if (res.status === 503 || res.status === 502) {
+        noteEndpointFailure(ep);
+        lastError = new RateLimitError(`${endpointLabel(ep)} responded ${res.status} (overloaded). Trying the next endpoint in rotation.`);
+        continue;
+      }
+      if (!res.ok) {
+        noteEndpointFailure(ep);
+        lastError = new Error(`${endpointLabel(ep)} responded ${res.status}`);
+        continue;
+      }
+      // success
+      noteEndpointSuccess(ep);
+      _runSuccessfulCalls++;
+      return res;
+    }
+    // exhausted: re-throw the last error so callers (and consultAll's classifier) see why
+    if (lastError) throw lastError;
+    throw new Error(`No reachable endpoint in rotation${lastEndpoint ? ` (last tried ${endpointLabel(lastEndpoint)})` : ''}.`);
+  }
+
+  async function fetchAddressBalance(addr) {
+    const res = await explorerFetch(`/address/${addr}`);
+    const data = await res.json();
+    const funded  = data.chain_stats?.funded_txo_sum   ?? 0;
+    const spent   = data.chain_stats?.spent_txo_sum    ?? 0;
+    const mfunded = data.mempool_stats?.funded_txo_sum ?? 0;
+    const mspent  = data.mempool_stats?.spent_txo_sum  ?? 0;
+    return (funded - spent + mfunded - mspent) / 1e8;
+  }
+
+  // v1.04 — same address endpoint also tells us tx-count, which is what the gap-limit
+  // really cares about (an address with no history). We inspect the raw response.
+  async function fetchAddressInfo(addr) {
+    const res = await explorerFetch(`/address/${addr}`);
+    const d = await res.json();
+    const funded  = d.chain_stats?.funded_txo_sum   ?? 0;
+    const spent   = d.chain_stats?.spent_txo_sum    ?? 0;
+    const mfunded = d.mempool_stats?.funded_txo_sum ?? 0;
+    const mspent  = d.mempool_stats?.spent_txo_sum  ?? 0;
+    const txc     = (d.chain_stats?.tx_count ?? 0) + (d.mempool_stats?.tx_count ?? 0);
+    return { balance: (funded - spent + mfunded - mspent) / 1e8, used: txc > 0 };
+  }
+
+  // v1.05/06 — lightweight probe used by Test Connection. Optional explicit endpoint
+  // bypasses rotation so the user can verify each endpoint individually.
+  async function fetchTipHeight(endpoint) {
+    const res = await explorerFetch('/blocks/tip/height', endpoint ? { endpoint } : undefined);
+    const txt = (await res.text()).trim();
+    const n = parseInt(txt, 10);
+    if (!Number.isFinite(n) || n <= 0) throw new Error(`Unexpected response from explorer: ${txt.slice(0, 60)}`);
+    return n;
+  }
+
+  // v1.04 — derive on demand in batches so we can stop early once the gap closes
+  function deriveBatch(extKey, addrType, chain, fromIndex, count) {
+    return deriveAddressesRange(extKey, addrType, chain, fromIndex, count);
+  }
+
+  async function scanInstrument(inst, onProgress) {
+    inst.error = null;
+    if (inst.type === 'address') {
+      const bal = await fetchAddressBalance(inst.key);
+      inst.balance = bal;
+      inst.addressesScanned = 1;
+      inst.lastScan = new Date().toISOString();
+      return bal;
+    }
+
+    // v1.06 — pure BIP-44 gap-limit per chain (receive=0, change=1). Stop after `gap`
+    // consecutive empty addresses, with a hard cap so a misconfigured key can't run away.
+    // The old `minDepth` gate has been removed: it silently overrode the user's gap setting
+    // (e.g. setting gap=3 with depth=20 still scanned 20). That was a bug, not a safety net.
+    const gap     = Math.max(1, state.gapLimit | 0);
+    const hardCap = Math.max(gap + 1, state.hardCap | 0);
+
+    let total = 0;
+    let scanned = 0;
+
+    for (const chain of [0, 1]) {
+      let consecutiveEmpty = 0;
+      let i = 0;
+      while (i < hardCap) {
+        // derive a small batch (16 at a time) to amortise BIP-32 cost without losing early-stop
+        const need  = Math.min(16, hardCap - i);
+        let batch;
+        try {
+          batch = deriveBatch(inst.key, inst.addrType, chain, i, need);
+        } catch (e) {
+          inst.error = 'Derivation failed: ' + (e.message || e);
+          throw e;
+        }
+        let stopped = false;
+        for (const { address } of batch) {
+          let info;
+          try {
+            info = await fetchAddressInfo(address);
+          } catch (e) {
+            inst.error = `Explorer call failed at chain ${chain} index ${i}: ${e.message}`;
+            throw e;
+          }
+          total += info.balance;
+          scanned += 1;
+          if (info.used) consecutiveEmpty = 0;
+          else           consecutiveEmpty += 1;
+          if (onProgress) onProgress(scanned, chain, i, info.used);
+          i += 1;
+
+          if (consecutiveEmpty >= gap) { stopped = true; break; }
+          if (state.rateDelay > 0) await sleep(state.rateDelay);
+        }
+        if (stopped) break;
+      }
+    }
+
+    inst.balance = total;
+    inst.addressesScanned = scanned;
+    inst.lastScan = new Date().toISOString();
+    return total;
+  }
+
+  // v1.04 — consent gate: returns true if the user has approved (now or previously)
+  function endpointConsented(url) {
+    return state.consentedEndpoints.includes(endpointOrigin(url));
+  }
+
+  function rememberEndpointConsent(url) {
+    const o = endpointOrigin(url);
+    if (!state.consentedEndpoints.includes(o)) {
+      state.consentedEndpoints.push(o);
+      saveState();
+    }
+  }
+
+  // v1.06 — list endpoints in rotation that still need consent before we can scan
+  function endpointsNeedingConsent() {
+    const eps = state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS;
+    return eps.filter(ep => !endpointConsented(ep));
+  }
+
+  // v1.06 — pre-flight estimate. Without scanning we don't know exact gap-limit stops, so
+  // we estimate using `gap × 2 chains` per extended key as a typical case. That's a useful
+  // upper bound for empty wallets and roughly accurate for active ones (gap is hit shortly
+  // after the last used address). Single-address instruments contribute 1 each.
+  function preflightSummary() {
+    let addrs = 0;
+    const gap = Math.max(1, state.gapLimit | 0);
+    for (const inst of state.instruments) {
+      addrs += inst.type === 'address' ? 1 : gap * 2;
+    }
+    const epCount = (state.endpoints && state.endpoints.length) || DEFAULT_ENDPOINTS.length;
+    // With rotation, total wall-time ≈ addrs × rateDelay (every call still spaced by rateDelay,
+    // load distributed across endpoints means each endpoint sees addrs/epCount calls).
+    const ms = addrs * Math.max(0, state.rateDelay | 0);
+    const eta = ms < 1000 ? `${ms} ms` :
+                ms < 60_000 ? `${Math.ceil(ms / 1000)} s` :
+                `${Math.floor(ms / 60_000)} min ${Math.round((ms % 60_000) / 1000)} s`;
+    return { addrs, eta, ms, epCount };
+  }
+
+  // v1.07 — top loading bar helpers. The bar lives at #scry-progress and has a child .bar.
+  // Modes: hidden / determinate (width%) / indeterminate (animated shimmer) / error (red full).
+  function _progressEl() { return document.getElementById('scry-progress'); }
+  function _progressBar() { return _progressEl()?.querySelector('.bar'); }
+
+  function progressStart() {
+    const el = _progressEl(); const b = _progressBar();
+    if (!el || !b) return;
+    el.classList.remove('error', 'indeterminate');
+    el.classList.add('active');
+    b.style.width = '2%';
+  }
+  function progressTo(pct) {
+    const el = _progressEl(); const b = _progressBar();
+    if (!el || !b) return;
+    if (pct >= 95) {
+      // We've hit our soft cap. Switch to indeterminate so the user sees we're still working.
+      el.classList.add('indeterminate');
+    } else {
+      el.classList.remove('indeterminate');
+      b.style.width = Math.max(2, Math.min(95, pct)) + '%';
+    }
+  }
+  function progressComplete() {
+    const el = _progressEl(); const b = _progressBar();
+    if (!el || !b) return;
+    el.classList.remove('indeterminate', 'error');
+    b.style.width = '100%';
+    setTimeout(() => { el.classList.remove('active'); b.style.width = '0%'; }, 600);
+  }
+  function progressError() {
+    const el = _progressEl(); const b = _progressBar();
+    if (!el || !b) return;
+    el.classList.remove('indeterminate');
+    el.classList.add('error');
+    setTimeout(() => { el.classList.remove('active', 'error'); b.style.width = '0%'; }, 1800);
+  }
+
+  // v1.06 — show the consent modal listing every endpoint that still needs approval.
+  // Resolves true if user agrees, false otherwise. Approval covers all listed endpoints.
+  function askConsent(endpoints) {
+    return new Promise((resolve) => {
+      const modal     = document.getElementById('consent-modal');
+      const okBtn     = document.getElementById('consent-ok');
+      const cancelBtn = document.getElementById('consent-cancel');
+      const remember  = document.getElementById('consent-remember');
+      const epEl      = document.getElementById('consent-endpoints');
+      const addrsEl   = document.getElementById('consent-addrs');
+      const paceEl    = document.getElementById('consent-pace');
+      const etaEl     = document.getElementById('consent-eta');
+      const epcEl     = document.getElementById('consent-epcount');
+
+      const pf = preflightSummary();
+      epEl.innerHTML = endpoints.length === 0
+        ? '<span style="color:var(--paper-faint)">(none — all endpoints already approved)</span>'
+        : endpoints.map(u => `<div>${escapeHtml(u)}</div>`).join('');
+      addrsEl.textContent = pf.addrs;
+      paceEl.textContent  = state.rateDelay;
+      etaEl.textContent   = pf.eta;
+      epcEl.textContent   = (state.endpoints && state.endpoints.length) || DEFAULT_ENDPOINTS.length;
+      remember.checked = false;
+      modal.classList.add('show');
+
+      function done(ok) {
+        modal.classList.remove('show');
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        if (ok && remember.checked) {
+          for (const u of endpoints) rememberEndpointConsent(u);
+        }
+        resolve(ok);
+      }
+      function onOk()     { done(true);  }
+      function onCancel() { done(false); }
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+    });
+  }
+
+  async function consultAll() {
+    if (state.instruments.length === 0) return;
+
+    const btn = document.getElementById('consult-btn');
+    const status = document.getElementById('status-area');
+
+    // v1.06 — consent gate covers EVERY endpoint in the rotation. If any are missing
+    // approval, prompt the user with the full list at once.
+    const needConsent = endpointsNeedingConsent();
+    if (needConsent.length > 0) {
+      const ok = await askConsent(needConsent);
+      if (!ok) {
+        status.innerHTML = '';
+        const cancel = document.createElement('div');
+        cancel.className = 'banner info';
+        cancel.innerHTML = `<span>Cancelled — no network call made. The Scryer remains offline.</span>`;
+        status.appendChild(cancel);
+        setTimeout(() => cancel.remove(), 3000);
+        return;
+      }
+    }
+
+    btn.disabled = true;
+    status.innerHTML = '';
+    const banner = document.createElement('div');
+    banner.className = 'banner working';
+    status.appendChild(banner);
+
+    // v1.05 — reset the per-run success counter so connection-drop detection has a clean baseline.
+    _runSuccessfulCalls = 0;
+    // v1.06 — reset rotation pointer + per-endpoint failure tally for a clean run
+    _rrIndex = 0;
+    _endpointStrikes.clear();
+
+    // v1.07 — kick off the top loading bar in determinate mode, soft-capped at 95%
+    // (so we never claim "done" before we are). Total estimate uses gap×2 per extended key.
+    const pf0 = preflightSummary();
+    const expectedTotal = Math.max(1, pf0.addrs);
+    progressStart();
+    progressTo(0);
+
+    let hadError = false;
+    let rateLimitHit = false;
+    let dropDetected = false;
+    let firstErrorMsg = '';
+    let totalScanned = 0;
+
+    for (let i = 0; i < state.instruments.length; i++) {
+      const inst = state.instruments[i];
+      try {
+        await scanInstrument(inst, (done, chain, idx, used) => {
+          const chainLbl = chain === 0 ? 'receive' : 'change';
+          banner.innerHTML = `
+            <span class="dots">Reading &mdash; ${escapeHtml(inst.name)} (${chainLbl} #${idx})</span>
+            <span class="prog">Instrument ${i + 1} of ${state.instruments.length} &middot; ${done} addr this wallet</span>
+          `;
+          // v1.07 — update the top bar. Use cumulative tally + best-effort estimate.
+          const cumulative = totalScanned + done;
+          const pct = Math.min(95, Math.floor((cumulative / expectedTotal) * 100));
+          progressTo(pct);
+        });
+        // tally what we just finished so the next instrument's progress is cumulative
+        totalScanned += inst.addressesScanned || 0;
+        saveState();
+        renderAll();
+      } catch (e) {
+        hadError = true;
+        if (!firstErrorMsg) firstErrorMsg = e.message || String(e);
+        if (e instanceof ConnectionDropLikelyRateLimitError) dropDetected = true;
+        if (e instanceof RateLimitError) rateLimitHit = true;
+        console.warn('Scan failed for', inst.name, e);
+        // On rate-limit, stop the whole run — further calls would just compound the cooldown.
+        if (rateLimitHit) break;
+      }
+    }
+
+    // v1.07 — finalise the top bar before showing the final banner
+    if (rateLimitHit || hadError) progressError();
+    else                          progressComplete();
+
+    state.lastConsult = new Date().toISOString();
+    const total = state.instruments.reduce((s, x) => s + (x.balance || 0), 0);
+    state.history.push({ t: state.lastConsult, total });
+    if (state.history.length > 30) state.history.shift();
+    saveState();
+
+    btn.disabled = false;
+
+    if (rateLimitHit) {
+      banner.className = 'banner error';
+      // v1.06 — name the endpoints that failed (rotation may have hit several)
+      const failedHosts = [...new Set([..._endpointStrikes.entries()]
+        .filter(([, n]) => n > 0).map(([o]) => endpointLabel(o)))].join(', ') || 'the explorers';
+      const lead = dropDetected
+        ? `<strong>Rate limit hit (silent drop).</strong> ${escapeHtml(failedHosts)} closed connections after ${_runSuccessfulCalls} successful calls across the rotation — that's how public explorers' nginx limiters behave under load.`
+        : `<strong>Rate limit hit.</strong> ${escapeHtml(failedHosts)} refused further calls.`;
+      banner.innerHTML = `
+        <div>
+          ${lead}
+          <div style="margin-top:8px; font-size:12.5px; line-height:1.55; color:var(--ink-dim);">
+            <strong>To recover:</strong>
+            <ol style="margin:6px 0 0 18px; padding:0;">
+              <li>Open <strong>Settings</strong> and raise <em>Rate delay</em> to <strong>1500&nbsp;ms</strong> or higher.</li>
+              <li>Wait 5–10 minutes for the cooldown on the affected explorers to clear.</li>
+              <li>Add more endpoints to the rotation (Settings → Endpoints) to spread the load.</li>
+              <li>Or point the rotation at <strong>your own node</strong> (a self-hosted mempool/Esplora has no public limit).</li>
+            </ol>
+          </div>
+        </div>`;
+    } else if (hadError) {
+      banner.className = 'banner error';
+      banner.innerHTML = `
+        <div>
+          <strong>One or more instruments failed.</strong>
+          <div style="margin-top:6px; font-size:12.5px; color:var(--ink-dim); word-break:break-word;">${escapeHtml(firstErrorMsg)}</div>
+          <div style="margin-top:8px; font-size:12.5px; color:var(--ink-dim);">
+            Use <strong>Settings → Test connection</strong> to verify the endpoint, or open DevTools (F12) → Network for the underlying browser error.
+          </div>
+        </div>`;
+    } else {
+      banner.className = 'banner info';
+      const epList = (state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS)
+        .map(endpointLabel).join(' + ');
+      banner.innerHTML = `<span>Refresh complete &middot; via ${escapeHtml(epList)}.</span> <span class="prog">${formatTime(state.lastConsult)}</span>`;
+      setTimeout(() => banner.remove(), 3500);
+    }
+
+    renderAll();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FORMATTING
+     ═══════════════════════════════════════════════════════════════ */
+
+  // v1.07 — Bitcoin convention 2-3-3 digit grouping. Visually splits the eight decimal
+  // places into BTC.cBTC|µBTC|sats. Wrapped in white-space:nowrap (.balance class) so
+  // long balances stop wrapping confusingly across two lines. The trailing groups dim
+  // when zero so a small balance like 0.00 005 000 reads at a glance.
+  function fmtBalanceBTC(btc, withUnit = true) {
+    const fixed = btc.toFixed(8);                  // "12.34567890"
+    const [intRaw, decRaw] = fixed.split('.');
+    const intPart = parseInt(intRaw, 10).toLocaleString(); // optional thousand-sep on int side
+    const a = decRaw.slice(0, 2);   // cBTC
+    const b = decRaw.slice(2, 5);   // µBTC group
+    const c = decRaw.slice(5, 8);   // sats group
+    const dim = (s) => /^0+$/.test(s) ? `<span class="dec-zero">${s}</span>` : s;
+    const unit = withUnit ? '<span class="unit">BTC</span>' : '';
+    return `<span class="num"><span class="int">${intPart}</span>.` +
+           `<span class="grp grp-a">${a}</span>` +
+           `<span class="grp grp-b">${dim(b)}</span>` +
+           `<span class="grp grp-c">${dim(c)}</span>` +
+           `</span>${unit}`;
+  }
+
+  function fmtBalanceSats(btc, withUnit = true) {
+    const s = Math.round(btc * 1e8);
+    const grouped = s.toLocaleString();             // 1,234,567 — locale-grouped, no wrap
+    const unit = withUnit ? '<span class="unit">sats</span>' : '';
+    return `<span class="num">${grouped}</span>${unit}`;
+  }
+
+  function fmtBalance(btc, withUnit = true) {
+    if (btc == null) return withUnit ? '&mdash;' : '—';
+    return state.denom === 'sats' ? fmtBalanceSats(btc, withUnit) : fmtBalanceBTC(btc, withUnit);
+  }
+
+  function fmtKey(k, n = 44) {
+    if (k.length <= n) return k;
+    return k.slice(0, n - 1) + '…';
+  }
+
+  function formatTime(iso) {
+    if (!iso) return 'never';
+    const d = new Date(iso);
+    const diff = (Date.now() - d.getTime()) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+    return d.toLocaleDateString();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     RENDERING
+     ═══════════════════════════════════════════════════════════════ */
+
+  function renderInstruments() {
+    const list = document.getElementById('instruments-list');
+    list.innerHTML = '';
+
+    if (state.instruments.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <h3>The glass is empty.</h3>
+          <p>Add an extended public key below to begin watching.</p>
+        </div>
+      `;
+      return;
+    }
+
+    state.instruments.forEach((inst, i) => {
+      const row = document.createElement('div');
+      row.className = 'instrument';
+      const num = String(i + 1).padStart(2, '0');
+      const scanMeta = inst.type === 'address'
+        ? 'single address'
+        : (inst.addressesScanned
+            ? `${inst.addressesScanned} addresses scanned`
+            : `up to gap-${state.gapLimit} per chain`);
+      const pathText = inst.path ? `&middot; path ${inst.path}` : '';
+      const lastText = inst.lastScan ? `consulted ${formatTime(inst.lastScan)}` : 'never consulted';
+      const errorText = inst.error ? `<span style="color:#f5a5a5;">&middot; ${inst.error}</span>` : '';
+
+      row.innerHTML = `
+        <div class="idx">Nº ${num}</div>
+        <div class="body">
+          <div class="head-row">
+            <div class="name">${escapeHtml(inst.name)}</div>
+            <span class="tag ${inst.badge}">${inst.badge}</span>
+          </div>
+          <div class="key" title="${escapeHtml(inst.key)}">${escapeHtml(fmtKey(inst.key, 72))}</div>
+          <div class="scan-meta">
+            <span>${scanMeta}</span>
+            <span class="dot-sep">•</span>
+            <span>${lastText}</span>
+            ${pathText ? `<span class="dot-sep">•</span><span>${pathText.replace('&middot; ', '')}</span>` : ''}
+            ${errorText}
+          </div>
+        </div>
+        <div class="bal-col">
+          <div class="balance ${inst.balance == null ? 'empty' : ''}">${fmtBalance(inst.balance)}</div>
+          <div class="row-actions">
+            <button class="icon-btn" data-act="scan" data-id="${inst.id}">Scan</button>
+            <button class="icon-btn" data-act="copy" data-id="${inst.id}">Copy key</button>
+            <button class="icon-btn danger" data-act="del" data-id="${inst.id}">Remove</button>
+          </div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function renderStats() {
+    const n = state.instruments.length;
+    document.getElementById('stat-instruments').textContent = n || '0';
+
+    // v1.06 — without depth-as-fixed-cap we report scanned counts when known, else estimate via gapLimit×2
+    const gap = Math.max(1, state.gapLimit | 0);
+    const totalAddrs = state.instruments.reduce((s, inst) => {
+      if (inst.type === 'address') return s + 1;
+      return s + (inst.addressesScanned || gap * 2);
+    }, 0);
+    document.getElementById('stat-addresses').textContent = totalAddrs.toLocaleString();
+
+    const total = state.instruments.reduce((s, x) => s + (x.balance || 0), 0);
+    const hasAny = state.instruments.some(x => x.balance != null);
+    document.getElementById('stat-balance').innerHTML = hasAny ? fmtBalance(total) : '&mdash;';
+    document.getElementById('stat-balance-sub').textContent = hasAny
+      ? (state.denom === 'sats' ? 'across all instruments' : 'across all instruments')
+      : 'consult to populate';
+
+    document.getElementById('total-balance').innerHTML =
+      hasAny ? fmtBalance(total).replace('<span class="unit">', `<span class="unit" id="total-unit">`) : `0.00000000<span class="unit">${state.denom.toUpperCase()}</span>`;
+
+    document.getElementById('stat-last').textContent = formatTime(state.lastConsult);
+    // v1.06 — show the rotation set, not a single endpoint
+    const eps = state.endpoints && state.endpoints.length ? state.endpoints : DEFAULT_ENDPOINTS;
+    const hostList = eps.map(endpointLabel).join(' + ');
+    document.getElementById('stat-oracle').textContent =
+      'oracle: ' + (hostList || 'unset') + (eps.length > 1 ? ` (rotation ×${eps.length})` : '');
+
+    document.getElementById('glass-counter').textContent =
+      `${n} ${n === 1 ? 'instrument' : 'instruments'} · ${totalAddrs.toLocaleString()} addresses in view`;
+    // v1.06 — keep the endpoint note next to the Refresh button in sync with settings
+    const epNote = document.getElementById('endpoint-note');
+    if (epNote) {
+      epNote.textContent = eps.length === 1
+        ? endpointLabel(eps[0])
+        : `${eps.length} explorers (rotation)`;
+    }
+  }
+
+  function renderChart() {
+    const svg = document.getElementById('chart');
+    // Preserve defs, clear rest
+    const defs = svg.querySelector('defs');
+    svg.innerHTML = '';
+    if (defs) svg.appendChild(defs);
+
+    const W = 700, H = 180;
+    const pad = { t: 15, r: 20, b: 25, l: 45 };
+
+    const pts = state.history.slice(-7);
+    const N_SLOTS = 7;
+
+    // Axes
+    const axis = (x1, y1, x2, y2) => {
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+      l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+      l.setAttribute('class', 'axis');
+      return l;
+    };
+    svg.appendChild(axis(pad.l, H - pad.b, W - pad.r, H - pad.b));
+
+    if (pts.length < 2) {
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', W / 2); t.setAttribute('y', H / 2);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('class', 'tick');
+      t.textContent = pts.length === 0
+        ? 'NO HISTORY — CONSULT THE ORACLE TO BEGIN'
+        : 'ONE DATAPOINT — CONSULT AGAIN FOR A LINE';
+      svg.appendChild(t);
+      return;
+    }
+
+    const vals = pts.map(p => p.total);
+    const minV = Math.min(...vals);
+    const maxV = Math.max(...vals);
+    const span = maxV - minV || Math.max(maxV, 0.0001);
+
+    const x = i => pad.l + (i / (pts.length - 1)) * (W - pad.l - pad.r);
+    const y = v => {
+      if (span === 0) return H - pad.b - (H - pad.t - pad.b) / 2;
+      return pad.t + (1 - (v - minV) / span) * (H - pad.t - pad.b);
+    };
+
+    // Y-axis ticks (min/mid/max)
+    const ticks = [maxV, (maxV + minV) / 2, minV];
+    ticks.forEach(tv => {
+      const yy = y(tv);
+      const gl = axis(pad.l, yy, W - pad.r, yy);
+      gl.setAttribute('stroke-dasharray', '2,4');
+      gl.setAttribute('opacity', '0.4');
+      svg.appendChild(gl);
+
+      const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tx.setAttribute('x', pad.l - 6);
+      tx.setAttribute('y', yy + 3);
+      tx.setAttribute('text-anchor', 'end');
+      tx.setAttribute('class', 'tick');
+      tx.textContent = state.denom === 'sats'
+        ? Math.round(tv * 1e8).toLocaleString()
+        : tv.toFixed(4);
+      svg.appendChild(tx);
+    });
+
+    // Area
+    const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(p.total)}`).join(' ');
+    const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    area.setAttribute('d', `${pathD} L${x(pts.length - 1)},${H - pad.b} L${x(0)},${H - pad.b} Z`);
+    area.setAttribute('class', 'area');
+    svg.appendChild(area);
+
+    // Line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('d', pathD);
+    line.setAttribute('class', 'line');
+    svg.appendChild(line);
+
+    // Dots + x-ticks
+    pts.forEach((p, i) => {
+      const cx = x(i), cy = y(p.total);
+      const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      pulse.setAttribute('cx', cx); pulse.setAttribute('cy', cy);
+      pulse.setAttribute('r', 5);
+      pulse.setAttribute('class', 'dot-pulse');
+      svg.appendChild(pulse);
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+      dot.setAttribute('r', 2.5);
+      dot.setAttribute('class', 'dot');
+      svg.appendChild(dot);
+
+      // x-tick label
+      if (i === 0 || i === pts.length - 1 || i === Math.floor(pts.length / 2)) {
+        const d = new Date(p.t);
+        const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        lbl.setAttribute('x', cx);
+        lbl.setAttribute('y', H - pad.b + 14);
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('class', 'tick');
+        lbl.textContent = d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).toUpperCase();
+        svg.appendChild(lbl);
+      }
+    });
+
+    document.getElementById('chart-range').textContent =
+      `Last ${pts.length} consultation${pts.length === 1 ? '' : 's'}`;
+  }
+
+  function renderAll() {
+    renderInstruments();
+    renderStats();
+    renderChart();
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     IMPORT PIPELINE (v1.01) — vault file → watch-only extraction
+     ═══════════════════════════════════════════════════════════════
+     Strict private-key hygiene contract:
+       * Seeds and private keys live only inside
+         convertPayloadToWatchOnly's local scope.
+       * That function scrubs them in a `finally` block before return.
+       * State.instruments only ever gains {name, key, type, addrType,
+         badge, path} — material indistinguishable from a manually
+         pasted extended public key.
+     ═══════════════════════════════════════════════════════════════ */
+
+  const IMPORT = {
+    file: null, kind: null, bytes: null,
+    zipContents: null, derivedItems: null,
+    // v1.03: two-step zip flow state
+    vaultMeta: null,        // decrypted vault.meta payload (after step 1)
+    walletEntries: null,    // wallets[] from meta (with file→data joined)
+  };
+
+  const ENC_TE = new TextEncoder();
+  const ENC_TD = new TextDecoder();
+
+  function b64ToBytes(s) {
+    const pad = s + "=".repeat((-s.length) % 4);
+    const bin = atob(pad);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  async function argon2idKdf(password, salt, m, t, p, hashLen = 32) {
+    if (!window.argon2 || typeof window.argon2.hash !== "function") {
+      throw new Error("Argon2id runtime not available — the bundle didn't load.");
+    }
+    const res = await window.argon2.hash({
+      pass: password, salt: salt, time: t, mem: m,
+      parallelism: p, hashLen: hashLen,
+      type: window.argon2.ArgonType.Argon2id,
+    });
+    return res.hash;
+  }
+
+  async function pbkdf2Sha256(password, salt, iter, bytes = 32) {
+    const base = await crypto.subtle.importKey("raw", ENC_TE.encode(password),
+      "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt, iterations: iter, hash: "SHA-256" },
+      base, bytes * 8
+    );
+    return new Uint8Array(bits);
+  }
+
+  async function aesGcmDecrypt(keyBytes, iv, ct) {
+    const key = await crypto.subtle.importKey("raw", keyBytes,
+      { name: "AES-GCM" }, false, ["decrypt"]);
+    try {
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
+      return new Uint8Array(pt);
+    } catch {
+      throw new Error("AES-GCM auth failed — wrong password or corrupted file.");
+    }
+  }
+
+  // BIP-39 mnemonic → 64-byte seed (PBKDF2-SHA-512, 2048 iter).
+  async function mnemonicToSeed(mnemonic, passphrase = "") {
+    const m = mnemonic.normalize("NFKD");
+    const salt = ("mnemonic" + passphrase).normalize("NFKD");
+    const base = await crypto.subtle.importKey("raw", ENC_TE.encode(m),
+      "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt: ENC_TE.encode(salt), iterations: 2048, hash: "SHA-512" },
+      base, 512
+    );
+    return new Uint8Array(bits);
+  }
+
+  // Version-byte swap on base58check-encoded extended keys.
+  const YPUB_V = new Uint8Array([0x04, 0x9d, 0x7c, 0xb2]);
+  const ZPUB_V = new Uint8Array([0x04, 0xb2, 0x47, 0x46]);
+  function swapExtKeyVersion(encoded, versionBytes) {
+    const decoded = b58c.decode(encoded);
+    const out = new Uint8Array(decoded.length);
+    out.set(versionBytes, 0);
+    out.set(decoded.slice(4), 4);
+    return b58c.encode(out);
+  }
+
+  function parseTimelockTxt(text) {
+    const addrMatch = text.match(/\[(?:P2SH_ADDRESS|BITCOIN_ADDRESS)\]\s*\n((?:[13][a-km-zA-HJ-NP-Z1-9]{25,34})|(?:bc1[a-z0-9]{39,59}))/);
+    if (!addrMatch) throw new Error("No Bitcoin address found in timelock file.");
+    const addr = addrMatch[1].trim();
+    const typeMatch = text.match(/\[ADDRESS_TYPE\]\s*(P2WSH|P2SH)/);
+    const utcMatch = text.match(/\[UNLOCK_UTC\]\s*(.+)/);
+    const unlockDate = utcMatch ? utcMatch[1].trim().slice(0, 10) : null;
+    return {
+      address: addr,
+      addressType: typeMatch ? typeMatch[1] : (addr.startsWith("bc1") ? "P2WSH" : "P2SH"),
+      suggestedName: "Timelock · " + addr.slice(0, 8) + "…" + addr.slice(-6) +
+        (unlockDate ? " · unlocks " + unlockDate : ""),
+    };
+  }
+
+  // Sniff a file's format. Returns: "vault-enc" | "amlt-enc" | "timelock-txt"
+  //                                | "vault-meta" | "unknown"
+  function detectFileKind(bytes, name = "") {
+    if (bytes.length > 33 && bytes[0] === 0x41 && bytes[1] === 0x4D &&
+        bytes[2] === 0x4C && bytes[3] === 0x54) return "amlt-enc";
+    let text = null;
+    try { text = ENC_TD.decode(bytes); } catch {}
+    if (text) {
+      try {
+        const obj = JSON.parse(text);
+        if (obj && obj.type === "amulet-wallet") return "vault-enc";
+        if (obj && obj.type === "amulet-vault-meta") return "vault-meta";
+      } catch {}
+      if (/\[(?:P2SH_ADDRESS|BITCOIN_ADDRESS)\]/.test(text)) return "timelock-txt";
+    }
+    return "unknown";
+  }
+
+  async function decryptVaultEnc(bytes, password) {
+    const obj = JSON.parse(ENC_TD.decode(bytes));
+    if (obj.type !== "amulet-wallet") throw new Error("Not a vault wallet file.");
+    if (!obj.kdf || obj.kdf.name !== "Argon2id") {
+      throw new Error("This .enc uses " + (obj.kdf?.name || "an unknown KDF") +
+        " — the Scryer only imports Argon2id files (Amulet Vault v1.08+).");
+    }
+    const salt = b64ToBytes(obj.kdf.salt);
+    const iv = b64ToBytes(obj.iv);
+    const ct = b64ToBytes(obj.ct);
+    const key = await argon2idKdf(password, salt, obj.kdf.m, obj.kdf.t, obj.kdf.p, 32);
+    const pt = await aesGcmDecrypt(key, iv, ct);
+    return JSON.parse(ENC_TD.decode(pt));
+  }
+
+  // v1.03: decrypt a vault.meta wrapper using the vault's master password.
+  // Returns the decrypted index payload — { magic, createdAt, wallets:[…] }.
+  // Each wallets[] entry is { id, name, createdAt, file, type? }.
+  async function decryptVaultMeta(bytes, masterPassword) {
+    const obj = JSON.parse(ENC_TD.decode(bytes));
+    if (obj.type !== "amulet-vault-meta") throw new Error("Not a vault.meta file.");
+    if (obj.yubikey) {
+      throw new Error("This vault.meta was created with a YubiKey. The Scryer can't unlock it — open the vault HTML in a browser with the key attached.");
+    }
+    if (!obj.kdf || obj.kdf.name !== "Argon2id") {
+      throw new Error("vault.meta uses " + (obj.kdf?.name || "an unknown KDF") +
+        " — the Scryer only imports Argon2id vaults (Amulet Vault v1.08+).");
+    }
+    const salt = b64ToBytes(obj.kdf.salt);
+    const iv = b64ToBytes(obj.iv);
+    const ct = b64ToBytes(obj.ct);
+    const key = await argon2idKdf(masterPassword, salt, obj.kdf.m, obj.kdf.t, obj.kdf.p, 32);
+    const pt = await aesGcmDecrypt(key, iv, ct);
+    const meta = JSON.parse(ENC_TD.decode(pt));
+    if (meta.magic !== "AMULET_VAULT_V1") {
+      throw new Error("Decrypted meta has unexpected magic: " + meta.magic);
+    }
+    return meta;
+  }
+
+  async function decryptAmltBinary(bytes, password) {
+    if (bytes[0] !== 0x41 || bytes[1] !== 0x4D ||
+        bytes[2] !== 0x4C || bytes[3] !== 0x54) throw new Error("Not an AMLT binary file.");
+    const version = bytes[4];
+    if (version !== 1) throw new Error("Unsupported AMLT version: " + version);
+    const salt = bytes.slice(5, 5 + 16);
+    const iv = bytes.slice(5 + 16, 5 + 16 + 12);
+    const ct = bytes.slice(5 + 16 + 12);
+    const key = await pbkdf2Sha256(password, salt, 600000, 32);
+    const pt = await aesGcmDecrypt(key, iv, ct);
+    return ENC_TD.decode(pt);
+  }
+
+  function parseAmuletReport(text) {
+    const seedLine = text.match(/^\s*Seed phrase\s*:\s*(.+?)\s*$/m);
+    if (!seedLine) throw new Error("Couldn't find a seed phrase in the report.");
+    const words = seedLine[1].trim().split(/\s+/).filter(Boolean);
+    let passphrase = "";
+    const passLine = text.match(/^\s*BIP-?39 passphrase\s*:\s*(.+?)\s*$/m);
+    if (passLine) {
+      const v = passLine[1].trim();
+      if (v !== "(none)") {
+        const q = v.match(/^"(.*)"$/);
+        passphrase = q ? q[1] : v;
+      }
+    }
+    return { words, passphrase };
+  }
+
+  // Minimal ZIP reader — STORE method only, matches the vault's writer.
+  const ZIPReader = (() => {
+    function le(bytes, off, n) {
+      let v = 0; for (let i = 0; i < n; i++) v |= bytes[off + i] << (i * 8);
+      return v >>> 0;
+    }
+    function read(bytes) {
+      let eocd = -1;
+      for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - 65557); i--) {
+        if (le(bytes, i, 4) === 0x06054b50) { eocd = i; break; }
+      }
+      if (eocd < 0) throw new Error("not a zip file (no EOCD)");
+      const entryCount = le(bytes, eocd + 10, 2);
+      const cdOffset = le(bytes, eocd + 16, 4);
+      const entries = [];
+      let p = cdOffset;
+      for (let i = 0; i < entryCount; i++) {
+        if (le(bytes, p, 4) !== 0x02014b50) throw new Error("corrupt central directory");
+        const method = le(bytes, p + 10, 2);
+        const compSize = le(bytes, p + 20, 4);
+        const nameLen = le(bytes, p + 28, 2);
+        const extraLen = le(bytes, p + 30, 2);
+        const commentLen = le(bytes, p + 32, 2);
+        const lh = le(bytes, p + 42, 4);
+        const name = new TextDecoder().decode(bytes.slice(p + 46, p + 46 + nameLen));
+        if (le(bytes, lh, 4) !== 0x04034b50) throw new Error("corrupt local header for " + name);
+        const lhNameLen = le(bytes, lh + 26, 2);
+        const lhExtraLen = le(bytes, lh + 28, 2);
+        const dataStart = lh + 30 + lhNameLen + lhExtraLen;
+        if (method !== 0) throw new Error("zip entry '" + name + "' is compressed; Scryer only reads stored zips from the Vault");
+        entries.push({ name, data: bytes.slice(dataStart, dataStart + compSize) });
+        p += 46 + nameLen + extraLen + commentLen;
+      }
+      return entries;
+    }
+    return { read };
+  })();
+
+  // ═════════════════════════════════════════════════════════════
+  // THE private-key-hygiene function. Narrow scope, strict finally.
+  // ═════════════════════════════════════════════════════════════
+  async function convertPayloadToWatchOnly(payload, sourceName) {
+    if (payload && payload.magic === "AMULET_TIMELOCK_V1") {
+      const item = {
+        name: sourceName || payload.name || "timelock",
+        key: payload.address,
+        type: "address",
+        addrType: payload.address?.startsWith("bc1") ? "p2wpkh" : "legacy",
+        badge: "timelock",
+        path: "",
+      };
+      // Timelock payload also has a WIF and redeem script; we don't want
+      // them even for a moment past this function. Null them on the way out.
+      for (const k of ["privateKeyWif", "redeemScript", "publicKey", "originalTxt", "notes"]) {
+        try { if (k in payload) payload[k] = null; } catch {}
+      }
+      return [item];
+    }
+
+    if (payload && payload.magic === "AMULET_WALLET_V1") {
+      const words = payload.words || [];
+      const passphrase = payload.passphrase || "";
+      const mnemonic = words.join(" ");
+      let seed = null;
+      try {
+        seed = await mnemonicToSeed(mnemonic, passphrase);
+        // HDKey.fromMasterSeed keeps private material on the tree internally;
+        // we use it to derive 3 public extended keys at the standard account
+        // paths and then let it go out of scope.
+        const root = HDKey.fromMasterSeed(seed);
+        const xpubAcct = root.derive("m/44'/0'/0'").publicExtendedKey;
+        const ypubAcct = swapExtKeyVersion(root.derive("m/49'/0'/0'").publicExtendedKey, YPUB_V);
+        const zpubAcct = swapExtKeyVersion(root.derive("m/84'/0'/0'").publicExtendedKey, ZPUB_V);
+        const base = sourceName || payload.name || "wallet";
+        return [
+          { name: base + " · Native SegWit (BIP-84)", key: zpubAcct, type: "extended", addrType: "p2wpkh",      badge: "zpub", path: "m/84'/0'/0'" },
+          { name: base + " · Nested SegWit (BIP-49)", key: ypubAcct, type: "extended", addrType: "p2sh-p2wpkh", badge: "ypub", path: "m/49'/0'/0'" },
+          { name: base + " · Legacy (BIP-44)",        key: xpubAcct, type: "extended", addrType: "p2pkh",       badge: "xpub", path: "m/44'/0'/0'" },
+        ];
+      } finally {
+        // Best-effort zero the seed buffer and scrub observable payload
+        // fields. JS engine internals are outside our reach, but we
+        // overwrite every allocation we can address.
+        try { if (seed && seed.fill) seed.fill(0); } catch {}
+        seed = null;
+        for (let i = 0; i < words.length; i++) {
+          try { words[i] = null; } catch {}
+        }
+        for (const k of ["words", "passphrase", "notes", "source", "originalTxt", "privateKeyWif"]) {
+          try { if (k in payload) payload[k] = null; } catch {}
+        }
+      }
+    }
+
+    throw new Error("Unrecognized payload magic: " + (payload?.magic || "(none)"));
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     IMPORT UI — modal state machine
+     ═══════════════════════════════════════════════════════════════ */
+
+  function resetImportModal() {
+    IMPORT.file = null; IMPORT.kind = null; IMPORT.bytes = null;
+    IMPORT.zipContents = null; IMPORT.derivedItems = null;
+    IMPORT.vaultMeta = null; IMPORT.walletEntries = null;
+    document.getElementById('import-stage-pick').style.display = '';
+    document.getElementById('import-stage-password').style.display = 'none';
+    document.getElementById('import-stage-master').style.display = 'none';
+    document.getElementById('import-stage-wallets').style.display = 'none';
+    document.getElementById('import-stage-results').style.display = 'none';
+    document.getElementById('import-zip-preview').style.display = 'none';
+    document.getElementById('import-zip-preview').innerHTML = '';
+    document.getElementById('import-wallet-list').innerHTML = '';
+    document.getElementById('import-error').style.display = 'none';
+    document.getElementById('import-progress').style.display = 'none';
+    document.getElementById('import-password').value = '';
+    document.getElementById('import-master-password').value = '';
+    document.getElementById('import-bulk-pw').value = '';
+    document.getElementById('import-decrypt').style.display = 'none';
+    document.getElementById('import-master-decrypt').style.display = 'none';
+    document.getElementById('import-wallets-decrypt').style.display = 'none';
+    document.getElementById('import-accept').style.display = 'none';
+    document.getElementById('import-back').style.display = 'none';
+    document.getElementById('import-decrypt').disabled = false;
+    document.getElementById('import-master-decrypt').disabled = false;
+    document.getElementById('import-wallets-decrypt').disabled = false;
+  }
+
+  function importError(msg) {
+    const el = document.getElementById('import-error');
+    el.textContent = msg;
+    el.style.display = '';
+    document.getElementById('import-progress').style.display = 'none';
+  }
+  function importClearError() {
+    document.getElementById('import-error').style.display = 'none';
+  }
+
+  function goToPasswordStage(info) {
+    document.getElementById('import-stage-pick').style.display = 'none';
+    document.getElementById('import-stage-password').style.display = '';
+    document.getElementById('import-file-summary').innerHTML =
+      `<dt>File</dt><dd>${escapeHtml(info.summary)}</dd>`;
+    document.getElementById('import-decrypt').style.display = '';
+    document.getElementById('import-back').style.display = '';
+    document.getElementById('import-accept').style.display = 'none';
+    setTimeout(() => document.getElementById('import-password').focus(), 50);
+  }
+
+  // v1.03: stage A of the zip flow — ask for the vault master password.
+  function goToMasterStage(info) {
+    document.getElementById('import-stage-pick').style.display = 'none';
+    document.getElementById('import-stage-password').style.display = 'none';
+    document.getElementById('import-stage-wallets').style.display = 'none';
+    document.getElementById('import-stage-master').style.display = '';
+    document.getElementById('import-master-summary').innerHTML = `
+      <dt>Vault backup</dt>
+      <dd>${escapeHtml(IMPORT.file.name)} — ${info.fileCount} file(s) inside
+        (${info.encCount} encrypted, ${info.tlCount} plaintext timelock)</dd>
+    `;
+    document.getElementById('import-master-decrypt').style.display = '';
+    document.getElementById('import-back').style.display = '';
+    document.getElementById('import-accept').style.display = 'none';
+    document.getElementById('import-decrypt').style.display = 'none';
+    document.getElementById('import-wallets-decrypt').style.display = 'none';
+    setTimeout(() => document.getElementById('import-master-password').focus(), 50);
+  }
+
+  // Step A handler: decrypt vault.meta with the master password and
+  // transition to the per-wallet stage.
+  async function runImportVaultMaster(masterPassword) {
+    importClearError();
+    document.getElementById('import-progress').style.display = '';
+    try {
+      const metaEntry = IMPORT.zipContents.find(e => e.kind === 'vault-meta');
+      if (!metaEntry) throw new Error("internal: master stage with no vault.meta");
+      const meta = await decryptVaultMeta(metaEntry.data, masterPassword);
+      IMPORT.vaultMeta = meta;
+      // Join meta.wallets with the actual zip data by filename. Any wallet
+      // listed in meta.wallets[] but missing from the zip becomes "missing".
+      // Any .enc in the zip that ISN'T listed in meta becomes "unindexed".
+      const byFile = new Map();
+      for (const e of IMPORT.zipContents) byFile.set(e.name, e);
+      const indexed = (meta.wallets || []).map(w => ({
+        id: w.id || crypto.randomUUID(),
+        name: w.name || w.file,
+        type: w.type === "timelock" ? "timelock" : "wallet",
+        file: w.file,
+        data: byFile.get(w.file)?.data || null,
+        kind: byFile.get(w.file)?.kind || null,
+        missing: !byFile.has(w.file),
+        unindexed: false,
+      }));
+      // Pick up loose .enc files in the zip that aren't in meta — uncommon
+      // but worth surfacing rather than silently skipping.
+      const indexedFiles = new Set((meta.wallets || []).map(w => w.file));
+      for (const e of IMPORT.zipContents) {
+        if ((e.kind === "vault-enc" || e.kind === "amlt-enc") && !indexedFiles.has(e.name)) {
+          indexed.push({
+            id: crypto.randomUUID(),
+            name: e.name + " (not in vault index)",
+            type: "wallet",
+            file: e.name,
+            data: e.data,
+            kind: e.kind,
+            missing: false,
+            unindexed: true,
+          });
+        }
+      }
+      IMPORT.walletEntries = indexed;
+      goToWalletsStage();
+    } catch (e) {
+      importError(e.message || String(e));
+    } finally {
+      document.getElementById('import-progress').style.display = 'none';
+    }
+  }
+
+  // v1.03: stage B of the zip flow — render the per-wallet password list.
+  function goToWalletsStage() {
+    document.getElementById('import-stage-master').style.display = 'none';
+    document.getElementById('import-stage-wallets').style.display = '';
+    document.getElementById('import-master-decrypt').style.display = 'none';
+    document.getElementById('import-wallets-decrypt').style.display = '';
+    document.getElementById('import-back').style.display = '';
+
+    const meta = IMPORT.vaultMeta;
+    const wallets = IMPORT.walletEntries || [];
+    const tlCount = (IMPORT.zipContents || []).filter(e => e.kind === 'timelock-txt').length;
+    const passwordedCount = wallets.filter(w => !w.missing).length;
+    document.getElementById('import-wallets-summary').innerHTML = `
+      <dt>Vault index</dt>
+      <dd>${(meta.wallets || []).length} item(s) listed${meta.createdAt
+        ? " · created " + escapeHtml(String(meta.createdAt).slice(0, 10))
+        : ""}</dd>
+      <dt>To unlock</dt>
+      <dd>${passwordedCount} wallet(s) need passwords${tlCount
+        ? " · " + tlCount + " plaintext timelock(s) will be added automatically"
+        : ""}</dd>
+    `;
+
+    const list = document.getElementById('import-wallet-list');
+    list.innerHTML = wallets.map((w, i) => {
+      if (w.missing) {
+        return `<div class="wallet-row no-pw" data-i="${i}">
+          <span class="tag ${w.type}">${w.type}</span>
+          <span class="name">${escapeHtml(w.name)}<span class="filename">${escapeHtml(w.file)} — file missing from zip</span></span>
+        </div>`;
+      }
+      return `<div class="wallet-row" data-i="${i}">
+        <span class="tag ${w.type}">${w.type}</span>
+        <span class="name">${escapeHtml(w.name)}<span class="filename">${escapeHtml(w.file)}${w.unindexed ? " · not in vault index" : ""}</span></span>
+        <input type="password" class="field wallet-pw" placeholder="password" autocomplete="off" spellcheck="false">
+      </div>`;
+    }).join('');
+    setTimeout(() => {
+      const first = list.querySelector('.wallet-pw');
+      if (first) first.focus();
+    }, 60);
+  }
+
+  // Step B handler: collect per-row passwords, decrypt each, derive watch-only.
+  async function runImportVaultWallets() {
+    importClearError();
+    document.getElementById('import-progress').style.display = '';
+    const list = document.getElementById('import-wallet-list');
+    const rows = Array.from(list.querySelectorAll('.wallet-row'));
+    const resultsList = [];
+    const derived = [];
+
+    try {
+      // Process every per-wallet row that has a password typed in.
+      for (const row of rows) {
+        const i = parseInt(row.dataset.i, 10);
+        const w = IMPORT.walletEntries[i];
+        if (!w || w.missing) {
+          resultsList.push({ status: "skip", name: w?.name || "(missing)", note: "file missing from zip" });
+          continue;
+        }
+        const pwField = row.querySelector('.wallet-pw');
+        const pw = pwField ? pwField.value : "";
+        if (!pw) {
+          resultsList.push({ status: "skip", name: w.name, note: "no password — skipped" });
+          continue;
+        }
+        try {
+          let payload;
+          if (w.kind === "vault-enc") {
+            payload = await decryptVaultEnc(w.data, pw);
+          } else if (w.kind === "amlt-enc") {
+            const report = await decryptAmltBinary(w.data, pw);
+            const parsed = parseAmuletReport(report);
+            payload = { magic: "AMULET_WALLET_V1", name: w.name, words: parsed.words, passphrase: parsed.passphrase };
+          } else {
+            throw new Error("unsupported file kind: " + w.kind);
+          }
+          const items = await convertPayloadToWatchOnly(payload, w.name);
+          for (const it of items) {
+            derived.push({ ...it, id: crypto.randomUUID(), balance: null, lastScan: null });
+          }
+          resultsList.push({ status: "ok", name: w.name, note: `+${items.length} watch-only item(s)` });
+        } catch (e) {
+          resultsList.push({ status: "err", name: w.name, note: e.message || String(e) });
+        }
+      }
+
+      // Process plaintext timelocks automatically — no password prompt.
+      for (const entry of IMPORT.zipContents) {
+        if (entry.kind === "timelock-txt") {
+          try {
+            const tl = parseTimelockTxt(ENC_TD.decode(entry.data));
+            derived.push({
+              id: crypto.randomUUID(), name: tl.suggestedName, key: tl.address,
+              type: "address",
+              addrType: tl.address.startsWith("bc1") ? "p2wpkh" : "legacy",
+              badge: "timelock", path: "", balance: null, lastScan: null,
+            });
+            resultsList.push({ status: "ok", name: entry.name, note: "timelock address added" });
+          } catch (e) {
+            resultsList.push({ status: "err", name: entry.name, note: e.message || String(e) });
+          }
+        }
+      }
+    } finally {
+      document.getElementById('import-progress').style.display = 'none';
+    }
+
+    IMPORT.derivedItems = derived;
+
+    // Move to results stage
+    document.getElementById('import-stage-wallets').style.display = 'none';
+    document.getElementById('import-stage-results').style.display = '';
+    document.getElementById('import-wallets-decrypt').style.display = 'none';
+    const okCount = resultsList.filter(r => r.status === 'ok').length;
+    const errCount = resultsList.filter(r => r.status === 'err').length;
+    const skipCount = resultsList.filter(r => r.status === 'skip').length;
+    document.getElementById('import-results-summary').innerHTML = `
+      <dt>Result</dt><dd>${derived.length} watch-only item(s) ready to add</dd>
+      <dt>Per-file</dt><dd>${okCount} succeeded · ${errCount} failed · ${skipCount} skipped</dd>
+    `;
+    document.getElementById('import-results-list').innerHTML = resultsList.map(r =>
+      `<div class="item ${r.status}">
+        <span class="mark">${r.status === 'ok' ? '✓' : r.status === 'err' ? '✗' : '—'}</span>
+        <span>${escapeHtml(r.name)} <span style="color:var(--paper-faint)">${escapeHtml(r.note)}</span></span>
+      </div>`
+    ).join('');
+    document.getElementById('import-back').style.display = '';
+    document.getElementById('import-accept').style.display = derived.length ? '' : 'none';
+  }
+
+  async function handleImportFile(file) {
+    importClearError();
+    IMPORT.file = file;
+    try {
+      IMPORT.bytes = new Uint8Array(await file.arrayBuffer());
+    } catch (e) { importError("Couldn't read file: " + (e.message || e)); return; }
+
+    // ZIP (PK\x03\x04)
+    if (IMPORT.bytes.length > 4 && IMPORT.bytes[0] === 0x50 && IMPORT.bytes[1] === 0x4B &&
+        IMPORT.bytes[2] === 0x03 && IMPORT.bytes[3] === 0x04) {
+      IMPORT.kind = "zip";
+      try {
+        const entries = ZIPReader.read(IMPORT.bytes);
+        IMPORT.zipContents = entries.map(e => ({
+          name: e.name, data: e.data, kind: detectFileKind(e.data, e.name)
+        }));
+      } catch (e) { importError("Couldn't parse zip: " + (e.message || e)); return; }
+      const items = IMPORT.zipContents;
+      const encCount = items.filter(i => i.kind === 'vault-enc' || i.kind === 'amlt-enc').length;
+      const tlCount = items.filter(i => i.kind === 'timelock-txt').length;
+      const preview = document.getElementById('import-zip-preview');
+      preview.innerHTML = `
+        <div style="padding:0.4rem 0.2rem;color:var(--paper-dim)">
+          Zip contains <strong>${items.length}</strong> file(s):
+          <strong>${encCount}</strong> encrypted, <strong>${tlCount}</strong> plaintext timelock,
+          ${items.length - encCount - tlCount} other (skipped).
+        </div>
+      ` + items.map(i => {
+        const ok = i.kind === 'vault-enc' || i.kind === 'amlt-enc' || i.kind === 'timelock-txt';
+        return `<div class="item ${ok ? 'ok' : 'skip'}">
+          <span class="mark">${ok ? '✓' : '—'}</span>
+          <span>${escapeHtml(i.name)} <span style="color:var(--paper-faint)">(${i.kind})</span></span>
+        </div>`;
+      }).join('');
+      preview.style.display = '';
+      // v1.03: route zips that contain a vault.meta into the two-step flow
+      // (master password → per-wallet passwords). Zips without a vault.meta
+      // — e.g. a hand-built archive of loose .enc files — keep the older
+      // single-password fallback.
+      const metaEntry = items.find(i => i.kind === 'vault-meta');
+      if (metaEntry) {
+        goToMasterStage({
+          fileCount: items.length,
+          encCount: encCount,
+          tlCount: tlCount,
+        });
+      } else if (encCount > 0) {
+        goToPasswordStage({
+          summary: `${items.length} file(s) in zip · ${encCount} encrypted, ${tlCount} plaintext (no vault.meta — single-password fallback)`
+        });
+      } else if (tlCount > 0) {
+        await runImport("");
+      } else {
+        importError("This zip contains no wallet or timelock files the Scryer can read.");
+      }
+      return;
+    }
+
+    // Single file
+    IMPORT.kind = detectFileKind(IMPORT.bytes, file.name);
+    if (IMPORT.kind === "timelock-txt") { await runImport(""); return; }
+    if (IMPORT.kind === "vault-enc" || IMPORT.kind === "amlt-enc") {
+      goToPasswordStage({
+        summary: `${file.name} · ${IMPORT.kind === 'vault-enc' ? 'vault-native .enc (Argon2id)' : 'Amulet binary .enc (PBKDF2)'}`
+      });
+      return;
+    }
+    if (IMPORT.kind === "vault-meta") {
+      importError("vault.meta isn't imported directly. Drop the full vault .zip, or extract the individual wallet .enc files.");
+      return;
+    }
+    importError("Unrecognized file format. The Scryer accepts .enc wallets, timelock .txt, and vault .zip archives.");
+  }
+
+  async function runImport(password) {
+    importClearError();
+    document.getElementById('import-progress').style.display = '';
+    const resultsList = [];
+    const derived = [];
+
+    async function processEncBytes(name, bytes, kind, pw) {
+      try {
+        let payload;
+        if (kind === "vault-enc") {
+          payload = await decryptVaultEnc(bytes, pw);
+        } else if (kind === "amlt-enc") {
+          const report = await decryptAmltBinary(bytes, pw);
+          const parsed = parseAmuletReport(report);
+          payload = {
+            magic: "AMULET_WALLET_V1",
+            name: name.replace(/\.enc$/i, "").replace(/^amulet-wallet-/, "Amulet "),
+            words: parsed.words,
+            passphrase: parsed.passphrase,
+          };
+        } else { throw new Error("internal: unsupported kind " + kind); }
+        const label = payload.name || name;
+        const items = await convertPayloadToWatchOnly(payload, label);
+        for (const it of items) {
+          derived.push({ ...it, id: crypto.randomUUID(), balance: null, lastScan: null });
+        }
+        resultsList.push({ status: "ok", name, note: `+${items.length} watch-only item(s)` });
+      } catch (e) {
+        resultsList.push({ status: "err", name, note: e.message || String(e) });
+      }
+    }
+
+    try {
+      if (IMPORT.kind === "zip") {
+        for (const entry of IMPORT.zipContents) {
+          if (entry.kind === "vault-enc" || entry.kind === "amlt-enc") {
+            await processEncBytes(entry.name, entry.data, entry.kind, password);
+          } else if (entry.kind === "timelock-txt") {
+            try {
+              const tl = parseTimelockTxt(ENC_TD.decode(entry.data));
+              derived.push({
+                id: crypto.randomUUID(), name: tl.suggestedName, key: tl.address,
+                type: "address",
+                addrType: tl.address.startsWith("bc1") ? "p2wpkh" : "legacy",
+                badge: "timelock", path: "", balance: null, lastScan: null,
+              });
+              resultsList.push({ status: "ok", name: entry.name, note: "timelock address added" });
+            } catch (e) {
+              resultsList.push({ status: "err", name: entry.name, note: e.message || String(e) });
+            }
+          } else {
+            resultsList.push({ status: "skip", name: entry.name, note: "skipped (" + entry.kind + ")" });
+          }
+        }
+      } else if (IMPORT.kind === "timelock-txt") {
+        const tl = parseTimelockTxt(ENC_TD.decode(IMPORT.bytes));
+        derived.push({
+          id: crypto.randomUUID(), name: tl.suggestedName, key: tl.address,
+          type: "address",
+          addrType: tl.address.startsWith("bc1") ? "p2wpkh" : "legacy",
+          badge: "timelock", path: "", balance: null, lastScan: null,
+        });
+        resultsList.push({ status: "ok", name: IMPORT.file.name, note: "timelock address added" });
+      } else if (IMPORT.kind === "vault-enc" || IMPORT.kind === "amlt-enc") {
+        await processEncBytes(IMPORT.file.name, IMPORT.bytes, IMPORT.kind, password);
+      }
+    } finally {
+      document.getElementById('import-progress').style.display = 'none';
+    }
+
+    IMPORT.derivedItems = derived;
+    document.getElementById('import-stage-password').style.display = 'none';
+    document.getElementById('import-stage-results').style.display = '';
+    const okCount = resultsList.filter(r => r.status === 'ok').length;
+    const errCount = resultsList.filter(r => r.status === 'err').length;
+    const skipCount = resultsList.filter(r => r.status === 'skip').length;
+    document.getElementById('import-results-summary').innerHTML = `
+      <dt>Result</dt><dd>${derived.length} watch-only item(s) ready to add</dd>
+      <dt>Per-file</dt><dd>${okCount} succeeded · ${errCount} failed · ${skipCount} skipped</dd>
+    `;
+    document.getElementById('import-results-list').innerHTML = resultsList.map(r =>
+      `<div class="item ${r.status}">
+        <span class="mark">${r.status === 'ok' ? '✓' : r.status === 'err' ? '✗' : '—'}</span>
+        <span>${escapeHtml(r.name)} <span style="color:var(--paper-faint)">${escapeHtml(r.note)}</span></span>
+      </div>`
+    ).join('');
+    document.getElementById('import-decrypt').style.display = 'none';
+    document.getElementById('import-back').style.display = '';
+    document.getElementById('import-accept').style.display = derived.length ? '' : 'none';
+  }
+
+  function commitImport() {
+    if (!IMPORT.derivedItems || !IMPORT.derivedItems.length) return;
+    for (const it of IMPORT.derivedItems) state.instruments.push(it);
+    saveState();
+    renderAll();
+    flash(`Added ${IMPORT.derivedItems.length} watch-only item(s) from import.`, 'info');
+    resetImportModal();
+    document.getElementById('import-modal').classList.remove('show');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     EVENT HANDLERS
+     ═══════════════════════════════════════════════════════════════ */
+
+  // Denomination toggle
+  document.getElementById('btc-toggle').addEventListener('click', () => {
+    state.denom = 'btc';
+    document.getElementById('btc-toggle').classList.add('on');
+    document.getElementById('sats-toggle').classList.remove('on');
+    saveState(); renderAll();
+  });
+  document.getElementById('sats-toggle').addEventListener('click', () => {
+    state.denom = 'sats';
+    document.getElementById('sats-toggle').classList.add('on');
+    document.getElementById('btc-toggle').classList.remove('on');
+    saveState(); renderAll();
+  });
+
+  // Add instrument
+  document.getElementById('add-btn').addEventListener('click', () => {
+    const name = document.getElementById('add-name').value.trim();
+    const key  = document.getElementById('add-key').value.trim();
+    if (!key) {
+      flash('Key is required.', 'error'); return;
+    }
+    const type = detectKeyType(key);
+    if (!type) {
+      flash('Unrecognized key format. Expected zpub / ypub / xpub or a bc1/1/3 address.', 'error'); return;
+    }
+    // Validate extended key actually parses
+    if (type.kind === 'extended') {
+      try { HDKey.fromExtendedKey(toXpub(key)); }
+      catch (e) { flash('Extended key failed to parse: ' + e.message, 'error'); return; }
+    }
+
+    state.instruments.push({
+      id: crypto.randomUUID(),
+      name: name || `Instrument ${state.instruments.length + 1}`,
+      key,
+      type: type.kind,
+      addrType: type.addr,
+      badge: type.badge,
+      path: type.path,
+      balance: null, lastScan: null
+    });
+    saveState();
+    document.getElementById('add-name').value = '';
+    document.getElementById('add-key').value = '';
+    renderAll();
+    flash('Instrument added.', 'info');
+  });
+
+  // Row actions (event delegation)
+  document.getElementById('instruments-list').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const inst = state.instruments.find(x => x.id === id);
+    if (!inst) return;
+
+    if (btn.dataset.act === 'del') {
+      if (!confirm(`Remove "${inst.name}" from the glass?`)) return;
+      state.instruments = state.instruments.filter(x => x.id !== id);
+      saveState(); renderAll();
+    } else if (btn.dataset.act === 'copy') {
+      try {
+        await navigator.clipboard.writeText(inst.key);
+        flash('Key copied to clipboard.', 'info');
+      } catch { flash('Copy failed.', 'error'); }
+    } else if (btn.dataset.act === 'scan') {
+      btn.disabled = true;
+      try {
+        await scanInstrument(inst);
+        saveState(); renderAll();
+        flash(`Scanned ${inst.name}.`, 'info');
+      } catch (err) {
+        flash(`Scan failed: ${err.message}`, 'error');
+      } finally { btn.disabled = false; }
+    }
+  });
+
+  // Consult all
+  document.getElementById('consult-btn').addEventListener('click', consultAll);
+
+  // Settings modal
+  const modal = document.getElementById('settings-modal');
+
+  // v1.04 — render the consent list inside the settings modal
+  function renderConsentList() {
+    const el = document.getElementById('consent-list');
+    if (!el) return;
+    if (!state.consentedEndpoints || state.consentedEndpoints.length === 0) {
+      el.innerHTML = 'No explorer consents recorded. You will be asked the next time the Scryer needs to make a network call.';
+    } else {
+      el.innerHTML = 'Trusted explorers:<br>' +
+        state.consentedEndpoints
+          .map(o => `<code style="font-family:var(--mono); color:var(--vault-2)">${escapeHtml(o)}</code>`)
+          .join('<br>');
+    }
+  }
+
+  // v1.04 — show / hide the rate-delay warning live
+  function refreshRateDelayWarning() {
+    const v = parseInt(document.getElementById('rate-delay').value) || 0;
+    const w = document.getElementById('rate-delay-warn');
+    if (w) w.style.display = (v < 1000) ? 'block' : 'none';
+  }
+  document.getElementById('rate-delay').addEventListener('input', refreshRateDelayWarning);
+
+  // v1.04 — clear-consents button
+  document.getElementById('clear-consents').addEventListener('click', () => {
+    state.consentedEndpoints = [];
+    saveState();
+    renderConsentList();
+    flash('Cleared all explorer consents.', 'info');
+  });
+
+  // v1.06 — parse + validate the textarea into an array of clean URLs
+  function parseEndpointTextarea(text) {
+    const seen = new Set();
+    return (text || '')
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(s => s && !seen.has(s) && (seen.add(s), true));
+  }
+
+  // v1.06 — Test all endpoints button: probe each URL in the textarea individually.
+  // Bypasses rotation (one-shot per endpoint) so the user gets a per-endpoint verdict.
+  document.getElementById('test-connection').addEventListener('click', async () => {
+    const btn = document.getElementById('test-connection');
+    const out = document.getElementById('test-connection-result');
+    const candidates = parseEndpointTextarea(document.getElementById('endpoint-list').value);
+    if (candidates.length === 0) {
+      out.style.color = '#f5a5a5';
+      out.textContent = 'Add at least one endpoint URL above.';
+      return;
+    }
+
+    btn.disabled = true;
+    out.style.color = 'var(--paper-faint)';
+    out.textContent = 'Probing…';
+
+    const lines = [];
+    for (const ep of candidates) {
+      const t0 = performance.now();
+      try {
+        const tip = await fetchTipHeight(ep);
+        const ms = Math.round(performance.now() - t0);
+        lines.push(`✓ ${endpointLabel(ep)} — tip ${tip.toLocaleString()} (${ms} ms)`);
+      } catch (e) {
+        const msg = e && e.message ? e.message : String(e);
+        const trimmed = msg.length > 200 ? msg.slice(0, 200) + '…' : msg;
+        lines.push(`✗ ${endpointLabel(ep)} — ${trimmed}`);
+      }
+    }
+    const allOk = lines.every(l => l.startsWith('✓'));
+    out.style.color = allOk ? 'var(--vault-2)' : '#f5a5a5';
+    out.textContent = lines.join('\n');
+    btn.disabled = false;
+  });
+
+  document.getElementById('gear-btn').addEventListener('click', () => {
+    document.getElementById('endpoint-list').value = (state.endpoints || []).join('\n');
+    document.getElementById('gap-limit').value  = state.gapLimit;
+    document.getElementById('rate-delay').value = state.rateDelay;
+    refreshRateDelayWarning();
+    renderConsentList();
+    // clear any stale Test connection result text from a previous open
+    const tcr = document.getElementById('test-connection-result');
+    if (tcr) { tcr.textContent = ''; tcr.style.color = 'var(--paper-faint)'; }
+    modal.classList.add('show');
+  });
+  document.getElementById('settings-cancel').addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+  document.getElementById('settings-save').addEventListener('click', () => {
+    const newEndpoints = parseEndpointTextarea(document.getElementById('endpoint-list').value);
+    const finalEndpoints = newEndpoints.length > 0 ? newEndpoints : [...DEFAULT_ENDPOINTS];
+
+    // v1.06 — if the endpoint set changed, drop consents for any host that's no longer in the rotation
+    const newOrigins = new Set(finalEndpoints.map(endpointOrigin));
+    state.consentedEndpoints = state.consentedEndpoints.filter(o => newOrigins.has(o));
+
+    state.endpoints = finalEndpoints;
+    state.gapLimit  = Math.max(1, Math.min(100, parseInt(document.getElementById('gap-limit').value) || 20));
+    state.rateDelay = Math.max(0, Math.min(5000, parseInt(document.getElementById('rate-delay').value) || 0));
+    saveState();
+    modal.classList.remove('show');
+    renderAll();
+    flash('Settings saved.', 'info');
+  });
+
+  // v1.04 — wire the consent modal: clicking the scrim cancels just like Cancel
+  document.getElementById('consent-modal').addEventListener('click', e => {
+    if (e.target.id === 'consent-modal') {
+      document.getElementById('consent-cancel').click();
+    }
+  });
+
+  // Reset
+  document.getElementById('reset-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!confirm('Clear all watched instruments, history, and settings on this device?')) return;
+    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(STORE_KEY + ':seeded');
+    state = loadState();
+    renderAll();
+  });
+
+  // v1.01: Import modal
+  document.getElementById('import-btn').addEventListener('click', () => {
+    resetImportModal();
+    document.getElementById('import-modal').classList.add('show');
+  });
+  document.getElementById('import-cancel').addEventListener('click', () => {
+    document.getElementById('import-modal').classList.remove('show');
+  });
+  document.getElementById('import-back').addEventListener('click', () => {
+    resetImportModal();
+  });
+  document.getElementById('import-modal').addEventListener('click', e => {
+    if (e.target.id === 'import-modal') document.getElementById('import-modal').classList.remove('show');
+  });
+  const importDrop = document.getElementById('import-drop');
+  importDrop.addEventListener('click', () => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.zip,.enc,.txt,application/zip,application/json,text/plain,application/octet-stream';
+    inp.onchange = () => { if (inp.files && inp.files[0]) handleImportFile(inp.files[0]); };
+    inp.click();
+  });
+  importDrop.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); importDrop.click(); }
+  });
+  ['dragenter', 'dragover'].forEach(ev => importDrop.addEventListener(ev, e => {
+    e.preventDefault(); importDrop.classList.add('over');
+  }));
+  ['dragleave', 'drop'].forEach(ev => importDrop.addEventListener(ev, e => {
+    e.preventDefault(); importDrop.classList.remove('over');
+  }));
+  importDrop.addEventListener('drop', e => {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleImportFile(e.dataTransfer.files[0]);
+  });
+  document.getElementById('import-decrypt').addEventListener('click', async () => {
+    const pw = document.getElementById('import-password').value;
+    if (!pw) { importError('Enter the password.'); return; }
+    document.getElementById('import-decrypt').disabled = true;
+    try { await runImport(pw); }
+    finally { document.getElementById('import-decrypt').disabled = false; }
+  });
+  document.getElementById('import-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('import-decrypt').click();
+  });
+  document.getElementById('import-accept').addEventListener('click', commitImport);
+
+  // v1.03: master-password stage (step 1 of zip flow)
+  document.getElementById('import-master-decrypt').addEventListener('click', async () => {
+    const pw = document.getElementById('import-master-password').value;
+    if (!pw) { importError('Enter the vault master password.'); return; }
+    document.getElementById('import-master-decrypt').disabled = true;
+    try { await runImportVaultMaster(pw); }
+    finally { document.getElementById('import-master-decrypt').disabled = false; }
+  });
+  document.getElementById('import-master-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('import-master-decrypt').click();
+  });
+
+  // v1.03: per-wallet stage (step 2 of zip flow)
+  document.getElementById('import-wallets-decrypt').addEventListener('click', async () => {
+    document.getElementById('import-wallets-decrypt').disabled = true;
+    try { await runImportVaultWallets(); }
+    finally { document.getElementById('import-wallets-decrypt').disabled = false; }
+  });
+  document.getElementById('import-bulk-apply').addEventListener('click', () => {
+    const bulk = document.getElementById('import-bulk-pw').value;
+    if (!bulk) return;
+    const list = document.getElementById('import-wallet-list');
+    list.querySelectorAll('.wallet-pw').forEach(inp => { inp.value = bulk; });
+  });
+  // Pressing Enter inside the bulk box should apply it (handy shortcut)
+  document.getElementById('import-bulk-pw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('import-bulk-apply').click();
+  });
+
+  // Flash messages
+  function flash(msg, kind = 'info') {
+    const status = document.getElementById('status-area');
+    const el = document.createElement('div');
+    el.className = `banner ${kind}`;
+    el.textContent = msg;
+    status.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     BOOT
+     ═══════════════════════════════════════════════════════════════ */
+  renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Amulet Constellation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root {
+  --bg: #0a0d15;
+  --panel: #141a2a;
+  --line: #262c42;
+  --ink: #eae6d9;
+  --ink-dim: #a7a394;
+  --ink-faint: #6d6a5d;
+  --gold: #e8b341;
+  --gold-soft: #c48f27;
+  --violet: #7a6bd1;
+  --violet-soft: #4b3e8f;
+  --orange: #f7931a;
+}
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  background: radial-gradient(ellipse at 50% 60%, #11172a 0%, #060914 60%, #03060d 100%);
+  color: var(--ink);
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  overflow: hidden;
+  min-height: 100vh;
+}
+.scene { position: relative; width: 100vw; height: 100vh; }
+
+/* Title */
+.title-block {
+  position: absolute;
+  top: 4vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
+.title {
+  font-size: clamp(28px, 4.4vw, 52px);
+  font-weight: 400;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 0 28px rgba(232,179,65,0.18);
+}
+.subtitle {
+  font-size: clamp(12.5px, 1.1vw, 15px);
+  color: var(--ink-dim);
+  margin-top: 10px;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+/* Footer */
+.foot {
+  position: absolute;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.foot b { color: var(--ink-dim); font-weight: 400; }
+
+/* Dust */
+.bg-dust { position: absolute; inset: 0; pointer-events: none; }
+.bg-dust .dust {
+  position: absolute;
+  background: rgba(234,230,217,0.6);
+  border-radius: 50%;
+  animation: twinkle var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50%      { opacity: 0.95; transform: scale(1.5); }
+}
+
+/* The constellation SVG */
+svg.constellation {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+.link {
+  stroke: rgba(122,107,209,0.28);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 2 5;
+  animation: drift 14s linear infinite;
+}
+.link.primary { stroke: rgba(232,179,65,0.35); stroke-width: 1.2; }
+@keyframes drift { to { stroke-dashoffset: 70; } }
+
+.star { cursor: pointer; }
+.star-halo {
+  fill: rgba(232,179,65,0.05);
+  transition: fill 0.3s ease;
+}
+.star.anchor .star-halo {
+  fill: rgba(247,147,26,0.10);
+  animation: halo-pulse 3.4s ease-in-out infinite;
+}
+@keyframes halo-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1;    }
+}
+.star-core {
+  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 16px currentColor);
+}
+.star.anchor .star-core {
+  filter: drop-shadow(0 0 10px var(--orange)) drop-shadow(0 0 26px var(--orange));
+}
+.star-inner { fill: #fff8e6; }
+.star:hover .star-halo  { fill: rgba(232,179,65,0.18); }
+.star.anchor:hover .star-halo { fill: rgba(247,147,26,0.22); }
+
+.star-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  fill: var(--ink-dim);
+  pointer-events: none;
+  letter-spacing: 0.08em;
+  transition: fill 0.2s ease;
+}
+.star:hover .star-label { fill: var(--gold); }
+.star.anchor .star-label { fill: var(--orange); letter-spacing: 0.12em; font-weight: 700; }
+
+/* Tooltip card */
+.tooltip {
+  position: fixed;
+  background: rgba(18,24,42,0.96);
+  border: 1px solid var(--gold-soft);
+  border-radius: 12px;
+  padding: 14px 18px 12px 18px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04);
+  max-width: 320px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  z-index: 100;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .tt-name {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 17px;
+  color: var(--gold);
+  margin: 0 0 6px 0;
+  letter-spacing: 0.02em;
+}
+.tooltip .tt-desc {
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+  margin: 0 0 8px 0;
+}
+.tooltip .tt-meta {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+
+/* Quiet hint at first load */
+.hint {
+  position: absolute;
+  bottom: 7vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.14em;
+  opacity: 0;
+  animation: fade-in 1.2s ease 0.8s forwards, fade-out 1s ease 6s forwards;
+  pointer-events: none;
+}
+@keyframes fade-in  { to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="scene">
+
+  <div class="bg-dust" id="bgDust"></div>
+
+  <div class="title-block">
+    <h1 class="title">The Amulet Arsenal</h1>
+    <p class="subtitle">Ten single-file tools for sovereign Bitcoiners. Audit before you trust them.</p>
+  </div>
+
+  <svg class="constellation" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+    <g id="links"></g>
+    <g id="stars"></g>
+  </svg>
+
+  <div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true">
+    <div class="tt-name" id="ttName"></div>
+    <div class="tt-desc" id="ttDesc"></div>
+    <div class="tt-meta" id="ttMeta"></div>
+  </div>
+
+  <div class="hint">hover a star</div>
+
+  <div class="foot"><b>AVBforge</b> &nbsp;·&nbsp; MIT &nbsp;·&nbsp; avbforge.codeberg.page</div>
+</div>
+
+<script>
+/* The ten tools (eleven, counting the recovery script) of the Amulet
+   Arsenal. Each star is positioned on a 1000x700 SVG canvas. The
+   launcher sits centre-top as the bright anchor; the rest spread out
+   below it in a loose constellation. Thin lines show the data flows
+   that actually connect them in the suite. */
+const tools = [
+  { id:'main',      name:'Amulet Main',                desc:'The launcher. One index to every tool, split into air-gapped and online companions.',
+    file:'AmuletMain_v1.36.html',                          x:500, y:170, r:9, anchor:true },
+  { id:'gen',       name:'Amulet Wallet Generator',    desc:'Rolls a fresh BIP-39 seed. Dice, cards, or keystroke entropy if you want belt-and-braces.',
+    file:'amulet_1_51.html',                               x:210, y:290, r:7.5 },
+  { id:'vault',     name:'Amulet Vault',               desc:'Encrypted keeper for seed wallets, time-locked redeem scripts, and pubkey-only entries. Argon2id at rest.',
+    file:'amulet_vault_v1.74.html',                        x:380, y:380, r:8 },
+  { id:'picker',    name:'Amulet Picker',              desc:'Master-passphrase generator drawing from a 10,000-word pool.',
+    file:'Amulet Picker v16.html',                         x:230, y:480, r:6 },
+  { id:'shamir',    name:'Amulet Shamir Shared Split', desc:'Splits a vault into T-of-N shares for inheritance, or reassembles them.',
+    file:'amulet_shamir_shared_split_v0.11.html',          x:120, y:400, r:6 },
+  { id:'timelock',  name:'Amulet Timelock',            desc:'Builds Bitcoin time-locked redeem scripts.',
+    file:'timelockbtc_RC2_002.html',                       x:320, y:520, r:6 },
+  { id:'tx',        name:'Amulet Transaction Creator', desc:'Builds and signs transactions offline. The job a hardware wallet usually does.',
+    file:'amulet_tx_v0.22.html',                           x:560, y:440, r:7.5 },
+  { id:'scryer',    name:'Amulet Scryer',              desc:'Watch-only balance viewer. The only piece of the suite that touches the network.',
+    file:'arsenal-scryer_v1.18.html',                      x:700, y:330, r:6 },
+  { id:'broadcast', name:'Amulet Broadcaster',         desc:'Pushes a finished, signed transaction to the Bitcoin network.',
+    file:'amulet_broadcast_v1.01.html',                    x:740, y:470, r:6 },
+  { id:'silent',    name:'Silent Amulet',              desc:'A BIP-352 silent-payments wallet. One static address, every payment lands at a fresh on-chain output only you can spot.',
+    file:'silent_amulet_1_21.html',                        x:850, y:230, r:7 },
+  { id:'relic',     name:'Amulet Relic',               desc:'Last-resort Python script that decrypts an Amulet .enc file with nothing but Python installed.',
+    file:'amulet_relic.py',                                x:470, y:560, r:5 },
+];
+
+/* The lines mirror the real data flows between the tools. Primary
+   lines (Main to its three entry points; Generator to Vault) are
+   drawn slightly brighter so the eye reads the spine of the suite. */
+const links = [
+  // launcher into the three main entry points
+  ['main','gen',   'primary'],
+  ['main','vault', 'primary'],
+  ['main','silent','primary'],
+  // wallet creation flow
+  ['gen','vault','primary'],
+  // vault radiates to its companions
+  ['vault','picker'],
+  ['vault','shamir'],
+  ['vault','timelock'],
+  ['vault','tx'],
+  ['vault','scryer'],
+  ['vault','relic'],
+  // the spend leg
+  ['tx','broadcast'],
+  ['scryer','tx'],
+];
+
+const linksLayer = document.getElementById('links');
+const starsLayer = document.getElementById('stars');
+const SVGNS = 'http://www.w3.org/2000/svg';
+const byId = Object.fromEntries(tools.map(t => [t.id, t]));
+
+for (const [a, b, kind] of links) {
+  const A = byId[a], B = byId[b];
+  if (!A || !B) continue;
+  const line = document.createElementNS(SVGNS, 'line');
+  line.setAttribute('class', 'link' + (kind === 'primary' ? ' primary' : ''));
+  line.setAttribute('x1', A.x); line.setAttribute('y1', A.y);
+  line.setAttribute('x2', B.x); line.setAttribute('y2', B.y);
+  linksLayer.appendChild(line);
+}
+
+for (const t of tools) {
+  const g = document.createElementNS(SVGNS, 'g');
+  g.setAttribute('class', 'star' + (t.anchor ? ' anchor' : ''));
+  g.setAttribute('transform', `translate(${t.x},${t.y})`);
+  g.setAttribute('data-id', t.id);
+  g.setAttribute('tabindex', '0');
+  g.setAttribute('role', 'button');
+  g.setAttribute('aria-label', t.name);
+
+  const halo = document.createElementNS(SVGNS, 'circle');
+  halo.setAttribute('class', 'star-halo');
+  halo.setAttribute('r', t.r * 2.8);
+  g.appendChild(halo);
+
+  const core = document.createElementNS(SVGNS, 'circle');
+  core.setAttribute('class', 'star-core');
+  core.setAttribute('r', t.r);
+  core.setAttribute('fill', t.anchor ? '#f7931a' : '#e8b341');
+  g.appendChild(core);
+
+  const inner = document.createElementNS(SVGNS, 'circle');
+  inner.setAttribute('class', 'star-inner');
+  inner.setAttribute('r', t.r * 0.45);
+  g.appendChild(inner);
+
+  const label = document.createElementNS(SVGNS, 'text');
+  label.setAttribute('class', 'star-label');
+  label.setAttribute('y', t.r + 16);
+  label.setAttribute('text-anchor', 'middle');
+  /* Strip the "Amulet " prefix on labels so the constellation breathes. */
+  label.textContent = t.name.replace(/^Amulet\s/, '').toUpperCase();
+  g.appendChild(label);
+
+  starsLayer.appendChild(g);
+}
+
+/* Tooltip behaviour: hover or focus shows the card, mouse-move tracks. */
+const tip    = document.getElementById('tooltip');
+const ttName = document.getElementById('ttName');
+const ttDesc = document.getElementById('ttDesc');
+const ttMeta = document.getElementById('ttMeta');
+
+function showTip(t, x, y) {
+  ttName.textContent = t.name;
+  ttDesc.textContent = t.desc;
+  ttMeta.textContent = t.file;
+  tip.classList.add('visible');
+  tip.setAttribute('aria-hidden', 'false');
+  positionTip(x, y);
+}
+function hideTip() {
+  tip.classList.remove('visible');
+  tip.setAttribute('aria-hidden', 'true');
+}
+function positionTip(x, y) {
+  const rect = tip.getBoundingClientRect();
+  const px = Math.min(window.innerWidth  - rect.width  - 16, Math.max(16, x + 18));
+  const py = Math.min(window.innerHeight - rect.height - 16, Math.max(16, y + 18));
+  tip.style.left = px + 'px';
+  tip.style.top  = py + 'px';
+}
+
+starsLayer.addEventListener('mouseover', e => {
+  const star = e.target.closest('.star');
+  if (!star) return;
+  const t = byId[star.dataset.id];
+  if (t) showTip(t, e.clientX, e.clientY);
+});
+starsLayer.addEventListener('mousemove', e => {
+  if (tip.classList.contains('visible')) positionTip(e.clientX, e.clientY);
+});
+starsLayer.addEventListener('mouseout', e => {
+  if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.star')) hideTip();
+});
+starsLayer.addEventListener('focusin', e => {
+  const star = e.target.closest('.star');
+  if (!star) return;
+  const t = byId[star.dataset.id];
+  if (!t) return;
+  const r = star.getBoundingClientRect();
+  showTip(t, r.left + r.width / 2, r.top);
+});
+starsLayer.addEventListener('focusout', hideTip);
+/* Tap-anywhere on touch screens: tap a star to lock the tooltip,
+   tap empty space to dismiss. */
+document.addEventListener('click', e => {
+  const star = e.target.closest && e.target.closest('.star');
+  if (star) {
+    const t = byId[star.dataset.id];
+    if (!t) return;
+    showTip(t, e.clientX, e.clientY);
+  } else {
+    hideTip();
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+
+/* Background dust. CSS-only twinkle, one DOM element per dust mote. */
+const dust = document.getElementById('bgDust');
+const dustCount = 140;
+for (let i = 0; i < dustCount; i++) {
+  const d = document.createElement('div');
+  d.className = 'dust';
+  d.style.left = (Math.random() * 100) + 'vw';
+  d.style.top  = (Math.random() * 100) + 'vh';
+  const size = Math.random() * 1.6 + 0.6;
+  d.style.width  = size + 'px';
+  d.style.height = size + 'px';
+  d.style.setProperty('--dur',   (2 + Math.random() * 6) + 's');
+  d.style.setProperty('--delay', (Math.random() * 5)     + 's');
+  dust.appendChild(d);
+}
+</script>
+</body>
+</html>

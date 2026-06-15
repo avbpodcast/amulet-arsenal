@@ -1,0 +1,2 @@
+silent_amulet_1_08.html
+SHA256: 75af54a51baae16ca559b56f545acfc641864b033ddc884c98dcfc5f1082cb39

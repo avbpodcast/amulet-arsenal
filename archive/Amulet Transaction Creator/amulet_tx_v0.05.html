@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Amulet Transaction · v0.05 · prototype</title>
+<style>
+  /* =============================================================
+     v0.05: Vault-style reskin. Same class names as v0.04, but the
+     palette and layout match amulet_vault_v1.17.html and the rest
+     of the Amulet arsenal: cyan + orange on deep navy, sans-serif
+     system font, light/dark theme toggle, radial-gradient body
+     bleed, rounded cards with deep shadow.
+     No functional changes; pure look-and-feel.
+     ============================================================= */
+  :root{
+    --bg0:#070b18; --bg1:#0d1326;
+    --panel:#111935; --panel-2:#0b1226;
+    --line:#1e284f; --line-2:#2a3663;
+    --ink:#eaf0ff; --ink-dim:#c3cdee; --muted:#7d88a8;
+    --accent:#f7931a; --accent-2:#ffc069; --accent-deep:#c96f00;
+    --vault:#7be0ff; --vault-2:#a6efff; --vault-deep:#1d7a9c;
+    --ok:#35d39a; --warn:#ffb86b; --err:#ff7a7a; --red:#ff9a9a;
+    --input-bg:#070b1d; --track:#11183a;
+    --btn-bg:#19224a; --btn-bg-hover:#1f2a58; --chip-bg:#1a2450;
+    --code-bg:#0b1226;
+    --bg-radial-a:rgba(247,147,26,.06);
+    --bg-radial-b:rgba(80,160,220,.13);
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --shadow:0 30px 80px rgba(0,0,0,.45);
+    --radius:14px;
+  }
+  html[data-theme="light"]{
+    --bg0:#e8edf8; --bg1:#d5deef;
+    --panel:#ffffff; --panel-2:#eef2fb;
+    --line:#c8d2e6; --line-2:#a4b1cf;
+    --ink:#0a1024; --ink-dim:#2a3658; --muted:#535f80;
+    --input-bg:#f4f7fd; --track:#d3dbed;
+    --btn-bg:#eaf0fb; --btn-bg-hover:#d8e1f3; --chip-bg:#dde6f5;
+    --code-bg:#eef2fb;
+    --bg-radial-a:rgba(247,147,26,.18);
+    --bg-radial-b:rgba(60,140,200,.14);
+    --shadow:0 24px 60px rgba(20,30,70,.18);
+    --ok:#0f8a5e; --err:#b51d23; --warn:#a35d04; --red:#b51d23;
+    --accent-2:#d97706; --vault:#0f6d8f; --vault-2:#1d7a9c; --vault-deep:#084a66;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  html,body{overflow-x:hidden}
+  body{
+    color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;
+    transition:background-color .5s ease, color .3s ease;
+    background:
+      radial-gradient(1000px 600px at 85% -10%, var(--bg-radial-a), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, var(--bg-radial-b), transparent 60%),
+      linear-gradient(180deg,var(--bg0),var(--bg1));
+    min-height:100vh;
+  }
+  .mono{font-family:var(--mono)}
+  .wrap{max-width:1020px;margin:0 auto;padding:32px 24px 80px}
+  ::selection{background:rgba(123,224,255,.35);color:var(--ink)}
+
+  /* ===== top bar ===== */
+  header.topbar{
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:22px;flex-wrap:wrap;
+    padding-bottom:18px;border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .sigil{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--vault-2),var(--vault));
+    color:#051822;
+    display:grid;place-items:center;
+    box-shadow:0 10px 24px rgba(123,224,255,.18);
+    padding:6px;
+  }
+  .brand-stack{display:flex;flex-direction:column;line-height:1.1;gap:3px}
+  .brand .maker{
+    font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.14em;
+    font-family:var(--sans);font-weight:500;
+  }
+  .brand .name{
+    font-size:18px;letter-spacing:.2px;color:var(--ink);
+    font-family:var(--sans);font-weight:600;text-transform:none;
+  }
+  .brand .name b{color:var(--vault-2);font-weight:700}
+  .topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+
+  .net-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border-radius:999px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    border:1px solid rgba(255,192,105,.4);background:rgba(255,192,105,.08);
+    color:var(--accent-2);user-select:none;font-weight:600;
+  }
+  .net-pill .dot{width:7px;height:7px;border-radius:999px;background:currentColor}
+  .offline-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ok);font-weight:600;
+  }
+  .offline-tag .dot{
+    width:6px;height:6px;border-radius:999px;background:currentColor;
+    box-shadow:0 0 8px currentColor;
+  }
+  .theme-switch{
+    display:inline-flex;align-items:center;justify-content:center;
+    height:34px;padding:0 12px;border-radius:999px;
+    background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+    cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  .theme-switch:hover{color:var(--ink);border-color:var(--vault-2)}
+
+  /* ===== Build/Sign tabs ===== */
+  nav.tabs{
+    display:flex;gap:4px;margin:6px 0 18px;
+    border-bottom:1px solid var(--line);
+  }
+  nav.tabs button{
+    background:transparent;border:0;color:var(--muted);
+    padding:12px 18px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.04em;
+    border-bottom:2px solid transparent;
+    transition:color .15s ease,border-color .15s ease;
+    text-transform:none;
+  }
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.active{
+    color:var(--accent-2);
+    border-bottom-color:var(--accent-2);
+  }
+
+  /* ===== cards ===== */
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.015),transparent),var(--panel);
+    border:1px solid var(--line);border-radius:18px;
+    padding:24px 26px;margin-bottom:16px;
+    box-shadow:var(--shadow);
+  }
+  .card h2{
+    margin:0 0 4px;
+    font-size:16px;font-weight:700;letter-spacing:.2px;color:var(--ink);
+    font-family:var(--sans);text-transform:none;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .card .hint{color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.55}
+
+  /* form fields */
+  label.field{display:block;margin-top:12px}
+  label.field > .label{
+    display:block;font-size:12.5px;color:var(--ink-dim);
+    margin-bottom:6px;font-weight:600;text-transform:none;letter-spacing:0;
+    font-family:var(--sans);
+  }
+  input[type=text],input[type=number],input[type=password],textarea{
+    width:100%;background:var(--input-bg);color:var(--ink);
+    font-family:var(--mono);font-size:13.5px;
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    outline:none;transition:border-color .15s ease,box-shadow .15s ease;
+    resize:vertical;
+  }
+  input:focus,textarea:focus{
+    border-color:var(--vault);
+    box-shadow:0 0 0 3px rgba(123,224,255,.12);
+  }
+  textarea{min-height:80px;line-height:1.5;word-break:break-all}
+  textarea.psbt{min-height:120px}
+
+  /* row layouts */
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+  @media (max-width:640px){
+    .row-2,.row-3{grid-template-columns:1fr}
+    .wrap{padding:18px 14px 56px}
+    .card{padding:18px;border-radius:14px}
+  }
+
+  /* sub-hint (under amount/fee inputs) */
+  .sub-hint{
+    display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;
+  }
+  .sub-hint .note{
+    font-size:11.5px;color:var(--muted);line-height:1.4;
+  }
+  .sub-hint .note.live{color:var(--accent-2)}
+
+  /* ===== buttons ===== */
+  button.btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:10px 16px;border-radius:10px;
+    font-family:inherit;font-size:14px;font-weight:600;
+    color:var(--ink);background:var(--btn-bg);border:1px solid var(--line);
+    text-transform:none;letter-spacing:0;cursor:pointer;
+    transition:background .15s ease,border-color .15s ease,transform .1s ease;
+  }
+  button.btn:hover:not(:disabled){background:var(--btn-bg-hover);border-color:var(--vault-2)}
+  button.btn:active:not(:disabled){transform:translateY(1px)}
+  button.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  button.btn.primary{
+    background:linear-gradient(180deg,var(--vault-2),var(--vault));
+    color:#052029;border-color:#2a7e9e;
+    box-shadow:0 10px 24px rgba(123,224,255,.18);
+  }
+  button.btn.primary:hover:not(:disabled){filter:brightness(1.08)}
+  button.btn.danger{
+    background:rgba(255,122,122,.08);border-color:rgba(255,122,122,.45);color:var(--err);
+  }
+  button.btn.danger:hover:not(:disabled){background:rgba(255,122,122,.15);border-color:var(--err)}
+  button.btn.small{padding:7px 12px;font-size:12.5px;border-radius:8px}
+  button.btn.ghost{
+    background:transparent;color:var(--ink-dim);border:1px dashed var(--line);
+  }
+  button.btn.ghost:hover:not(:disabled){color:var(--accent-2);border-color:var(--accent-2);border-style:solid}
+  button.btn.ghost.active{
+    background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#1a1204;border:1px solid var(--accent-deep);
+  }
+
+  /* ===== UTXO table ===== */
+  table.utxo{
+    width:100%;border-collapse:collapse;margin-top:10px;
+    font-family:var(--mono);font-size:12.5px;
+  }
+  table.utxo th,table.utxo td{
+    text-align:left;padding:8px 6px;
+    border-bottom:1px solid var(--line);vertical-align:middle;
+  }
+  table.utxo th{
+    color:var(--muted);font-family:var(--sans);font-weight:600;
+    font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  }
+  table.utxo td input{
+    background:transparent;border:1px solid transparent;
+    color:var(--ink);padding:5px 7px;font-family:inherit;font-size:12.5px;
+    border-radius:6px;width:100%;
+  }
+  table.utxo td input:focus{
+    background:var(--input-bg);border-color:var(--vault);
+    box-shadow:0 0 0 2px rgba(123,224,255,.12);
+  }
+  .utxo-actions{
+    display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;
+  }
+  .utxo-total{
+    margin-left:auto;color:var(--muted);font-size:13px;
+  }
+  .utxo-total b{
+    color:var(--accent-2);font-family:var(--mono);
+  }
+
+  /* ===== preview / verification panel ===== */
+  .preview{
+    margin-top:14px;padding:16px 18px;border-radius:12px;
+    background:linear-gradient(180deg,rgba(123,224,255,.04),transparent),var(--panel-2);
+    border:1px solid var(--line);
+  }
+  .preview h3{
+    margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--vault-2);
+  }
+  .preview .row{
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    padding:6px 0;border-bottom:1px dashed var(--line);
+  }
+  .preview .row:last-child{border-bottom:0}
+  .preview .row .lbl{color:var(--muted);font-size:13px}
+  .preview .row .val{
+    color:var(--ink);font-family:var(--mono);font-size:13px;
+    word-break:break-all;text-align:right;max-width:65%;
+  }
+  .preview .row .val.amount{color:var(--accent-2)}
+  .preview .row .val.change{color:var(--vault-2)}
+  .preview .row.warn .val{color:var(--warn)}
+  .preview .row.bad .val{color:var(--err)}
+
+  /* ===== output blocks ===== */
+  .err{
+    color:var(--err);
+    background:rgba(255,122,122,.08);border:1px solid rgba(255,122,122,.4);
+    padding:10px 12px;border-radius:10px;margin-top:10px;font-size:13px;
+  }
+  .ok{
+    color:var(--ok);
+    background:rgba(53,211,154,.08);border:1px solid rgba(53,211,154,.4);
+    padding:10px 12px;border-radius:10px;margin-top:10px;font-size:13px;
+  }
+  .out-box{
+    margin-top:12px;background:var(--code-bg);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;
+    font-family:var(--mono);font-size:12px;word-break:break-all;color:var(--ink-dim);
+    max-height:200px;overflow-y:auto;
+  }
+  .out-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+  /* ===== help popover (PSBT explainer) ===== */
+  .help-trigger{
+    display:inline-flex;align-items:center;gap:6px;
+    background:transparent;border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px 3px 6px;color:var(--ink-dim);
+    font-family:inherit;font-size:11.5px;letter-spacing:.04em;cursor:pointer;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  .help-trigger:hover{color:var(--vault-2);border-color:var(--vault-2)}
+  .help-trigger .qmark{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:16px;height:16px;border-radius:999px;
+    background:rgba(123,224,255,.2);color:var(--vault-2);
+    font-family:var(--mono);font-size:11px;font-weight:700;
+  }
+  .help-trigger.open .qmark{background:rgba(255,192,105,.25);color:var(--accent-2)}
+  .help-panel{
+    display:none;margin-top:12px;padding:14px 16px;border-radius:10px;
+    background:linear-gradient(180deg,rgba(123,224,255,.05),transparent),var(--panel-2);
+    border:1px solid var(--line);border-left:3px solid var(--vault-2);
+    color:var(--ink-dim);font-size:13.5px;line-height:1.55;
+  }
+  .help-panel.show{display:block}
+  .help-panel h4{
+    margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--vault-2);
+  }
+  .help-panel p{margin:0 0 8px;color:var(--ink-dim)}
+  .help-panel p:last-child{margin-bottom:0}
+  .help-panel b{color:var(--accent-2);font-weight:700}
+  .help-panel .mono{color:var(--ink);font-family:var(--mono);font-size:12.5px;
+    background:var(--code-bg);padding:1px 6px;border-radius:5px;border:1px solid var(--line)}
+
+  /* ===== panes (Build / Sign) ===== */
+  .pane{display:none}
+  .pane.active{display:block}
+
+  /* ===== toast ===== */
+  .toast{
+    position:fixed;right:20px;bottom:20px;padding:12px 16px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--vault-2);color:var(--ink);
+    font-size:13.5px;max-width:360px;
+    box-shadow:0 16px 36px rgba(0,0,0,.45);
+    transform:translateY(20px);opacity:0;pointer-events:none;
+    transition:transform .2s ease,opacity .2s ease;z-index:200;
+  }
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.bad{border-color:var(--err)}
+  .toast.good{border-color:var(--ok)}
+
+  /* ===== footer ===== */
+  footer.foot{
+    margin-top:32px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:12.5px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .version-tag{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="sigil" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#e8b341"/>
+            <stop offset="1" stop-color="#7a6bd1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M32 12 L36 28 L52 32 L36 36 L32 52 L28 36 L12 32 L28 28 Z"
+              fill="#e8b341" opacity=".85"/>
+        <circle cx="32" cy="32" r="3" fill="#0a0d15" stroke="#7a6bd1" stroke-width="1"/>
+      </svg>
+      <div class="brand-stack">
+        <div class="maker">by AVBforge.com</div>
+        <div class="name">Amulet <b>Transaction</b></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="offline-tag"><span class="dot"></span> Offline</span>
+      <span class="net-pill"><span class="dot"></span>Mainnet</span>
+      <button id="themeBtn" class="theme-switch" type="button" title="Toggle light / dark theme" aria-label="Toggle theme">◐ theme</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button id="tabBuildBtn" class="active">Build PSBT</button>
+    <button id="tabSignBtn">Sign PSBT</button>
+  </nav>
+
+  <!-- ==================== BUILD PANE ==================== -->
+  <section id="paneBuild" class="pane active">
+
+    <div class="card">
+      <h2>Watching wallet</h2>
+      <p class="hint">
+        Paste the account-level mainnet extended public key (xpub, ypub, or zpub) of the wallet
+        whose UTXOs you want to spend. Used only to derive addresses; it cannot sign.
+      </p>
+      <label class="field">
+        <span class="label">Account xpub / ypub / zpub (mainnet)</span>
+        <textarea id="bAcctXpub" spellcheck="false" autocomplete="off"
+          placeholder="xpub6... / ypub6... / zpub6..."></textarea>
+      </label>
+      <div class="utxo-actions">
+        <button class="btn small" id="bVerifyXpub">Show address 0/0</button>
+        <span id="bXpubInfo" class="mono" style="font-size:12px;color:var(--ink-faint)"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>UTXOs to spend</h2>
+      <p class="hint">
+        Add the unspent outputs you want to fund this transaction with. Get these from
+        your watch-only tool (Scryer, mempool.space, an Electrum server you trust).
+        The "path" column is the address index under the account, written as
+        change/index (for example <span class="mono">0/3</span> for receive-chain index 3).
+      </p>
+      <table class="utxo" id="bUtxoTable">
+        <thead>
+          <tr>
+            <th style="width:38%">txid</th>
+            <th style="width:9%">vout</th>
+            <th style="width:14%">path</th>
+            <th style="width:24%">value (sats)</th>
+            <th style="width:15%"></th>
+          </tr>
+        </thead>
+        <tbody id="bUtxoBody">
+          <!-- populated by JS -->
+        </tbody>
+      </table>
+      <div class="utxo-actions">
+        <button class="btn small" id="bAddUtxo">+ Add UTXO</button>
+        <span class="utxo-total">Total selected: <b id="bUtxoTotal">0</b> sats</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recipient and fee</h2>
+      <div class="row-3">
+        <label class="field">
+          <span class="label">Recipient address</span>
+          <input type="text" id="bRecipient" spellcheck="false" autocomplete="off"
+            placeholder="bc1q...">
+        </label>
+        <label class="field">
+          <span class="label">Amount (sats)</span>
+          <input type="number" id="bAmount" min="0" step="1" placeholder="50000">
+          <div class="sub-hint">
+            <button class="btn small ghost" id="bSendAllBtn" type="button">Send all available</button>
+            <span id="bSendAllNote" class="note"></span>
+          </div>
+        </label>
+        <label class="field">
+          <span class="label">Fee rate (sat/vB)</span>
+          <input type="number" id="bFeeRate" min="1" step="1" value="10">
+          <div class="sub-hint">
+            <span class="note">Set this to your target 2-block rate (check a fee oracle on a separate online device before using this offline tool).</span>
+          </div>
+        </label>
+      </div>
+      <div class="row-2">
+        <label class="field">
+          <span class="label">Change path (default 1/0)</span>
+          <input type="text" id="bChangePath" placeholder="1/0" value="1/0">
+        </label>
+        <label class="field">
+          <span class="label">&nbsp;</span>
+          <button class="btn primary" id="bBuildBtn" style="width:100%">Build unsigned PSBT</button>
+        </label>
+      </div>
+      <div style="margin-top:12px">
+        <button class="help-trigger" data-help="psbt" type="button">
+          <span class="qmark">?</span> What is a PSBT
+        </button>
+        <div class="help-panel" data-help-panel="psbt">
+          <h4>PSBT in plain language</h4>
+          <p>
+            A <b>PSBT</b> (Partially Signed Bitcoin Transaction, BIP-174) is a standard
+            file format for a transaction that is being put together in steps.
+          </p>
+          <p>
+            One tool builds the unsigned shape: which coins to spend, who gets paid,
+            how much fee. Another tool, kept offline with the seed, signs it. A third
+            tool broadcasts the signed transaction to the network.
+          </p>
+          <p>
+            Hardware wallets, Sparrow, Electrum, and this prototype all speak the
+            same PSBT format. You can hand it around as a base64 string, a
+            <span class="mono">.psbt</span> file, or a QR code.
+          </p>
+          <p>
+            In this tool the <b>Build</b> tab makes the unsigned PSBT. The <b>Sign</b>
+            tab takes a PSBT and your seed, and gives you back a signed one ready
+            to broadcast.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="bResult"></div>
+
+  </section>
+
+  <!-- ==================== SIGN PANE ==================== -->
+  <section id="paneSign" class="pane">
+
+    <div class="card">
+      <h2 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        Load PSBT
+        <button class="help-trigger" data-help="psbt-sign" type="button" style="margin-left:auto">
+          <span class="qmark">?</span> What is a PSBT
+        </button>
+      </h2>
+      <p class="hint">
+        Paste the base64 PSBT produced by the Build tab (or any PSBT-compatible
+        wallet that targets a BIP-84 native segwit account).
+      </p>
+      <div class="help-panel" data-help-panel="psbt-sign">
+        <h4>PSBT in plain language</h4>
+        <p>
+          A <b>PSBT</b> (Partially Signed Bitcoin Transaction, BIP-174) is a
+          standard file format for a transaction that is being put together in
+          steps.
+        </p>
+        <p>
+          One tool builds the unsigned shape: which coins to spend, who gets
+          paid, how much fee. Another tool, kept offline with the seed, signs
+          it. A third tool broadcasts the signed transaction to the network.
+        </p>
+        <p>
+          Hardware wallets, Sparrow, Electrum, and this prototype all speak the
+          same PSBT format. You can hand it around as a base64 string, a
+          <span class="mono">.psbt</span> file, or a QR code.
+        </p>
+        <p>
+          You are now on the <b>Sign</b> tab: load a PSBT below, type your
+          seed, and the tool returns it signed and ready to broadcast.
+        </p>
+      </div>
+      <label class="field">
+        <span class="label">PSBT (base64)</span>
+        <textarea id="sPsbt" class="psbt" spellcheck="false" autocomplete="off"
+          placeholder="cHNidP8BAFICAAAAAQ..."></textarea>
+      </label>
+      <div class="utxo-actions">
+        <button class="btn small" id="sDecodeBtn">Decode and verify</button>
+        <input type="file" id="sPsbtFile" accept=".psbt" style="display:none">
+        <button class="btn small" id="sUploadBtn">Load from file</button>
+      </div>
+      <div id="sDecodeResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>Unlock and sign</h2>
+      <p class="hint">
+        Type your seed phrase below. It stays in this tab, never leaves the page,
+        and is wiped from memory when you press <b>Forget seed</b> or close the tab.
+      </p>
+      <label class="field">
+        <span class="label">Seed phrase (12 or 24 words)</span>
+        <textarea id="sSeed" rows="2" autocomplete="off" autocapitalize="off"
+          autocorrect="off" spellcheck="false"
+          placeholder="abandon abandon abandon abandon ... about"></textarea>
+      </label>
+      <div class="utxo-actions">
+        <button class="btn primary" id="sSignBtn">Sign</button>
+        <button class="btn danger" id="sForgetBtn">Forget seed</button>
+      </div>
+      <div id="sSignResult"></div>
+    </div>
+
+  </section>
+
+  <footer class="foot">
+    <span>Amulet Transaction · prototype</span>
+    <span class="version-tag">amulet_tx · v0.05</span>
+  </footer>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="amulet-tx-bundle.js"></script>
+<script>
+"use strict";
+
+/* ============================================================
+ * Amulet Transaction · v0.03 prototype
+ *
+ * Combined Creator + Signer. Two tabs in one file for the
+ * first-cut prototype. Production v1 will split these into
+ * separate tools (see PLAN.txt in each directory).
+ *
+ * v0.02: Mainnet only. Testnet code paths and the network
+ * toggle were removed at user request. Testnet keys are now
+ * actively rejected by normalizeXpub().
+ *
+ * v0.03: Send-all (sweep) mode added. The "Send all available"
+ * button computes the maximum amount that can be sent with no
+ * change output, given the current fee rate, and locks the
+ * amount field while sweep mode is on. Build logic skips the
+ * 2-output try when sendAllMode is true. Manually editing the
+ * amount field demotes the build out of sweep mode.
+ *
+ * v0.04: "What is a PSBT?" help popovers added. Click-to-toggle
+ * panels in both Build and Sign tabs explain the format in plain
+ * language. Generic data-help / data-help-panel pattern, so we
+ * can drop in more help triggers later without new wiring.
+ *
+ * Bundle exposes: AmuletTx.HDKey, .bip39, .btc, .base58check,
+ *                 .bech32, .sha256, .ripemd160, .secp256k1,
+ *                 .wordlistEnglish
+ * ============================================================ */
+
+const T = window.AmuletTx;
+if (!T) {
+  alert('Crypto bundle failed to load. Check that amulet-tx-bundle.js sits next to this file.');
+}
+
+/* ---------- network ---------- */
+/* v0.02: mainnet only. Testnet is a thing this tool intentionally does not
+   handle. If you want a sandbox, use a small mainnet wallet with dust amounts. */
+const NETWORK = T.btc.NETWORK;
+const COIN    = 0;                       // BIP-44 coin type for mainnet
+
+/* ---------- toast ---------- */
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function toast(msg, kind) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (kind ? (' ' + kind) : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.classList.remove('show'); }, 2400);
+}
+
+/* ---------- tab switching ---------- */
+const tabBuildBtn = document.getElementById('tabBuildBtn');
+const tabSignBtn  = document.getElementById('tabSignBtn');
+const paneBuild   = document.getElementById('paneBuild');
+const paneSign    = document.getElementById('paneSign');
+function showTab(name) {
+  const isBuild = (name === 'build');
+  tabBuildBtn.classList.toggle('active', isBuild);
+  tabSignBtn.classList.toggle('active', !isBuild);
+  paneBuild.classList.toggle('active', isBuild);
+  paneSign.classList.toggle('active', !isBuild);
+}
+tabBuildBtn.addEventListener('click', () => showTab('build'));
+tabSignBtn.addEventListener('click',  () => showTab('sign'));
+
+/* ---------- help popovers (click-to-toggle) ---------- */
+/* Any element with data-help="<key>" toggles the panel that has the
+   matching data-help-panel="<key>". Multiple instances of the same key
+   keep their own state, so the Build-tab and Sign-tab help triggers
+   open independently. */
+document.querySelectorAll('[data-help]').forEach(trigger => {
+  trigger.addEventListener('click', () => {
+    /* find the closest panel with the matching key, walking up to the
+       trigger's parent first so two triggers on the same page with the
+       same key do not interfere. */
+    const key = trigger.dataset.help;
+    /* prefer a panel inside the same parent container */
+    let panel = trigger.parentElement && trigger.parentElement.querySelector(
+      '[data-help-panel="' + key + '"]'
+    );
+    /* fall back to a sibling section search */
+    if (!panel) {
+      panel = trigger.closest('.card, section, body')
+        ?.querySelector('[data-help-panel="' + key + '"]');
+    }
+    if (!panel) return;
+    const open = panel.classList.toggle('show');
+    trigger.classList.toggle('open', open);
+  });
+});
+
+/* ============================================================
+ * helpers
+ * ============================================================ */
+
+function bytesToHex(u8) {
+  let s = ''; for (const b of u8) s += b.toString(16).padStart(2,'0'); return s;
+}
+function hexToBytes(hex) {
+  const clean = hex.replace(/\s+/g,'');
+  if (clean.length % 2) throw new Error('odd-length hex');
+  const out = new Uint8Array(clean.length/2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.substr(i*2,2), 16);
+  return out;
+}
+function b64Encode(u8) {
+  let s = ''; for (const b of u8) s += String.fromCharCode(b); return btoa(s);
+}
+function b64Decode(s) {
+  const raw = atob(s.replace(/\s+/g,''));
+  const u8 = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+  return u8;
+}
+
+/* xpub-family prefix normalization (mainnet only).
+ * @scure/bip32 only knows xpub. Real BIP-49/BIP-84 wallets export ypub or
+ * zpub respectively, which differ only in the 4-byte version prefix. We
+ * rewrite the version bytes back to xpub so HDKey.fromExtendedKey can parse
+ * them. Testnet prefixes (tpub/upub/vpub) are intentionally rejected. */
+const XPUB_VERSIONS_MAINNET = {
+  xpub: 0x0488B21E,   // BIP-44 mainnet
+  ypub: 0x049D7CB2,   // BIP-49 mainnet
+  zpub: 0x04B24746,   // BIP-84 mainnet
+};
+const XPUB_VERSIONS_TESTNET_PREFIXES = ['tpub','upub','vpub'];
+function normalizeXpub(s) {
+  s = s.trim();
+  const pre = s.slice(0,4).toLowerCase();
+  if (XPUB_VERSIONS_TESTNET_PREFIXES.includes(pre)) {
+    throw new Error('this prototype is mainnet-only; testnet keys (' + s.slice(0,4) + ') are not accepted');
+  }
+  if (!XPUB_VERSIONS_MAINNET[pre]) {
+    throw new Error('xpub prefix not recognized: ' + s.slice(0,4));
+  }
+  // base58check decode (returns version + payload)
+  const dec = T.base58check(T.sha256).decode(s);
+  // rewrite version bytes to canonical xpub
+  const target = XPUB_VERSIONS_MAINNET.xpub;
+  const out = new Uint8Array(dec.length);
+  out.set(dec);
+  out[0] = (target >>> 24) & 0xff;
+  out[1] = (target >>> 16) & 0xff;
+  out[2] = (target >>>  8) & 0xff;
+  out[3] = target & 0xff;
+  return T.base58check(T.sha256).encode(out);
+}
+
+/* parse "0/3" -> {chain:0, index:3} */
+function parsePath(s) {
+  const m = (s||'').trim().match(/^(\d+)\s*\/\s*(\d+)$/);
+  if (!m) throw new Error('path must be in chain/index form (e.g. 0/3)');
+  return { chain: +m[1], index: +m[2] };
+}
+
+/* derive a single P2WPKH address + script from an account-level HDKey. */
+function deriveAddress(hdAccount, chain, index) {
+  const child = hdAccount.deriveChild(chain).deriveChild(index);
+  const p2 = T.btc.p2wpkh(child.publicKey, NETWORK);
+  return { address: p2.address, script: p2.script, pubkey: child.publicKey, hd: child };
+}
+
+/* root fingerprint as Uint8Array(4), big-endian */
+function fpBytes(root) {
+  const fp = new Uint8Array(4);
+  new DataView(fp.buffer).setUint32(0, root.fingerprint, false);
+  return fp;
+}
+
+/* download helper */
+function download(filename, bytes, mime) {
+  const blob = new Blob([bytes], { type: mime || 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+
+/* ============================================================
+ * BUILD pane: construct unsigned PSBT
+ * ============================================================ */
+
+const bAcctXpub   = document.getElementById('bAcctXpub');
+const bVerifyBtn  = document.getElementById('bVerifyXpub');
+const bXpubInfo   = document.getElementById('bXpubInfo');
+const bUtxoBody   = document.getElementById('bUtxoBody');
+const bAddBtn     = document.getElementById('bAddUtxo');
+const bUtxoTotal  = document.getElementById('bUtxoTotal');
+const bRecipient  = document.getElementById('bRecipient');
+const bAmount     = document.getElementById('bAmount');
+const bFeeRate    = document.getElementById('bFeeRate');
+const bChangePath = document.getElementById('bChangePath');
+const bBuildBtn   = document.getElementById('bBuildBtn');
+const bResult     = document.getElementById('bResult');
+const bSendAllBtn = document.getElementById('bSendAllBtn');
+const bSendAllNote= document.getElementById('bSendAllNote');
+
+/* v0.03: send-all (sweep) mode.
+   When active, the build skips the 2-output (recipient + change) attempt and
+   goes straight to a 1-output transaction whose amount equals the input total
+   minus the fee for that 1-output transaction at the current fee rate.
+   Manually editing the amount field demotes the build out of send-all mode. */
+let sendAllMode = false;
+
+let bAcctHd = null;     // cached HDKey from xpub
+
+function loadAcctHd() {
+  const raw = bAcctXpub.value.trim();
+  if (!raw) throw new Error('paste an account xpub first');
+  const norm = normalizeXpub(raw);
+  bAcctHd = T.HDKey.fromExtendedKey(norm);
+  return bAcctHd;
+}
+
+bVerifyBtn.addEventListener('click', () => {
+  bXpubInfo.textContent = '';
+  try {
+    const hd = loadAcctHd();
+    const a0 = deriveAddress(hd, 0, 0);
+    bXpubInfo.innerHTML = 'addr 0/0: <b style="color:var(--gold)">' + a0.address + '</b>';
+  } catch (e) {
+    bXpubInfo.innerHTML = '<span style="color:var(--bad)">' + e.message + '</span>';
+  }
+});
+
+function addUtxoRow(initial) {
+  const tr = document.createElement('tr');
+  const i = initial || {};
+  tr.innerHTML =
+    '<td><input type="text" data-k="txid" placeholder="txid (64 hex)" value="' + (i.txid||'') + '" spellcheck="false"></td>' +
+    '<td><input type="number" data-k="vout" min="0" step="1" value="' + (i.vout||0) + '"></td>' +
+    '<td><input type="text" data-k="path" placeholder="0/0" value="' + (i.path||'0/0') + '"></td>' +
+    '<td><input type="number" data-k="value" min="0" step="1" placeholder="0" value="' + (i.value||'') + '"></td>' +
+    '<td><button class="btn small" data-act="del">Remove</button></td>';
+  tr.addEventListener('input', recomputeUtxoTotal);
+  tr.querySelector('[data-act=del]').addEventListener('click', () => {
+    tr.remove(); recomputeUtxoTotal();
+  });
+  bUtxoBody.appendChild(tr);
+  recomputeUtxoTotal();
+}
+function readUtxos() {
+  const rows = [...bUtxoBody.querySelectorAll('tr')];
+  return rows.map(tr => {
+    const get = k => tr.querySelector('[data-k='+k+']').value.trim();
+    return {
+      txid: get('txid'),
+      vout: parseInt(get('vout') || '0', 10),
+      path: get('path'),
+      value: BigInt(get('value') || '0'),
+    };
+  });
+}
+function recomputeUtxoTotal() {
+  let total = 0n;
+  for (const u of readUtxos()) total += u.value;
+  bUtxoTotal.textContent = total.toString();
+}
+bAddBtn.addEventListener('click', () => addUtxoRow());
+addUtxoRow();   // start with one empty row
+
+/* rough vbyte estimate for P2WPKH:
+ *   tx overhead 10.5 + per-input 68 + per-output 31 */
+function estimateFee(inputs, outputs, satPerVb) {
+  const vbytes = 10.5 + 68 * inputs + 31 * outputs;
+  return BigInt(Math.ceil(vbytes * satPerVb));
+}
+
+/* ---- send-all (sweep) mode ---- */
+function setSendAll(on, displayMsg) {
+  sendAllMode = !!on;
+  bSendAllBtn.classList.toggle('active', sendAllMode);
+  bSendAllBtn.textContent = sendAllMode ? 'Sweep mode on' : 'Send all available';
+  bAmount.readOnly = sendAllMode;
+  bSendAllNote.textContent = displayMsg || '';
+  bSendAllNote.classList.toggle('live', sendAllMode);
+}
+/* user-edits to amount drop us out of sweep mode */
+bAmount.addEventListener('input', () => {
+  if (sendAllMode) setSendAll(false, '');
+});
+bSendAllBtn.addEventListener('click', () => {
+  /* toggle off if already on */
+  if (sendAllMode) { setSendAll(false, ''); bAmount.value = ''; return; }
+  try {
+    /* require: at least one UTXO with a value, and a positive fee rate */
+    const utxos = readUtxos().filter(u => u.txid && u.value > 0n);
+    if (!utxos.length) throw new Error('add at least one UTXO before sweeping');
+    const feeRate = parseFloat(bFeeRate.value || '0');
+    if (!(feeRate > 0)) throw new Error('set the fee rate first');
+    const total = utxos.reduce((a,u) => a + u.value, 0n);
+    const fee = estimateFee(utxos.length, 1, feeRate);
+    if (total <= fee) throw new Error('inputs (' + total + ') do not cover the sweep fee (' + fee + ')');
+    const amt = total - fee;
+    bAmount.value = amt.toString();
+    setSendAll(true, 'Sweep: ' + amt + ' sats out, ' + fee + ' sats fee at ' + feeRate + ' sat/vB. Edit the amount to switch back.');
+  } catch (e) {
+    setSendAll(false, e.message || String(e));
+  }
+});
+
+bBuildBtn.addEventListener('click', () => {
+  bResult.innerHTML = '';
+  try {
+    const hd = loadAcctHd();
+    const utxos = readUtxos().filter(u => u.txid && u.value > 0n);
+    if (!utxos.length) throw new Error('add at least one UTXO');
+    const recipient = bRecipient.value.trim();
+    if (!recipient) throw new Error('recipient address is required');
+    const feeRate = parseFloat(bFeeRate.value || '0');
+    if (!(feeRate > 0)) throw new Error('fee rate must be > 0');
+    const cp = parsePath(bChangePath.value || '1/0');
+
+    const inputTotal = utxos.reduce((a,u) => a + u.value, 0n);
+
+    let amount, fee, change, outputs;
+    const DUST = 546n;
+
+    if (sendAllMode) {
+      /* sweep: one output, amount = inputs - fee at current fee rate */
+      fee = estimateFee(utxos.length, 1, feeRate);
+      if (inputTotal <= fee) throw new Error(
+        'inputs (' + inputTotal + ') do not cover the sweep fee (' + fee + ') at this fee rate');
+      amount = inputTotal - fee;
+      change = 0n;
+      outputs = 1;
+    } else {
+      amount = BigInt(bAmount.value || '0');
+      if (amount <= 0n) throw new Error('amount must be > 0');
+      /* build with 2 outputs (recipient + change) for fee estimate, then re-check */
+      fee = estimateFee(utxos.length, 2, feeRate);
+      change = inputTotal - amount - fee;
+      outputs = 2;
+      if (change < 0n) throw new Error(
+        'inputs (' + inputTotal + ') < amount + fee (' + (amount + fee) + ')');
+      /* if change would be dust, drop it and recompute */
+      if (change < DUST) {
+        fee = estimateFee(utxos.length, 1, feeRate);
+        change = 0n;
+        outputs = 1;
+        if (inputTotal < amount + fee) throw new Error(
+          'inputs (' + inputTotal + ') < amount + fee (' + (amount + fee) + '), and no change to absorb');
+      }
+    }
+
+    /* construct PSBT.
+       We pass fingerprint=0 in the BIP-32 derivation entries because the
+       Build tab only knows the xpub, not the master fingerprint. The Signer
+       derives from the seed root using the path alone, so a zero fingerprint
+       does not block signing. */
+    const tx = new T.btc.Transaction({});
+    for (const u of utxos) {
+      const p = parsePath(u.path);
+      const a = deriveAddress(hd, p.chain, p.index);
+      tx.addInput({
+        txid: u.txid,
+        index: u.vout,
+        witnessUtxo: { script: a.script, amount: u.value },
+        bip32Derivation: [[
+          a.pubkey,
+          {
+            // fingerprint zero is acceptable in PSBT spec; signer derives from seed root anyway
+            fingerprint: 0,
+            /* path from master, BIP-84 / coin' / account 0' / chain / index.
+               IMPORTANT: use addition, not bitwise OR. JS bitwise ops return
+               signed Int32 and any value with the high bit set comes out as
+               a negative number, which the PSBT encoder rejects. */
+            path: [
+              0x80000000 + 84,                   // 84'
+              0x80000000 + COIN,                 // coin' (mainnet = 0)
+              0x80000000 + 0,                    // account 0'
+              p.chain,
+              p.index,
+            ],
+          }
+        ]],
+      });
+    }
+
+    tx.addOutputAddress(recipient, amount, NETWORK);
+
+    let changeAddr = '';
+    if (change > 0n) {
+      const c = deriveAddress(hd, cp.chain, cp.index);
+      changeAddr = c.address;
+      tx.addOutputAddress(changeAddr, change, NETWORK);
+    }
+
+    const psbtBytes = tx.toPSBT();
+    const psbtB64   = b64Encode(psbtBytes);
+
+    /* render summary */
+    const wrap = document.createElement('div');
+    wrap.className = 'preview';
+    wrap.innerHTML =
+      '<h3>Built unsigned PSBT' + (sendAllMode ? ' (sweep)' : '') + '</h3>' +
+      '<div class="row"><span class="lbl">Network</span><span class="val">Mainnet</span></div>' +
+      (sendAllMode ? '<div class="row"><span class="lbl">Mode</span><span class="val change">Send all available (no change output)</span></div>' : '') +
+      '<div class="row"><span class="lbl">Inputs</span><span class="val">' + utxos.length + ' UTXO(s), total ' + inputTotal + ' sats</span></div>' +
+      '<div class="row"><span class="lbl">Send to</span><span class="val">' + escapeHtml(recipient) + '</span></div>' +
+      '<div class="row"><span class="lbl">Amount</span><span class="val amount">' + amount + ' sats</span></div>' +
+      (change > 0n
+        ? '<div class="row"><span class="lbl">Change back to</span><span class="val change">' + escapeHtml(changeAddr) + ' (' + change + ' sats)</span></div>'
+        : '<div class="row warn"><span class="lbl">Change</span><span class="val">none (absorbed into fee)</span></div>') +
+      '<div class="row"><span class="lbl">Fee</span><span class="val">' + fee + ' sats (≈ ' + feeRate + ' sat/vB, ' + outputs + ' outputs)</span></div>';
+    bResult.appendChild(wrap);
+
+    const out = document.createElement('div');
+    out.innerHTML =
+      '<div class="ok" style="margin-top:14px">PSBT ready. Move it to your offline signer (or use the Sign tab).</div>' +
+      '<div class="out-box" id="bPsbtOut"></div>' +
+      '<div class="out-actions">' +
+      '  <button class="btn small" id="bCopyBtn">Copy base64</button>' +
+      '  <button class="btn small" id="bDownloadBtn">Download .psbt</button>' +
+      '  <button class="btn small" id="bToSignBtn">Send to Sign tab</button>' +
+      '</div>';
+    bResult.appendChild(out);
+    document.getElementById('bPsbtOut').textContent = psbtB64;
+    document.getElementById('bCopyBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(psbtB64).then(() => toast('PSBT copied','good'));
+    });
+    document.getElementById('bDownloadBtn').addEventListener('click', () => {
+      download('amulet_unsigned.psbt', psbtBytes, 'application/octet-stream');
+      toast('PSBT downloaded','good');
+    });
+    document.getElementById('bToSignBtn').addEventListener('click', () => {
+      document.getElementById('sPsbt').value = psbtB64;
+      showTab('sign');
+      toast('Loaded into Sign tab','good');
+    });
+
+  } catch (e) {
+    bResult.innerHTML = '<div class="err">' + escapeHtml(e.message || String(e)) + '</div>';
+  }
+});
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+/* ============================================================
+ * SIGN pane: decode + sign PSBT
+ * ============================================================ */
+
+const sPsbt        = document.getElementById('sPsbt');
+const sDecodeBtn   = document.getElementById('sDecodeBtn');
+const sUploadBtn   = document.getElementById('sUploadBtn');
+const sPsbtFile    = document.getElementById('sPsbtFile');
+const sDecodeRes   = document.getElementById('sDecodeResult');
+const sSeed        = document.getElementById('sSeed');
+const sSignBtn     = document.getElementById('sSignBtn');
+const sForgetBtn   = document.getElementById('sForgetBtn');
+const sSignResult  = document.getElementById('sSignResult');
+
+sUploadBtn.addEventListener('click', () => sPsbtFile.click());
+sPsbtFile.addEventListener('change', async () => {
+  const f = sPsbtFile.files[0];
+  if (!f) return;
+  const buf = new Uint8Array(await f.arrayBuffer());
+  /* file may be raw binary PSBT or base64 text. Try both. */
+  let b64;
+  if (buf.length > 5 && buf[0] === 0x70 && buf[1] === 0x73 && buf[2] === 0x62 && buf[3] === 0x74 && buf[4] === 0xff) {
+    b64 = b64Encode(buf);
+  } else {
+    b64 = new TextDecoder().decode(buf).trim();
+  }
+  sPsbt.value = b64;
+  toast('PSBT loaded from file','good');
+});
+
+function loadPsbt() {
+  const txt = sPsbt.value.trim();
+  if (!txt) throw new Error('paste a PSBT or load one from file');
+  let bytes;
+  try { bytes = b64Decode(txt); }
+  catch (e) { throw new Error('input is not valid base64'); }
+  return T.btc.Transaction.fromPSBT(bytes);
+}
+
+sDecodeBtn.addEventListener('click', () => {
+  sDecodeRes.innerHTML = '';
+  try {
+    const tx = loadPsbt();
+    sDecodeRes.appendChild(renderPsbtSummary(tx));
+  } catch (e) {
+    sDecodeRes.innerHTML = '<div class="err">' + escapeHtml(e.message) + '</div>';
+  }
+});
+
+function renderPsbtSummary(tx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'preview';
+  let html = '<h3>You are about to sign</h3>';
+
+  let totalIn = 0n;
+  for (let i = 0; i < tx.inputsLength; i++) {
+    const inp = tx.getInput(i);
+    let addr = '(unknown)';
+    let amt  = 0n;
+    if (inp.witnessUtxo) {
+      amt = inp.witnessUtxo.amount;
+      try {
+        const decoded = T.btc.Address(NETWORK).encode(T.btc.OutScript.decode(inp.witnessUtxo.script));
+        addr = decoded;
+      } catch(e) { addr = '(non-standard)'; }
+    }
+    totalIn += amt;
+    html += '<div class="row"><span class="lbl">Input ' + i + '</span><span class="val">' + escapeHtml(addr) + ' · ' + amt + ' sats</span></div>';
+  }
+
+  let totalOut = 0n;
+  for (let i = 0; i < tx.outputsLength; i++) {
+    const o = tx.getOutput(i);
+    let addr = '(unknown)';
+    try {
+      addr = T.btc.Address(NETWORK).encode(T.btc.OutScript.decode(o.script));
+    } catch(e) { addr = '(non-standard)'; }
+    totalOut += o.amount;
+    html += '<div class="row"><span class="lbl">Output ' + i + '</span><span class="val">' + escapeHtml(addr) + ' · <b style="color:var(--gold)">' + o.amount + '</b> sats</span></div>';
+  }
+
+  const fee = totalIn - totalOut;
+  const feeWarn = (totalOut > 0n && fee > totalOut / 10n);    /* fee > 10% of value spent */
+  html += '<div class="row' + (feeWarn ? ' warn' : '') + '"><span class="lbl">Fee</span><span class="val">' + fee + ' sats' + (feeWarn ? ' (HIGH compared to amount)' : '') + '</span></div>';
+  if (fee < 0n) {
+    html = '<h3 style="color:var(--bad)">Inputs less than outputs - PSBT is malformed or signer cannot see all input amounts</h3>' + html;
+  }
+
+  wrap.innerHTML = html;
+  return wrap;
+}
+
+sSignBtn.addEventListener('click', async () => {
+  sSignResult.innerHTML = '';
+  try {
+    const tx = loadPsbt();
+    const seedWords = sSeed.value.trim().toLowerCase().replace(/\s+/g,' ');
+    if (!seedWords) throw new Error('enter your seed phrase');
+    if (!T.bip39.validateMnemonic(seedWords, T.wordlistEnglish)) {
+      throw new Error('seed phrase did not validate as BIP-39 (check spelling and word count)');
+    }
+    const seed = T.bip39.mnemonicToSeedSync(seedWords);
+    const root = T.HDKey.fromMasterSeed(seed);
+
+    /* sign every input we have a derivation path for */
+    let signedCount = 0;
+    for (let i = 0; i < tx.inputsLength; i++) {
+      const inp = tx.getInput(i);
+      const der = inp.bip32Derivation && inp.bip32Derivation[0];
+      if (!der) continue;
+      const path = der[1].path;
+      /* convert numeric path back to a BIP-32 string */
+      const segs = path.map(n => (n & 0x80000000) ? ((n & 0x7fffffff) + "'") : String(n));
+      const pathStr = 'm/' + segs.join('/');
+      const childKey = root.derive(pathStr);
+      tx.signIdx(childKey.privateKey, i);
+      signedCount++;
+    }
+    if (signedCount === 0) throw new Error('no inputs had derivation paths to sign with');
+
+    /* try to finalize; if not all inputs are signed we still hand back the partially-signed PSBT */
+    let finalizedHex = null;
+    try {
+      tx.finalize();
+      finalizedHex = bytesToHex(tx.extract());
+    } catch (e) {
+      /* finalization can fail if some inputs aren't signable by us; that's fine */
+    }
+
+    const signedBytes = tx.toPSBT();
+    const signedB64   = b64Encode(signedBytes);
+
+    /* wipe seed from DOM and from the local variable */
+    sSeed.value = '';
+    /* (the seed/root variables themselves go out of scope when the handler returns) */
+
+    let html =
+      '<div class="ok">Signed ' + signedCount + ' input(s).</div>' +
+      '<div class="out-box" id="sPsbtOut"></div>' +
+      '<div class="out-actions">' +
+      '  <button class="btn small" id="sCopyPsbt">Copy signed PSBT</button>' +
+      '  <button class="btn small" id="sDlPsbt">Download signed .psbt</button>';
+    if (finalizedHex) {
+      html +=
+        '  <button class="btn small" id="sCopyHex">Copy raw tx (hex)</button>' +
+        '  <button class="btn small" id="sDlHex">Download .tx</button>';
+    }
+    html += '</div>';
+    if (finalizedHex) {
+      html +=
+        '<p class="hint" style="margin-top:14px;color:var(--ink-faint)">Finalized raw transaction (broadcast-ready):</p>' +
+        '<div class="out-box" id="sHexOut"></div>';
+    } else {
+      html += '<p class="hint" style="margin-top:14px;color:var(--ember)">PSBT not fully finalized. Pass it to other cosigners or back to the Builder.</p>';
+    }
+    sSignResult.innerHTML = html;
+    document.getElementById('sPsbtOut').textContent = signedB64;
+    document.getElementById('sCopyPsbt').addEventListener('click', () => {
+      navigator.clipboard.writeText(signedB64).then(() => toast('Signed PSBT copied','good'));
+    });
+    document.getElementById('sDlPsbt').addEventListener('click', () => {
+      download('amulet_signed.psbt', signedBytes, 'application/octet-stream');
+      toast('Signed PSBT downloaded','good');
+    });
+    if (finalizedHex) {
+      document.getElementById('sHexOut').textContent = finalizedHex;
+      document.getElementById('sCopyHex').addEventListener('click', () => {
+        navigator.clipboard.writeText(finalizedHex).then(() => toast('Raw tx copied','good'));
+      });
+      document.getElementById('sDlHex').addEventListener('click', () => {
+        download('amulet_signed.tx', hexToBytes(finalizedHex), 'application/octet-stream');
+        toast('Raw tx downloaded','good');
+      });
+    }
+  } catch (e) {
+    sSignResult.innerHTML = '<div class="err">' + escapeHtml(e.message || String(e)) + '</div>';
+  }
+});
+
+sForgetBtn.addEventListener('click', () => {
+  sSeed.value = '';
+  toast('Seed cleared','good');
+});
+
+/* on tab close / reload, scrub the seed field */
+window.addEventListener('beforeunload', () => { sSeed.value = ''; });
+window.addEventListener('pagehide',     () => { sSeed.value = ''; });
+
+/* ============================================================
+ * Theme switch (v0.05)
+ * Toggles html[data-theme] between 'dark' and 'light'. The
+ * :root and html[data-theme="light"] CSS variable blocks at the
+ * top of the file handle the visual swap. Choice persists to
+ * localStorage so it survives reload.
+ * ============================================================ */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+  themeBtn.textContent = (t === 'light') ? '☾ theme' : '◐ theme';
+}
+(function loadTheme() {
+  let saved = 'dark';
+  try { saved = localStorage.getItem('amulet_tx_theme') || 'dark'; } catch (e) {}
+  applyTheme(saved);
+})();
+themeBtn.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = (cur === 'light') ? 'dark' : 'light';
+  applyTheme(next);
+  try { localStorage.setItem('amulet_tx_theme', next); } catch (e) {}
+});
+
+</script>
+</body>
+</html>

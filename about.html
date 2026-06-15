@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>About · True Bitcoin Self-Sovereignty · Amulet Arsenal by AVBforge</title>
+<meta name="description" content="A Swiss Army knife for Bitcoin: download it, verify it, run it offline. Generate your own entropy with a deck of cards, create and back up a wallet, sign transactions — all offline. Complete, private, reproducible control over your Bitcoin, with no expensive hardware or third parties." />
+<!-- theme init (before paint): light is default; only honour a saved "dark" choice -->
+<script>if(localStorage.getItem('aa-theme')!=='dark')document.documentElement.setAttribute('data-theme','light');</script>
+
+<link rel="canonical" href="https://avbforge.com/about.html" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Amulet Arsenal · AVBforge" />
+<meta property="og:title" content="About — True Bitcoin self-sovereignty" />
+<meta property="og:description" content="A Swiss Army knife for Bitcoin: download, verify, run offline. Generate entropy from a deck of cards, create and back up a wallet, sign transactions — all offline." />
+<meta property="og:url" content="https://avbforge.com/about.html" />
+<meta property="og:image" content="https://avbforge.com/amulet-og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="About — True Bitcoin self-sovereignty" />
+<meta name="twitter:description" content="Complete, private, reproducible control over your Bitcoin — no expensive hardware, no third parties." />
+<meta name="twitter:image" content="https://avbforge.com/amulet-og.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://avbforge.com/#org",
+      "name": "AVBforge",
+      "url": "https://avbforge.com/",
+      "sameAs": ["https://codeberg.org/avbforge/pages", "https://timeseed.io"]
+    },
+    {
+      "@type": "AboutPage",
+      "@id": "https://avbforge.com/about.html#webpage",
+      "url": "https://avbforge.com/about.html",
+      "name": "About — True Bitcoin self-sovereignty",
+      "isPartOf": { "@id": "https://avbforge.com/#website" },
+      "about": { "@id": "https://avbforge.com/#org" },
+      "author": { "@id": "https://avbforge.com/#mr21" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://avbforge.com/#mr21",
+      "name": "mr 21",
+      "description": "A 20+ year veteran of testing, tech and telecom, and the creator of the Amulet Arsenal.",
+      "affiliation": { "@id": "https://avbforge.com/#org" }
+    }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg:#0a0d15; --bg-2:#0f1320; --panel:#141a2a; --panel-2:#1a2138; --line:#262c42;
+    --ink:#eae6d9; --ink-dim:#a7a394; --ink-faint:#6d6a5d;
+    --gold:#e8b341; --gold-soft:#c48f27; --violet:#7a6bd1; --violet-soft:#4b3e8f;
+    --good:#6fcf97; --radius:14px; --btn-ink:#1a1407;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  [data-theme="light"] {
+    --bg:#fbf8f3; --bg-2:#f2ebe0; --panel:#ffffff; --panel-2:#faf4ea; --line:#e6dccb;
+    --ink:#1b1611; --ink-dim:#5b5247; --ink-faint:#9a9081;
+    --gold:#d9660f; --gold-soft:#a8480a; --violet:#b8530c; --violet-soft:#e2a978;
+    --good:#2f9e5f; --btn-ink:#fff7ef;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; overflow-x:hidden; }
+  body {
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    background:
+      radial-gradient(900px 500px at 85% -10%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 60%),
+      radial-gradient(800px 480px at -10% 12%, color-mix(in srgb, var(--violet) 10%, transparent), transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    color:var(--ink); min-height:100vh; line-height:1.6;
+    -webkit-font-smoothing:antialiased; transition:background .25s ease, color .25s ease;
+  }
+  .mono { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; }
+  /* readable sans for body copy; serif stays on display headings */
+  p, .lede, li, .callout, .step-body, .donate-note { font-family:var(--sans); }
+  a { color:var(--gold); text-decoration:none; }
+  a:hover { color:color-mix(in srgb, var(--gold) 75%, #fff); }
+  .wrap { max-width:820px; margin:0 auto; padding:28px 28px 96px; }
+
+  /* header (matches index/verify) */
+  header.nav { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand .sigil { width:38px; height:38px; }
+  .brand-stack { display:flex; flex-direction:column; gap:3px; line-height:1; }
+  .brand .maker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:10px; letter-spacing:.32em; text-transform:uppercase; color:var(--gold); opacity:.6; }
+  .brand .name { font-size:16px; letter-spacing:.22em; text-transform:uppercase; }
+  .brand .name b { color:var(--gold); font-weight:600; }
+  .nav-right { display:flex; align-items:center; gap:16px; }
+  .nav-right a.back { color:var(--ink-dim); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+  .nav-right a.back:hover { color:var(--gold); }
+  .theme-toggle { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--gold); background:color-mix(in srgb, var(--gold) 5%, transparent); transition:border-color .2s, transform .15s; }
+  .theme-toggle:hover { border-color:var(--gold); transform:translateY(-1px); }
+  .theme-toggle svg { width:17px; height:17px; }
+  .theme-toggle .icon-sun { display:none; }
+  [data-theme="light"] .theme-toggle .icon-sun { display:block; }
+  [data-theme="light"] .theme-toggle .icon-moon { display:none; }
+
+  /* hero */
+  .eyebrow { display:inline-block; margin-top:46px; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); padding:6px 13px; border-radius:999px; border:1px solid color-mix(in srgb, var(--gold) 35%, transparent); background:color-mix(in srgb, var(--gold) 5%, transparent); }
+  h1 { font-size:clamp(34px,5.5vw,52px); font-weight:500; letter-spacing:-.01em; margin:18px 0 14px; line-height:1.08; }
+  h1 em { color:var(--gold); font-style:italic; }
+  .lede { font-size:19px; color:color-mix(in srgb, var(--ink) 80%, var(--ink-dim)); max-width:680px; margin:0; }
+
+  .callout {
+    margin:28px 0 10px; padding:18px 22px; border-left:3px solid var(--gold); border-radius:0 10px 10px 0;
+    background:color-mix(in srgb, var(--gold) 7%, transparent);
+    color:var(--ink); font-size:18px; line-height:1.55;
+  }
+  .callout b { color:var(--gold); font-weight:600; }
+
+  /* section headings */
+  h2 { font-size:clamp(24px,3.5vw,30px); font-weight:500; letter-spacing:-.005em; margin:56px 0 8px; }
+  h2 em { color:var(--gold); font-style:italic; }
+  .sub-intro { font-size:16px; color:var(--ink-dim); margin:0 0 22px; max-width:680px; }
+  section p { font-size:16px; color:color-mix(in srgb, var(--ink) 82%, var(--ink-dim)); margin:0 0 14px; }
+
+  /* workflow steps */
+  ol.flow { counter-reset:step; list-style:none; padding:0; margin:24px 0 0; display:grid; gap:12px; }
+  ol.flow > li { position:relative; display:flex; gap:16px; align-items:flex-start; padding:16px 18px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(180deg,var(--panel),var(--panel-2)); }
+  ol.flow > li .num { flex:none; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:"JetBrains Mono",ui-monospace,monospace; font-size:14px; color:var(--btn-ink); background:linear-gradient(180deg,var(--gold),var(--gold-soft)); }
+  ol.flow > li .step-body { padding-top:3px; }
+  ol.flow > li .step-body b { color:var(--ink); font-weight:600; }
+  ol.flow > li .step-body span { display:block; font-size:14px; color:var(--ink-dim); margin-top:2px; }
+  ol.flow > li.online { border-color:color-mix(in srgb, var(--violet) 45%, transparent); }
+  ol.flow > li.online .num { background:linear-gradient(180deg,var(--violet),var(--violet-soft)); color:#fff; }
+  .flow-note { margin-top:14px; font-size:14.5px; color:var(--ink-dim); font-family:var(--sans); }
+  .flow-note b { color:var(--violet); font-weight:600; }
+
+  /* story panels */
+  .story { margin-top:22px; padding:26px 28px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(180deg,var(--panel),var(--panel-2)); }
+  .story .kicker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet); margin:0 0 8px; }
+  .story h3 { font-size:22px; font-weight:500; margin:0 0 12px; }
+  .story p:last-child { margin-bottom:0; }
+  .story .outcome { color:var(--ink); font-style:italic; border-top:1px solid var(--line); margin-top:14px; padding-top:14px; font-family:"Iowan Old Style",Palatino,Georgia,serif; }
+  .story .outcome b { color:var(--gold); font-style:normal; font-weight:600; }
+
+  /* "what you get" checklist */
+  ul.getlist { list-style:none; padding:0; margin:18px 0 0; display:grid; gap:13px; }
+  ul.getlist li { display:flex; gap:11px; align-items:flex-start; font-size:16px; line-height:1.5; color:var(--ink); }
+  ul.getlist li svg { width:20px; height:20px; flex:none; margin-top:1px; }
+  .closer { margin-top:18px; font-size:17px; color:var(--ink); font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic; }
+  .closer b { color:var(--gold); font-style:normal; font-weight:600; }
+
+  /* creator */
+  .creator { margin-top:24px; padding:26px 28px; border:1px solid color-mix(in srgb, var(--gold) 26%, transparent); border-radius:var(--radius); background:color-mix(in srgb, var(--gold) 5%, transparent); }
+  .creator h3 { font-size:20px; font-weight:500; margin:0 0 12px; }
+  .creator h3 b { color:var(--gold); font-weight:600; }
+  .donate-note { margin-top:6px; font-size:15px; color:var(--ink); }
+  .donate-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+  .btn { display:inline-flex; align-items:center; gap:9px; padding:12px 18px; border-radius:10px; font-size:13.5px; letter-spacing:.1em; text-transform:uppercase; font-family:var(--sans); cursor:pointer; transition:transform .15s, border-color .2s; }
+  .btn.primary { background:linear-gradient(180deg,var(--gold),var(--gold-soft)); color:var(--btn-ink); border:1px solid var(--gold-soft); box-shadow:0 8px 24px -10px color-mix(in srgb,var(--gold) 55%,transparent); }
+  .btn.primary:hover { transform:translateY(-1px); }
+  .btn.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
+  .btn.ghost:hover { border-color:var(--violet); color:var(--violet); }
+
+  /* footer */
+  footer { margin-top:60px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--ink-faint); flex-wrap:wrap; gap:12px; }
+  footer .mantra { font-style:italic; color:var(--ink-dim); }
+  footer .foot-links { display:flex; gap:18px; }
+  footer .foot-links a { color:var(--ink-dim); }
+  footer .foot-links a:hover { color:var(--gold); }
+  footer .sibling { flex-basis:100%; margin-top:4px; padding-top:16px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-faint); font-family:var(--sans); }
+  footer .sibling a { color:var(--ink-dim); font-weight:600; }
+  footer .sibling a:hover { color:var(--gold); }
+
+  @media (max-width:640px) {
+    .wrap { padding:18px 16px 64px; }
+    header.nav { flex-direction:column; align-items:flex-start; gap:12px; }
+    .nav-right { width:100%; justify-content:space-between; }
+    h1 { font-size:clamp(28px,8vw,40px); }
+    .lede { font-size:17px; }
+    .callout { font-size:16.5px; padding:16px 18px; }
+    .story, .creator { padding:20px 18px; }
+    .donate-row { flex-direction:column; align-items:stretch; }
+    .btn { justify-content:center; }
+    footer { flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="nav">
+    <a class="brand" href="./index.html" style="text-decoration:none;color:inherit;">
+      <svg class="sigil" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:var(--violet)"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M32 12 L36 28 L52 32 L36 36 L32 52 L28 36 L12 32 L28 28 Z" style="fill:var(--gold)" opacity=".85"/>
+        <circle cx="32" cy="32" r="3" style="fill:var(--bg);stroke:var(--violet)" stroke-width="1"/>
+      </svg>
+      <div class="brand-stack">
+        <div class="maker">by AVBforge.com</div>
+        <div class="name">Amulet <b>Arsenal</b></div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a class="back" href="./index.html">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.4M12 19.1v2.4M21.5 12h-2.4M4.9 12H2.5M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7 17 17M7 7 5.3 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <span class="eyebrow">About</span>
+  <h1>True Bitcoin <em>self-sovereignty.</em></h1>
+  <p class="lede">
+    A Swiss Army knife for Bitcoin. Download it, verify it, and run it offline on your own machine —
+    and it keeps working even if this website disappears. Complete, private, reproducible control over
+    your Bitcoin: no expensive hardware, no third parties, no subscriptions.
+  </p>
+
+  <div class="callout">
+    You hold your value the way Bitcoin was meant to be held: <b>offline, unseen by anyone else, and
+    recoverable on your own terms</b> — even decades later.
+  </div>
+
+  <!-- WORKFLOW -->
+  <section>
+    <h2>Everything offline <em>except the broadcast.</em></h2>
+    <p class="sub-intro">
+      Generate your own randomness — even by shuffling a deck of playing cards — then run the rest on an
+      offline machine. Only the final step touches the internet.
+    </p>
+    <ol class="flow">
+      <li><span class="num">1</span><span class="step-body"><b>Generate entropy</b><span>Roll dice or draw from a deck of cards — randomness you can see and reproduce.</span></span></li>
+      <li><span class="num">2</span><span class="step-body"><b>Create a wallet</b><span>Turn that entropy into a seed and addresses, fully offline.</span></span></li>
+      <li><span class="num">3</span><span class="step-body"><b>Encrypt &amp; back up</b><span>Save it — plain or strongly encrypted — to paper, a USB stick, or hidden in plain sight.</span></span></li>
+      <li><span class="num">4</span><span class="step-body"><b>Build &amp; sign transactions</b><span>Construct and sign PSBTs on the air-gapped machine.</span></span></li>
+      <li class="online"><span class="num">5</span><span class="step-body"><b>Broadcast</b><span>Push the signed transaction to the network — the only step that needs to be online.</span></span></li>
+    </ol>
+    <p class="flow-note"><b>Steps 1–4 never touch the internet.</b> Your keys are created, stored, and used entirely offline.</p>
+  </section>
+
+  <!-- STORY 1 -->
+  <section>
+    <h2>Meet Melissa</h2>
+    <div class="story">
+      <p class="kicker">Starting from zero</p>
+      <h3>Long-term Bitcoin, no companies involved.</h3>
+      <p>
+        Melissa wanted to secure her Bitcoin for the long term without trusting companies, hardware
+        vendors, or complex setups — and she wasn't about to pay €300+ for a "black box" wallet she
+        barely understood.
+      </p>
+      <p>
+        Instead, she shuffled an ordinary deck of cards to generate her own high-quality entropy, created
+        a wallet seed completely offline, and saved the encrypted result to a file she can keep anywhere —
+        on paper, a USB stick, or hidden in plain sight. Because her method is fully reproducible, she can
+        always regenerate the exact same wallet.
+      </p>
+      <p>
+        No exchange, no wallet company, no network ever saw her keys or her funds. No remote hacks, no
+        supply-chain risk, no firmware to brick. Her Bitcoin is set-and-forget — ready to hold for decades
+        or pass to her children, with a recovery process that depends only on her and a deck of cards.
+      </p>
+      <p class="outcome">This is what real self-sovereignty feels like: <b>calm, simple, permanent.</b> Low-tech on purpose.</p>
+    </div>
+  </section>
+
+  <!-- STORY 2 -->
+  <section>
+    <h2>Bringing old coins forward</h2>
+    <div class="story">
+      <p class="kicker">A real use case</p>
+      <h3>Dormant legacy coins, spent privately.</h3>
+      <p>
+        Many people still hold small amounts of Bitcoin in old wallets. Moving those funds without leaking
+        privacy has always been hard.
+      </p>
+      <p>
+        With these tools, you can import the UTXOs from an old wallet in a fully air-gapped environment,
+        then spend them straight into a silent payment — to a recipient who never has to publish a reusable
+        address. No address reuse, no public link between sender and receiver. Everything stays offline
+        until the signed transaction is ready to broadcast.
+      </p>
+      <p class="outcome">Dormant or exposed legacy coins become <b>modern, private holdings</b> — without ever breaking the air gap or relying on a third-party coordinator.</p>
+    </div>
+  </section>
+
+  <!-- WHAT YOU GET -->
+  <section>
+    <h2>What you actually <em>get</em></h2>
+    <p class="sub-intro">Whether you start from zero or bring old coins forward, the outcome stays the same.</p>
+    <ul class="getlist">
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" style="stroke:var(--gold)" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5-5.5" style="stroke:var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your own entropy and keys, from nothing more than a deck of cards.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" style="stroke:var(--gold)" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5-5.5" style="stroke:var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything offline and encrypted until you decide otherwise.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" style="stroke:var(--gold)" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5-5.5" style="stroke:var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A recovery method that's simple, auditable, and reproducible forever.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" style="stroke:var(--gold)" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5-5.5" style="stroke:var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Advanced privacy like silent payments, without giving up control.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" style="stroke:var(--gold)" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5 5-5.5" style="stroke:var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>No company ever sees your funds, your addresses, or your activity.</span></li>
+    </ul>
+    <p class="closer">True buy-and-hold Bitcoin: private, portable, inheritable on your terms. <b>Your keys, your coins, your rules.</b></p>
+  </section>
+
+  <!-- CREATOR -->
+  <section>
+    <h2>About the creator</h2>
+    <div class="creator">
+      <h3>I'm <b>"mr 21"</b> — 20+ years in testing, tech and telecom.</h3>
+      <p>
+        I'm a Bitcoiner who got tired of watching tools turn bloated, commercial, and stuffed with
+        software standing between people and their money. Today you buy an expensive hardware wallet,
+        install its companion apps, and somehow end up with <em>less</em> privacy and <em>less</em>
+        sovereignty.
+      </p>
+      <p>
+        You don't need any of it. With a pencil, paper, a few dice or a deck of cards, and a web browser
+        on an offline machine, you can play "hardware wallet" yourself — no corporations, no untested
+        firmware, no supply-chain risk.
+      </p>
+      <p class="donate-note">
+        This is my gift to the Bitcoin community. Not free — <b>value for value</b>. If these tools saved
+        you from buying something expensive and risky, send some support. It keeps the lights on in the
+        proverbial mom's basement.
+      </p>
+      <div class="donate-row">
+        <a class="btn primary" href="https://timeseed.io/donate" target="_blank" rel="noopener">Donate (V4V) →</a>
+        <a class="btn ghost" href="mailto:mr21@coinos.io">mr21@coinos.io</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="mantra">"Not your keys, not your coins. So forge them yourself."</div>
+    <div class="foot-links">
+      <a href="./index.html">Home</a>
+      <a href="./verify.html">Verify</a>
+      <a href="./recovery.html">Recovery</a>
+      <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">Source</a>
+    </div>
+    <div class="mono">AVBforge · © <span id="year"></span></div>
+    <div class="sibling">
+      Also from AVBforge — <a href="https://timeseed.io" target="_blank" rel="noopener">TimeSeed.io ↗</a> · offline, post-quantum encryption for your messages &amp; files.
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    if (localStorage.getItem('aa-theme') !== 'dark') root.setAttribute('data-theme', 'light');
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.addEventListener('click', function () {
+      if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('aa-theme','dark'); }
+      else { root.setAttribute('data-theme','light'); localStorage.setItem('aa-theme','light'); }
+    });
+  })();
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

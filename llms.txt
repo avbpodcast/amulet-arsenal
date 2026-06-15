@@ -1,0 +1,47 @@
+# Amulet Arsenal — by AVBforge
+
+> Free, open-source, air-gap-friendly tools for Bitcoin self-custody and encryption.
+> Every tool is a single HTML file you can download, read, verify (SHA-256) and run
+> fully offline in any browser — no install, no accounts, no telemetry, no third party.
+> Built and tested before release; "value for value", never sold.
+
+## Key pages
+
+- [Home / The Arsenal](https://avbforge.com/): overview of all tools, trust signals, testing ethos.
+- [About — True Bitcoin self-sovereignty](https://avbforge.com/about.html): what the tools do, how they help, real use cases, and the creator ("mr 21").
+- [Verify the code](https://avbforge.com/verify.html): step-by-step guide to checking a downloaded file against its SHA-256.
+- [Recovery plan](https://avbforge.com/recovery.html): how to decrypt vaults and recombine Shamir shares with two Python scripts if the tools ever disappear, plus practice fixtures.
+- [SHA256SUMS](https://avbforge.com/SHA256SUMS.txt): SHA-256 hash of every published tool.
+- [Download bundle](https://avbforge.com/amulet-arsenal.zip): the whole Arsenal in one .zip, to run locally.
+- [Source code](https://codeberg.org/avbforge/pages): full source to read, fork or rebuild.
+
+## The tools
+
+- [Amulet Main](https://avbforge.com/Amulet%20Main/AmuletMain_v1.36.html): single-file launcher for the whole Arsenal.
+- [Amulet Generator](https://avbforge.com/Amulet%20Wallet%20Generator/amulet_1_51.html): offline wallet generator with verifiable entropy (dice/cards), Silent Payments, Taproot, Bech32 and legacy support.
+- [Amulet Vault](https://avbforge.com/Amulet%20Vault/amulet_vault_v1.74.html): local encrypted vault for seeds and keys (AES-GCM-256 + Argon2id), with watch-only export.
+- [Amulet Shamir Split](https://avbforge.com/Amulet%20Shamir%20Shared%20Split/amulet_shamir_shared_split_v0.11.html): Vault variant that splits the key into Shamir K-of-N shares. (Beta)
+- [Amulet Scryer](https://avbforge.com/Amulet%20Scryer/arsenal-scryer_v1.18.html): watch-only balance viewer; never sees a private key.
+- [Amulet Transaction Creator](https://avbforge.com/Amulet%20Transaction%20Creator/amulet_tx_v0.22.html): build and sign Bitcoin PSBTs (BIP-174) offline. (Beta)
+- [Amulet Broadcaster](https://avbforge.com/Amulet%20Broadcaster/amulet_broadcast_v1.01.html): broadcast signed transactions via clearnet or Tor behind a gated flow.
+- [Amulet Timelock](https://avbforge.com/Amulet%20Timelock/timelockbtc_RC2_002.html): time-locked redeem scripts (P2SH/P2WSH) with SHA-256 checksums. (Release candidate)
+- [Amulet Silent](https://avbforge.com/Amulet%20Silent/silent_amulet_1_21.html): silent-payment wallet (BIP-352); one static address, fresh output each time. (Beta)
+- [Amulet Picker](https://avbforge.com/Amulet-passphrase-gen/Amulet%20Picker%20v16.html): offline passphrase generator drawing from a 10,000-word pool.
+- [Amulet Relic](https://avbforge.com/amulet_relic.py): pure-Python recovery script; decrypts every vault/wallet/Generator .enc without the HTML tools.
+- [Amulet Shamir Relic](https://avbforge.com/amulet_shamir_relic.py): pure-Python recovery; rebuilds a vault from T-of-N Shamir shares, no password needed.
+
+## Principles
+
+- Self-custody: your keys, your coins, your rules. No central entity, no trusted third party.
+- Offline-first: everything works air-gapped; only broadcasting a finished, signed transaction needs the internet.
+- Verifiable: read the source and check the SHA-256 of any file before you run it.
+- Free and open-source: no paywall, no premium tier. Support is value-for-value.
+
+## Support / contact
+
+- Donate (value-for-value): https://timeseed.io/donate
+- Email: mr21@coinos.io
+
+## Also from AVBforge
+
+- [TimeSeed.io](https://timeseed.io): offline, post-quantum encryption for messages and files.

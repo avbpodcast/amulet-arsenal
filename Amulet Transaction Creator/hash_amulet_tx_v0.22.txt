@@ -1,0 +1,2 @@
+amulet_tx_v0.22.html
+SHA256: b4ae03e81531f42ea4b0a5297a04ed48c404fe2190a3139ffc6e8fdef3450baf

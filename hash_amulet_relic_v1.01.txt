@@ -1,0 +1,2 @@
+amulet_relic.py
+SHA256: cb57fc2f6aceaefb3efc4d8e628490246574caaaf3384283e50be8617139bc64
