@@ -1,0 +1,2 @@
+amulet_vault_v1.68.html
+SHA256: 3bf275f1a599f65853113b6cc61529fa257f61e96e6eaf1fa4a77bb04175f8d1

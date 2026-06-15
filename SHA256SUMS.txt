@@ -10,7 +10,7 @@
 # Source:      https://codeberg.org/avbforge/pages
 
 # 01 · Amulet Main (launcher)
-65155b5792cf01cc4548778d2c178e41f0509d50b9a566a1090382287aef0cf0  Amulet Main/AmuletMain_v1.36.html
+d09dc6c12ee1ed9d5d82a3a719cfdd638827a30a39a931b19f537e4e30034ffe  Amulet Main/AmuletMain_v1.38.html
 
 # 02 · Amulet Generator (wallet generator)
 9db958799d73ef56a9e9aa893ad357a24f9bc21ac8f311e22defbee47e9b9d36  Amulet Wallet Generator/amulet_1_51.html
@@ -39,8 +39,4 @@ ff4b7fc8462be42f7ca20c7b2c5f807e1d21931b133f88400508d1dadb3f78b9  Amulet Silent/
 # 10 · Amulet Picker (passphrase generator)
 48f85e732f9a6ed1ed8c3393c1aaf56387cc62b5e0d5d103576a1083bb8b5d86  Amulet-passphrase-gen/Amulet Picker v16.html
 
-# 11 · Amulet Relic (recovery script, pure Python)
-cb57fc2f6aceaefb3efc4d8e628490246574caaaf3384283e50be8617139bc64  amulet_relic.py
-
-# 12 · Amulet Shamir Relic (Shamir share recovery script, pure Python)
-1f828afc8fa478426dc4580e10195427f226fdf506ab4cdb41824dfd9dd7a82c  amulet_shamir_relic.py
+# 11 · Amulet Relic ships as a Python script in the source repository (amulet_relic.py).
