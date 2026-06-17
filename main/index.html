@@ -7,7 +7,7 @@
 <title>Amulet · launcher</title>
 
 <!--
-  Amulet Main launcher v1.39 (June 2026)
+  Amulet Main launcher v1.40 (June 2026)
   ─────────────────────────────────────────
   A single self-contained HTML page. NO external dependencies: no CDN
   fonts, no CDN CSS, no JS framework. Opens and renders identically
@@ -17,6 +17,14 @@
   card opens the explicit versioned file of the corresponding tool via
   a relative path. URL-encoded spaces handle folder names that contain
   spaces.
+
+  v1.40 changes:
+    - Refresh the Amulet Scryer link to v1.19. The Scryer
+      now has a "Stop scan" button that appears while a scan
+      is running (so a hanging block-explorer no longer
+      freezes the tab) and a "Forget all loaded data" button
+      next to it that wipes every loaded watch-only entry,
+      balance and history from the browser in one click.
 
   v1.39 changes:
     - Refresh the Amulet Wallet Generator link to v1.52. The
@@ -705,7 +713,7 @@
             <span class="tag online">needs internet</span>
           </div>
           <p class="desc">Watch-only balance viewer. Reads xpub/ypub/zpub or single addresses, queries mempool.space + blockstream.info in rotation. Auto-refresh every 10 min.</p>
-          <div class="meta">arsenal-scryer_v1.18.html</div>
+          <div class="meta">arsenal-scryer_v1.19.html</div>
         </div>
       </a>
 
@@ -738,7 +746,7 @@
 
   <footer class="foot">
     <div>
-      Amulet Main · v1.39 · runs locally · no telemetry · single-file HTML, audit it before you trust it
+      Amulet Main · v1.40 · runs locally · no telemetry · single-file HTML, audit it before you trust it
     </div>
     <div style="margin-top:6px">
       <span style="opacity:.7">Tip: bookmark this page in your browser.</span>

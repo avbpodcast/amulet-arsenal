@@ -1,33 +1,4 @@
-# security.txt for AVB Forge
-# https://avbforge.com
-
-# This file follows the security.txt standard (RFC 9116)
-
-Contact: https://avbforge.com/#contact
-Expires: 2027-04-21T23:00:00.000Z
+Contact: mailto:allesvoorbitcoin@proton.me
+Expires: 2027-06-15T00:00:00Z
 Preferred-Languages: en
 Canonical: https://avbforge.com/.well-known/security.txt
-
-# Policy
-Policy: https://avbforge.com/#security
-
-# Scope
-Scope: https://avbforge.com
-Scope: https://codeberg.org/avbforge
-
-# Encryption (placeholder — will be added when you publish a PGP key)
-# Encryption: https://avbforge.com/pgp-key.txt
-
-# Acknowledgments
-Acknowledgments: https://avbforge.com/thanks
-
-# We take security very seriously.
-# AVB Forge develops tools that protect Bitcoin self-custody.
-# If you discover a security vulnerability in any tool, library, or process from the Amulet Arsenal,
-# we greatly appreciate responsible disclosure.
-
-# Current Status (Early Stage)
-# This project is still in its early phase. Full PGP signing, detailed vulnerability disclosure
-# policy, and coordinated disclosure timelines will be published as the Arsenal grows.
-
-# Thank you for helping keep Bitcoin custody tools safer.

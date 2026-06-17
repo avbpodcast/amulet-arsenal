@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Amulet Scryer v1.18 · watch-only balance viewer</title>
+<title>Amulet Scryer v1.19 · watch-only balance viewer</title>
 <meta name="description" content="A viewing glass for extended public keys. Derive addresses, sum balances, peer at the chain without surrendering spend access." />
 <!-- v1.02: Google Fonts dropped. The new CSS uses the system-ui sans
      stack (matching Amulet Vault), so no third-party font fetch happens
@@ -523,6 +523,14 @@
   .btn-ghost:hover:not(:disabled){
     color:var(--ink); border-color:var(--vault-2);
   }
+  /* v1.19: danger-styled Stop-scan button */
+  .btn-danger{
+    background:transparent; color:#f5a5a5;
+    border-color:rgba(255,122,122,.45);
+  }
+  .btn-danger:hover:not(:disabled){
+    background:rgba(255,122,122,.10); border-color:var(--err);
+  }
 
   /* ===== Banners (status messages) ===== */
   .banner{
@@ -852,13 +860,28 @@
     </div>
 
     <div style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:center;">
-      <button class="btn btn-primary" id="consult-btn" title="Contacts the configured block-explorer to read balances. No private keys are sent.">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        Refresh balances <span style="opacity:.65; font-weight:500; margin-left:.35rem;">(online)</span>
-      </button>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-primary" id="consult-btn" title="Contacts the configured block-explorer to read balances. No private keys are sent.">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Refresh balances <span style="opacity:.65; font-weight:500; margin-left:.35rem;">(online)</span>
+        </button>
+        <!-- v1.19: Stop button. Only visible while a scan is running. Clicking it
+             aborts the in-flight fetch and unwinds the scan loop. Balances that
+             were already read stay; the rest of the addresses are skipped. -->
+        <button class="btn btn-danger" id="consult-stop-btn" type="button" style="display:none" title="Stop the scan in progress.">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+          Stop scan
+        </button>
+        <!-- v1.19: Forget button. Aborts any running scan, then clears every
+             loaded watch-only entry, balance and history from this browser.
+             The actual on-disk wallet files are not touched. -->
+        <button class="btn btn-ghost" id="forget-btn" type="button" title="Stop any running scan and erase every loaded watch-only entry, balance and history from this browser. On-disk files are not touched.">
+          Forget all loaded data
+        </button>
+      </div>
       <div style="font-family:var(--mono); font-size:0.7rem; color:var(--paper-faint); letter-spacing:0.05em; text-align:right;">
         Will contact <span id="endpoint-note" style="color:var(--vault-2);">…</span><br>
         <span style="opacity:.78">Watch-only. No private keys leave this device. You'll be asked to confirm the first time.</span>
@@ -875,7 +898,7 @@
   <!-- ============ FOOTER ============ -->
   <footer class="foot">
     <div>
-      Amulet Scryer &middot; v1.18 &middot; watch-only. No keys. No telemetry. No CDN.
+      Amulet Scryer &middot; v1.19 &middot; watch-only. No keys. No telemetry. No CDN.
     </div>
     <div style="display:flex; gap:1.5rem;">
       <a href="#" data-github>GitHub</a>
@@ -1321,8 +1344,8 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     schemaVersion: SCHEMA_VERSION,   // v1.05: tracks state shape so we can migrate cleanly
     denom: 'btc',
     endpoints: [...DEFAULT_ENDPOINTS], // v1.06: rotation set — round-robin per call
-    rateDelay: 1100,                 // v1.04: above mempool.space's ~60/min limit by default
-    gapLimit: 20,                    // v1.06: BIP-44 gap (consecutive empty addresses) — now the SOLE stop condition
+    rateDelay: 2200,                 // v1.19: doubled to 2200 ms by default; large rotations stayed under public limits in field tests
+    gapLimit: 4,                     // v1.19: tighter default. Most wallets do not skip 4 receive addresses in a row; users who do can raise this in Settings.
     hardCap: 500,                    // v1.04: defensive ceiling per chain so a misconfigured key can't run away
     autoRefreshMins: 10,             // v1.11: minutes between auto-refreshes (5..120; 0 = disabled)
     consentedEndpoints: [],          // v1.04: list of endpoint origins the user has agreed to contact
@@ -1476,6 +1499,11 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
   // intent explicit helps. credentials:'omit' also keeps us truly anonymous.
   const FETCH_OPTS = { mode: 'cors', credentials: 'omit', cache: 'no-store' };
 
+  // v1.19: shared AbortController for the running scan (consultAll or a per-instrument
+  // scan). When the user clicks Stop or Forget, we call .abort() on this controller;
+  // the in-flight fetch rejects with AbortError and the scan loop unwinds.
+  let _scanAbortController = null;
+
   // v1.06 — central wrapper. Picks the next endpoint via round-robin; if it fails,
   // tries the remaining live endpoints once each before giving up. This means a single
   // mempool.space cooldown no longer aborts a scan that blockstream.info could finish.
@@ -1506,8 +1534,11 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
       const url = `${ep.replace(/\/$/, '')}${path}`;
       let res;
       try {
-        res = await fetch(url, FETCH_OPTS);
+        // v1.19: thread the AbortSignal in so Stop aborts the in-flight call.
+        res = await fetch(url, opts.signal ? { ...FETCH_OPTS, signal: opts.signal } : FETCH_OPTS);
       } catch (e) {
+        // v1.19: an aborted fetch must bubble up untouched so the scan loop can detect it.
+        if (e && e.name === 'AbortError') { throw e; }
         noteEndpointFailure(ep);
         const msg = e && e.message ? e.message : String(e);
         // Save error context but try the next endpoint in the rotation if any remain
@@ -1550,8 +1581,8 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     throw new Error(`No reachable endpoint in rotation${lastEndpoint ? ` (last tried ${endpointLabel(lastEndpoint)})` : ''}.`);
   }
 
-  async function fetchAddressBalance(addr) {
-    const res = await explorerFetch(`/address/${addr}`);
+  async function fetchAddressBalance(addr, signal) {
+    const res = await explorerFetch(`/address/${addr}`, signal ? { signal } : undefined);
     const data = await res.json();
     const funded  = data.chain_stats?.funded_txo_sum   ?? 0;
     const spent   = data.chain_stats?.spent_txo_sum    ?? 0;
@@ -1562,8 +1593,8 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
 
   // v1.04 — same address endpoint also tells us tx-count, which is what the gap-limit
   // really cares about (an address with no history). We inspect the raw response.
-  async function fetchAddressInfo(addr) {
-    const res = await explorerFetch(`/address/${addr}`);
+  async function fetchAddressInfo(addr, signal) {
+    const res = await explorerFetch(`/address/${addr}`, signal ? { signal } : undefined);
     const d = await res.json();
     const funded  = d.chain_stats?.funded_txo_sum   ?? 0;
     const spent   = d.chain_stats?.spent_txo_sum    ?? 0;
@@ -1588,10 +1619,12 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     return deriveAddressesRange(extKey, addrType, chain, fromIndex, count);
   }
 
-  async function scanInstrument(inst, onProgress) {
+  async function scanInstrument(inst, onProgress, signal) {
     inst.error = null;
+    // v1.19: bail out immediately if we were already aborted.
+    if (signal && signal.aborted) throw new DOMException('Scan stopped', 'AbortError');
     if (inst.type === 'address') {
-      const bal = await fetchAddressBalance(inst.key);
+      const bal = await fetchAddressBalance(inst.key, signal);
       inst.balance = bal;
       inst.addressesScanned = 1;
       inst.lastScan = new Date().toISOString();
@@ -1623,10 +1656,13 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
         }
         let stopped = false;
         for (const { address } of batch) {
+          // v1.19: check abort between addresses so Stop unwinds quickly.
+          if (signal && signal.aborted) throw new DOMException('Scan stopped', 'AbortError');
           let info;
           try {
-            info = await fetchAddressInfo(address);
+            info = await fetchAddressInfo(address, signal);
           } catch (e) {
+            if (e && e.name === 'AbortError') { throw e; }
             inst.error = `Explorer call failed at chain ${chain} index ${i}: ${e.message}`;
             throw e;
           }
@@ -1891,6 +1927,11 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     }
 
     btn.disabled = true;
+    // v1.19: install a fresh AbortController for this run and reveal the Stop button.
+    _scanAbortController = new AbortController();
+    const _scanSignal = _scanAbortController.signal;
+    const stopBtn = document.getElementById('consult-stop-btn');
+    if (stopBtn) { stopBtn.style.display = 'inline-flex'; stopBtn.disabled = false; }
     status.innerHTML = '';
     const banner = document.createElement('div');
     banner.className = 'banner working';
@@ -1931,12 +1972,16 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
           const cumulative = totalScanned + done;
           const pct = Math.min(95, Math.floor((cumulative / expectedTotal) * 100));
           progressTo(pct);
-        });
+        }, _scanSignal);
         // tally what we just finished so the next instrument's progress is cumulative
         totalScanned += inst.addressesScanned || 0;
         saveState();
         renderAll();
       } catch (e) {
+        // v1.19: user-initiated Stop unwinds the whole loop without flagging an error.
+        if (e && e.name === 'AbortError') {
+          break;
+        }
         hadError = true;
         if (!firstErrorMsg) firstErrorMsg = e.message || String(e);
         if (e instanceof ConnectionDropLikelyRateLimitError) dropDetected = true;
@@ -1958,6 +2003,17 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     saveState();
 
     btn.disabled = false;
+    // v1.19: hide the Stop button and release the controller now that the run is done.
+    const _wasAborted = _scanSignal.aborted;
+    if (stopBtn) { stopBtn.style.display = 'none'; stopBtn.disabled = false; }
+    _scanAbortController = null;
+
+    if (_wasAborted) {
+      banner.className = 'banner info';
+      banner.innerHTML = '<span>Scan stopped. Balances that were already read have been kept.</span>';
+      renderAll();
+      return;
+    }
 
     if (rateLimitHit) {
       banner.className = 'banner error';
@@ -3280,18 +3336,57 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
       } catch { flash('Copy failed.', 'error'); }
     } else if (btn.dataset.act === 'scan') {
       btn.disabled = true;
+      // v1.19: per-instrument scan also honours Stop.
+      const _sc = new AbortController();
+      _scanAbortController = _sc;
+      const _stopBtn = document.getElementById('consult-stop-btn');
+      if (_stopBtn) { _stopBtn.style.display = 'inline-flex'; _stopBtn.disabled = false; }
       try {
-        await scanInstrument(inst);
+        await scanInstrument(inst, null, _sc.signal);
         saveState(); renderAll();
         flash(`Scanned ${inst.name}.`, 'info');
       } catch (err) {
-        flash(`Scan failed: ${err.message}`, 'error');
-      } finally { btn.disabled = false; }
+        if (err && err.name === 'AbortError') {
+          flash('Scan stopped.', 'info');
+        } else {
+          flash(`Scan failed: ${err.message}`, 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        if (_stopBtn) { _stopBtn.style.display = 'none'; }
+        if (_scanAbortController === _sc) _scanAbortController = null;
+      }
     }
   });
 
   // Consult all
   document.getElementById('consult-btn').addEventListener('click', consultAll);
+
+  // v1.19: Stop scan button. Aborts the in-flight scan; the scan loop unwinds and
+  // resets the UI on its own through the existing finally / cleanup branches.
+  document.getElementById('consult-stop-btn').addEventListener('click', () => {
+    if (_scanAbortController) {
+      try { _scanAbortController.abort(); } catch {}
+    }
+    const sb = document.getElementById('consult-stop-btn');
+    if (sb) sb.disabled = true;
+  });
+
+  // v1.19: Forget all loaded data. Aborts any running scan, then wipes the
+  // localStorage state for this Scryer and re-renders the empty welcome view.
+  // The actual on-disk wallet files are not touched.
+  document.getElementById('forget-btn').addEventListener('click', () => {
+    if (!confirm('Forget every loaded watch-only entry, balance and history from this browser?\n\nThe wallet files on disk are not affected. You can re-import them later.')) return;
+    if (_scanAbortController) {
+      try { _scanAbortController.abort(); } catch {}
+      _scanAbortController = null;
+    }
+    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(STORE_KEY + ':seeded');
+    state = loadState();
+    renderAll();
+    flash('Loaded data cleared.', 'info');
+  });
 
   // Settings modal
   const modal = document.getElementById('settings-modal');
@@ -3418,10 +3513,15 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     }
   });
 
-  // Reset
+  // Reset (footer link). v1.19: also aborts a running scan, same as the
+  // toolbar Forget button.
   document.getElementById('reset-link').addEventListener('click', (e) => {
     e.preventDefault();
     if (!confirm('Clear all watched instruments, history, and settings on this device?')) return;
+    if (_scanAbortController) {
+      try { _scanAbortController.abort(); } catch {}
+      _scanAbortController = null;
+    }
     localStorage.removeItem(STORE_KEY);
     localStorage.removeItem(STORE_KEY + ':seeded');
     state = loadState();

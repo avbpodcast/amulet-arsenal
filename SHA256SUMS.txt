@@ -10,7 +10,7 @@
 # Source:      https://codeberg.org/avbforge/pages
 
 # 01 · Amulet Main (launcher)
-cd241537155a1f64d0c452056309b7e6a3ece54f37f11606cc99f81094cc68cc  Amulet Main/AmuletMain_v1.39.html
+5854e1a40a8ebd497fa6f9c58a67809739776daa763480258b3e3652ff5617ad  Amulet Main/AmuletMain_v1.40.html
 
 # 02 · Amulet Generator (wallet generator)
 8df6dae06a297f4f35e27f3a8f8ee0320082c8482fd4ca95f0f57cbf9f07faff  Amulet Wallet Generator/amulet_1_52.html
@@ -19,7 +19,7 @@ cd241537155a1f64d0c452056309b7e6a3ece54f37f11606cc99f81094cc68cc  Amulet Main/Am
 6d3adc0ea1e2bc27b4dc5fee4f779e4ee4dbdddfeb20af1e36d8c2ae84580797  Amulet Vault/amulet_vault_v1.74.html
 
 # 04 · Amulet Scryer
-19f280e53d2bdfaed5ae09f4b63ba473ca145e08799797a5fd9835dc933a273d  Amulet Scryer/arsenal-scryer_v1.18.html
+d5ea12ea18db064b47b3db34a370ec5999df11324503d9b2bfc4ec5fc021b2c6  Amulet Scryer/arsenal-scryer_v1.19.html
 
 # 05 · Amulet Transaction Creator
 b4ae03e81531f42ea4b0a5297a04ed48c404fe2190a3139ffc6e8fdef3450baf  Amulet Transaction Creator/amulet_tx_v0.22.html
