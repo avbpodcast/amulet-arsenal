@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Contact · AVBforge · Amulet Arsenal</title>
+<meta name="description" content="Two ways to reach AVBforge: plain email or Nostr. The Amulet Arsenal's author reads both." />
+<script>if(localStorage.getItem('aa-theme')!=='dark')document.documentElement.setAttribute('data-theme','light');</script>
+
+<link rel="canonical" href="https://avbforge.com/contact/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Amulet Arsenal · AVBforge" />
+<meta property="og:title" content="Contact — AVBforge" />
+<meta property="og:description" content="Reach the Amulet Arsenal's author by email or Nostr." />
+<meta property="og:url" content="https://avbforge.com/contact/" />
+<meta property="og:image" content="https://avbforge.com/amulet-og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<style>
+  :root {
+    --bg:#0a0d15; --bg-2:#0f1320; --panel:#141a2a; --panel-2:#1a2138; --line:#262c42;
+    --ink:#eae6d9; --ink-dim:#a7a394; --ink-faint:#6d6a5d;
+    --gold:#e8b341; --gold-soft:#c48f27; --violet:#7a6bd1; --violet-soft:#4b3e8f;
+    --good:#6fcf97; --radius:14px; --btn-ink:#1a1407;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  [data-theme="light"] {
+    --bg:#fbf8f3; --bg-2:#f2ebe0; --panel:#ffffff; --panel-2:#faf4ea; --line:#e6dccb;
+    --ink:#1b1611; --ink-dim:#5b5247; --ink-faint:#9a9081;
+    --gold:#d9660f; --gold-soft:#a8480a; --violet:#b8530c; --violet-soft:#e2a978;
+    --good:#2f9e5f; --btn-ink:#fff7ef;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; overflow-x:hidden; }
+  body {
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    background:
+      radial-gradient(900px 500px at 85% -10%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 60%),
+      radial-gradient(800px 480px at -10% 12%, color-mix(in srgb, var(--violet) 10%, transparent), transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    color:var(--ink); min-height:100vh; line-height:1.6;
+    -webkit-font-smoothing:antialiased; transition:background .25s ease, color .25s ease;
+  }
+  .mono { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; }
+  p, .lede, .closer { font-family:var(--sans); }
+  a { color:var(--gold); text-decoration:none; }
+  a:hover { color:color-mix(in srgb, var(--gold) 75%, #fff); }
+  .wrap { max-width:820px; margin:0 auto; padding:28px 28px 96px; }
+
+  /* header (matches index / about / verify) */
+  header.nav { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand .sigil { width:38px; height:38px; }
+  .brand-stack { display:flex; flex-direction:column; gap:3px; line-height:1; }
+  .brand .maker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:10px; letter-spacing:.32em; text-transform:uppercase; color:var(--gold); opacity:.6; }
+  .brand .name { font-size:16px; letter-spacing:.22em; text-transform:uppercase; }
+  .brand .name b { color:var(--gold); font-weight:600; }
+  .nav-right { display:flex; align-items:center; gap:16px; }
+  .nav-right a.back { color:var(--ink-dim); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+  .nav-right a.back:hover { color:var(--gold); }
+  .theme-toggle { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--gold); background:color-mix(in srgb, var(--gold) 5%, transparent); transition:border-color .2s, transform .15s; }
+  .theme-toggle:hover { border-color:var(--gold); transform:translateY(-1px); }
+  .theme-toggle svg { width:17px; height:17px; }
+  .theme-toggle .icon-sun { display:none; }
+  [data-theme="light"] .theme-toggle .icon-sun { display:block; }
+  [data-theme="light"] .theme-toggle .icon-moon { display:none; }
+
+  /* hero */
+  .eyebrow { display:inline-block; margin-top:46px; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); padding:6px 13px; border-radius:999px; border:1px solid color-mix(in srgb, var(--gold) 35%, transparent); background:color-mix(in srgb, var(--gold) 5%, transparent); }
+  h1 { font-size:clamp(34px,5.5vw,52px); font-weight:500; letter-spacing:-.01em; margin:18px 0 14px; line-height:1.08; }
+  h1 em { color:var(--gold); font-style:italic; }
+  .lede { font-size:19px; color:color-mix(in srgb, var(--ink) 80%, var(--ink-dim)); max-width:680px; margin:0; }
+
+  /* contact cards */
+  .channel { margin-top:24px; padding:24px 26px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(180deg,var(--panel),var(--panel-2)); }
+  .channel .kicker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet); margin:0 0 8px; }
+  .channel h3 { font-size:22px; font-weight:500; margin:0 0 10px; }
+  .channel p { font-size:16px; color:color-mix(in srgb, var(--ink) 82%, var(--ink-dim)); margin:0 0 14px; }
+  .channel .value { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:15px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--gold) 5%, transparent); color:var(--gold); word-break:break-all; display:block; }
+  .channel .value a { color:inherit; }
+
+  .closer { margin-top:30px; font-size:15px; color:var(--ink-dim); font-style:italic; }
+  .closer b { color:var(--gold); font-style:normal; font-weight:600; }
+  .closer a { color:var(--gold); }
+
+  /* footer (matches sibling pages) */
+  footer { margin-top:60px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--ink-faint); flex-wrap:wrap; gap:12px; }
+  footer .mantra { font-style:italic; color:var(--ink-dim); }
+  footer .foot-links { display:flex; gap:18px; }
+  footer .foot-links a { color:var(--ink-dim); }
+  footer .foot-links a:hover { color:var(--gold); }
+  footer .sibling { flex-basis:100%; margin-top:4px; padding-top:16px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-faint); font-family:var(--sans); }
+  footer .sibling a { color:var(--ink-dim); font-weight:600; }
+  footer .sibling a:hover { color:var(--gold); }
+
+  @media (max-width:640px) {
+    .wrap { padding:18px 16px 64px; }
+    header.nav { flex-direction:column; align-items:flex-start; gap:12px; }
+    .nav-right { width:100%; justify-content:space-between; }
+    h1 { font-size:clamp(28px,8vw,40px); }
+    .lede { font-size:17px; }
+    .channel { padding:20px 18px; }
+    .channel .value { font-size:13px; }
+    footer { flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="nav">
+    <a class="brand" href="../index.html" style="text-decoration:none;color:inherit;">
+      <svg class="sigil" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:var(--violet)"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M32 12 L36 28 L52 32 L36 36 L32 52 L28 36 L12 32 L28 28 Z" style="fill:var(--gold)" opacity=".85"/>
+        <circle cx="32" cy="32" r="3" style="fill:var(--bg);stroke:var(--violet)" stroke-width="1"/>
+      </svg>
+      <div class="brand-stack">
+        <div class="maker">by AVBforge.com</div>
+        <div class="name">Amulet <b>Arsenal</b></div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a class="back" href="../index.html">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.4M12 19.1v2.4M21.5 12h-2.4M4.9 12H2.5M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7 17 17M7 7 5.3 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <span class="eyebrow">Contact</span>
+  <h1>Reach <em>AVBforge.</em></h1>
+  <p class="lede">
+    Two ways to get in touch. I read both. Whether it is feedback on a tool, a bug you found, a suggestion, or a thank-you, all of it is welcome.
+  </p>
+
+  <!-- EMAIL -->
+  <div class="channel">
+    <p class="kicker">Email</p>
+    <h3>Direct line</h3>
+    <p>Plain email. Good for anything that is not time-critical, anything with attachments, or anything sensitive.</p>
+    <a class="value" href="mailto:mr21@nodes.be">mr21@nodes.be</a>
+  </div>
+
+  <!-- NOSTR -->
+  <div class="channel">
+    <p class="kicker">Nostr</p>
+    <h3>Public and censorship-resistant</h3>
+    <p>Tag me or send a DM on Nostr. Replies happen across the public relays I follow.</p>
+    <span class="value">npub1sec6degc3ae7warveuxaz6dlffnc2sutwtqjr7pmll7sf7ypjngsd4p0l7</span>
+  </div>
+
+  <!-- PGP -->
+  <div class="channel">
+    <p class="kicker">PGP</p>
+    <h3>Encrypted reports + signed releases</h3>
+    <p>Use this key to encrypt sensitive reports, or to verify signatures on anything I publish. Fetch the armored key over <a href="../.well-known/pgp-key.txt">the local copy</a> or from <a href="https://codeberg.org/avbforge.gpg" target="_blank" rel="noopener">Codeberg</a>, then check the fingerprint below against both sources.</p>
+    <span class="value">8781 57D4 1D9F B9BC D99B  1F81 1B35 6516 AFFC CEFE</span>
+  </div>
+
+  <p class="closer">
+    For a <b>responsible-disclosure</b> security report, the standard contact, this PGP key, and
+    the Codeberg mirror are all published at <a href="../.well-known/security.txt">/.well-known/security.txt</a> in RFC 9116 format.
+  </p>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="mantra">"Not your keys, not your coins. So forge them yourself."</div>
+    <div class="foot-links">
+      <a href="../index.html">Home</a>
+      <a href="../verify.html">Verify</a>
+      <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">Source</a>
+    </div>
+    <div class="mono">AVBforge · © <span id="year"></span></div>
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    if (localStorage.getItem('aa-theme') !== 'dark') root.setAttribute('data-theme', 'light');
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.addEventListener('click', function () {
+      if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('aa-theme','dark'); }
+      else { root.setAttribute('data-theme','light'); localStorage.setItem('aa-theme','light'); }
+    });
+  })();
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

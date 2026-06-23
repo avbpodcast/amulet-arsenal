@@ -1,4 +1,6 @@
 Contact: mailto:allesvoorbitcoin@proton.me
+Encryption: https://avbforge.com/.well-known/pgp-key.txt
+Encryption: https://codeberg.org/avbforge.gpg
 Expires: 2027-06-15T00:00:00Z
 Preferred-Languages: en
 Canonical: https://avbforge.com/.well-known/security.txt

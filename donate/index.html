@@ -1,587 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Development | AVBFORGE.COM</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --btc-orange: #f7931a;
-            --btc-orange-dim: #c77a15;
-            --btc-gold: #ffd93d;
-            --dark-bg: #0a0a0f;
-            --card-bg: #12121a;
-            --card-border: #1e1e2e;
-            --text-primary: #e8e8ed;
-            --text-secondary: #8888a0;
-            --text-muted: #555566;
-            --success: #22c55e;
-            --warning: #eab308;
-            --error: #ef4444;
-            --glow-orange: rgba(247, 147, 26, 0.15);
-            --glow-strong: rgba(247, 147, 26, 0.3);
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Donate · AVBforge · Amulet Arsenal</title>
+<meta name="description" content="Support the Amulet Arsenal: a sovereign, audit-friendly Bitcoin self-custody suite. Tips welcome via onchain, Lightning, or Silent Payments." />
+<script>if(localStorage.getItem('aa-theme')!=='dark')document.documentElement.setAttribute('data-theme','light');</script>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<link rel="canonical" href="https://avbforge.com/donate/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Amulet Arsenal · AVBforge" />
+<meta property="og:title" content="Donate — AVBforge" />
+<meta property="og:description" content="Support the work behind the Amulet Arsenal. Onchain, Lightning, or Silent Payments." />
+<meta property="og:url" content="https://avbforge.com/donate/" />
+<meta property="og:image" content="https://avbforge.com/amulet-og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+<style>
+  :root {
+    --bg:#0a0d15; --bg-2:#0f1320; --panel:#141a2a; --panel-2:#1a2138; --line:#262c42;
+    --ink:#eae6d9; --ink-dim:#a7a394; --ink-faint:#6d6a5d;
+    --gold:#e8b341; --gold-soft:#c48f27; --violet:#7a6bd1; --violet-soft:#4b3e8f;
+    --good:#6fcf97; --radius:14px; --btn-ink:#1a1407;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  [data-theme="light"] {
+    --bg:#fbf8f3; --bg-2:#f2ebe0; --panel:#ffffff; --panel-2:#faf4ea; --line:#e6dccb;
+    --ink:#1b1611; --ink-dim:#5b5247; --ink-faint:#9a9081;
+    --gold:#d9660f; --gold-soft:#a8480a; --violet:#b8530c; --violet-soft:#e2a978;
+    --good:#2f9e5f; --btn-ink:#fff7ef;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; overflow-x:hidden; }
+  body {
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    background:
+      radial-gradient(900px 500px at 85% -10%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 60%),
+      radial-gradient(800px 480px at -10% 12%, color-mix(in srgb, var(--violet) 10%, transparent), transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    color:var(--ink); min-height:100vh; line-height:1.6;
+    -webkit-font-smoothing:antialiased; transition:background .25s ease, color .25s ease;
+  }
+  .mono { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; }
+  p, .lede, .closer { font-family:var(--sans); }
+  a { color:var(--gold); text-decoration:none; }
+  a:hover { color:color-mix(in srgb, var(--gold) 75%, #fff); }
+  .wrap { max-width:820px; margin:0 auto; padding:28px 28px 96px; }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at 20% 20%, var(--glow-orange) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
-                linear-gradient(180deg, var(--dark-bg) 0%, #0d0d14 100%);
-            pointer-events: none;
-            z-index: -1;
-        }
+  header.nav { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand .sigil { width:38px; height:38px; }
+  .brand-stack { display:flex; flex-direction:column; gap:3px; line-height:1; }
+  .brand .maker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:10px; letter-spacing:.32em; text-transform:uppercase; color:var(--gold); opacity:.6; }
+  .brand .name { font-size:16px; letter-spacing:.22em; text-transform:uppercase; }
+  .brand .name b { color:var(--gold); font-weight:600; }
+  .nav-right { display:flex; align-items:center; gap:16px; }
+  .nav-right a.back { color:var(--ink-dim); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+  .nav-right a.back:hover { color:var(--gold); }
+  .theme-toggle { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--gold); background:color-mix(in srgb, var(--gold) 5%, transparent); transition:border-color .2s, transform .15s; }
+  .theme-toggle:hover { border-color:var(--gold); transform:translateY(-1px); }
+  .theme-toggle svg { width:17px; height:17px; }
+  .theme-toggle .icon-sun { display:none; }
+  [data-theme="light"] .theme-toggle .icon-sun { display:block; }
+  [data-theme="light"] .theme-toggle .icon-moon { display:none; }
 
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 24px 20px 60px;
-        }
+  .eyebrow { display:inline-block; margin-top:46px; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); padding:6px 13px; border-radius:999px; border:1px solid color-mix(in srgb, var(--gold) 35%, transparent); background:color-mix(in srgb, var(--gold) 5%, transparent); }
+  h1 { font-size:clamp(34px,5.5vw,52px); font-weight:500; letter-spacing:-.01em; margin:18px 0 14px; line-height:1.08; }
+  h1 em { color:var(--gold); font-style:italic; }
+  .lede { font-size:19px; color:color-mix(in srgb, var(--ink) 80%, var(--ink-dim)); max-width:680px; margin:0; }
 
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-top: 40px;
-        }
+  .channel { margin-top:24px; padding:24px 26px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(180deg,var(--panel),var(--panel-2)); }
+  .channel .kicker { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet); margin:0 0 8px; }
+  .channel h3 { font-size:22px; font-weight:500; margin:0 0 10px; }
+  .channel p { font-size:16px; color:color-mix(in srgb, var(--ink) 82%, var(--ink-dim)); margin:0 0 14px; }
+  .channel .value { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:14.5px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--gold) 5%, transparent); color:var(--gold); word-break:break-all; display:block; }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+  .closer { margin-top:30px; font-size:15px; color:var(--ink-dim); font-style:italic; }
+  .closer b { color:var(--gold); font-style:normal; font-weight:600; }
+  .closer a { color:var(--gold); }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--btc-orange), var(--btc-gold));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--dark-bg);
-            box-shadow: 0 0 30px var(--glow-strong);
-        }
+  footer { margin-top:60px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--ink-faint); flex-wrap:wrap; gap:12px; }
+  footer .mantra { font-style:italic; color:var(--ink-dim); }
+  footer .foot-links { display:flex; gap:18px; }
+  footer .foot-links a { color:var(--ink-dim); }
+  footer .foot-links a:hover { color:var(--gold); }
 
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--btc-orange), var(--btc-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header .subtitle {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: var(--btc-orange);
-            box-shadow: 0 0 40px var(--glow-orange);
-        }
-
-        .card h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-        }
-
-        /* Donation Options */
-        .options-grid {
-            display: grid;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .option-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            width: 100%;
-            color: var(--text-primary);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-        }
-
-        .option-btn:hover {
-            border-color: var(--btc-orange);
-            background: rgba(247, 147, 26, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .option-btn.active {
-            border-color: var(--btc-orange);
-            box-shadow: 0 0 20px var(--glow-orange);
-        }
-
-        .option-icon {
-            font-size: 1.5rem;
-            width: 40px;
-            text-align: center;
-        }
-
-        .option-text {
-            flex: 1;
-        }
-
-        .option-text .name {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .option-text .desc {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* Details Section */
-        .details-section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .details-section.visible {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .details-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .details-icon {
-            font-size: 1.5rem;
-        }
-
-        .details-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .details-info {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .details-info a {
-            color: var(--btc-orange);
-            text-decoration: none;
-        }
-
-        .details-info a:hover {
-            text-decoration: underline;
-        }
-
-        .address-box {
-            background: var(--dark-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            word-break: break-all;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .address-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--card-border);
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .copy-btn:hover {
-            background: var(--btc-orange);
-            color: var(--dark-bg);
-        }
-
-        .qr-container {
-            display: flex;
-            justify-content: center;
-            margin: 24px 0;
-        }
-
-        .qr-container img {
-            max-width: 280px;
-            border-radius: 12px;
-            border: 2px solid var(--card-border);
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--card-border);
-            border-top: 3px solid var(--btc-orange);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .back-btn {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 10px 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.9rem;
-        }
-
-        .back-btn:hover {
-            border-color: var(--btc-orange);
-            color: var(--btc-orange);
-        }
-
-        /* Highlight Box */
-        .highlight-box {
-            background: rgba(247, 147, 26, 0.08);
-            border: 1px solid var(--btc-orange-dim);
-            border-radius: 12px;
-            padding: 20px 24px;
-            text-align: center;
-        }
-
-        .highlight-box p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-
-        .highlight-box strong {
-            color: var(--btc-orange);
-        }
-
-        /* Footer */
-        .site-footer {
-            text-align: center;
-            padding: 24px 20px 16px;
-            margin-top: 40px;
-            border-top: 1px solid var(--card-border);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .site-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .site-footer a:hover {
-            color: var(--btc-orange);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .footer-separator {
-            color: var(--text-muted);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--card-bg);
-            border: 1px solid var(--success);
-            color: var(--success);
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Hidden */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .header {
-                padding-top: 24px;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .option-btn {
-                padding: 16px;
-            }
-
-            .qr-container img {
-                max-width: 220px;
-            }
-        }
-    </style>
+  @media (max-width:640px) {
+    .wrap { padding:18px 16px 64px; }
+    header.nav { flex-direction:column; align-items:flex-start; gap:12px; }
+    .nav-right { width:100%; justify-content:space-between; }
+    h1 { font-size:clamp(28px,8vw,40px); }
+    .lede { font-size:17px; }
+    .channel { padding:20px 18px; }
+    .channel .value { font-size:13px; }
+    footer { flex-direction:column; align-items:flex-start; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">₿</div>
-            </div>
-            <h1>Support Development</h1>
-            <p class="subtitle">Your contributions fuel the development of open-source, privacy-focused Bitcoin tools. We operate on a value-for-value basis.</p>
-        </header>
+<div class="wrap">
 
-        <!-- Main Card -->
-        <div class="card">
-            <h2>Choose a Donation Method</h2>
-
-            <!-- Options -->
-            <div id="options" class="options-grid">
-                <!-- Buttons will be injected by JS -->
-            </div>
-
-            <!-- Details Section -->
-            <div id="details" class="details-section">
-                <div class="details-header">
-                    <span class="details-icon" id="details-icon">⚡</span>
-                    <span class="details-title" id="details-title"></span>
-                </div>
-                <p class="details-info" id="details-info"></p>
-                
-                <div class="address-box">
-                    <div class="address-label">Address</div>
-                    <div id="details-address"></div>
-                    <button class="copy-btn" onclick="copyAddress()">Copy</button>
-                </div>
-
-                <div class="qr-container" id="qrcode">
-                    <div class="spinner"></div>
-                </div>
-
-                <button class="back-btn" onclick="backToOptions()">← Back to options</button>
-            </div>
-        </div>
-
-        <!-- Highlight Box -->
-        <div class="highlight-box">
-            <p><strong>Why Donate?</strong> Your support helps maintain and improve these tools, ensuring privacy remains a human right. Every contribution counts!</p>
-        </div>
+  <header class="nav">
+    <a class="brand" href="../index.html" style="text-decoration:none;color:inherit;">
+      <svg class="sigil" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" style="stop-color:var(--gold)"/><stop offset="1" style="stop-color:var(--violet)"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M32 12 L36 28 L52 32 L36 36 L32 52 L28 36 L12 32 L28 28 Z" style="fill:var(--gold)" opacity=".85"/>
+        <circle cx="32" cy="32" r="3" style="fill:var(--bg);stroke:var(--violet)" stroke-width="1"/>
+      </svg>
+      <div class="brand-stack">
+        <div class="maker">by AVBforge.com</div>
+        <div class="name">Amulet <b>Arsenal</b></div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a class="back" href="../index.html">← Home</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.4M12 19.1v2.4M21.5 12h-2.4M4.9 12H2.5M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7 17 17M7 7 5.3 5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
     </div>
+  </header>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="https://github.com/avbpodcast/timeseed.io" target="_blank" rel="noopener">Source</a>
-            <span class="footer-separator">·</span>
-            <a href="https://allesvoorbitcoin.be/21tools/" target="_blank" rel="noopener">21 Tools</a>
-            <span class="footer-separator">·</span>
-            <a href="https://avbpodcast.github.io/timeseed.io/contact.html" target="_blank" rel="noopener">Contact</a>
-        </div>
-    </footer>
+  <span class="eyebrow">Donate</span>
+  <h1>Support the <em>Arsenal.</em></h1>
+  <p class="lede">
+    The Amulet Arsenal is free, open source, and made for sovereign Bitcoiners. If a tool here saved you a hardware-wallet purchase, simplified an inheritance plan, or just made your Bitcoin life easier, value-for-value is welcome.
+  </p>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">Copied to clipboard!</div>
+  <div class="channel">
+    <p class="kicker">Onchain Bitcoin</p>
+    <h3>Native SegWit (BIP-84)</h3>
+    <p>One-shot, no third party.</p>
+    <span class="value">bc1qrjc6mduhqn7sp3l2dfu6e268lrvemkgm6akhm4</span>
+  </div>
 
-    <script>
-        const donationOptions = [
-            {
-                name: "Lightning Network",
-                icon: "⚡",
-                desc: "Instant, low-fee payments",
-                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/MR21QR.png",
-                address: "Mr21@coinos.io",
-                details: "<strong>Lightning Address:</strong> Send sats instantly via Lightning Network to 'Mr21'."
-            },
-            {
-                name: "Bitcoin On-Chain",
-                icon: "₿",
-                desc: "Direct, without intermediaries",
-                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/onchain3.png",
-                address: "bc1qrjc6mduhqn7sp3l2dfu6e268lrvemkgm6akhm4",
-                details: "The preferred way to donate Bitcoin: on-chain, direct and without intermediaries."
-            },
-            {
-                name: "Silent Payment",
-                icon: "🔒",
-                desc: "Maximum privacy (BIP352)",
-                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/silent1.png",
-                address: "sp1qqv5t58fjkc77l7repqgy7x5pudp4dh3vypddle7eyplassvgvfp85qu3lfu2dd87ws8ltetshtdqut3yg3r9qm4650u5fwruwe0ad4u38gkkq3hr",
-                details: "Alias: <strong>avb@danawallet.app</strong><br><br>Silent Payments are supported by Phoenix, Blue Wallet, DANA, Cake Wallet, and WabiSabi. <a href='https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki' target='_blank' rel='noopener'>Learn more about BIP353</a>."
-            }
-        ];
+  <div class="channel">
+    <p class="kicker">Lightning</p>
+    <h3>Small, fast, low fees</h3>
+    <p>A Lightning address. Easiest for small tips.</p>
+    <span class="value">mr21@coinos.io</span>
+  </div>
 
-        let currentAddress = '';
+  <div class="channel">
+    <p class="kicker">Silent Payments (BIP-352)</p>
+    <h3>One static address, fresh outputs</h3>
+    <p>Reuses no on-chain address. Build the wallet that scans it with Amulet Silent.</p>
+    <span class="value">sp1qqv5t58fjkc77l7repqgy7x5pudp4dh3vypddle7eyplassvgvfp85qu3lfu2dd87ws8ltetshtdqut3yg3r9qm4650u5fwruwe0ad4u38gkkq3hr</span>
+  </div>
 
-        function loadOptions() {
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
+  <p class="closer">
+    Thanks for considering. The fastest way to help on top of a tip is to <a href="https://codeberg.org/avbforge/pages">audit the code</a>, <a href="../contact/index.html">report an issue</a>, or share the Arsenal with someone who could use it.
+  </p>
 
-            donationOptions.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.innerHTML = `
-                    <span class="option-icon">${option.icon}</span>
-                    <div class="option-text">
-                        <div class="name">${option.name}</div>
-                        <div class="desc">${option.desc}</div>
-                    </div>
-                `;
-                button.onclick = () => showDetails(option);
-                optionsDiv.appendChild(button);
-            });
-        }
+  <footer>
+    <div class="mantra">"Not your keys, not your coins. So forge them yourself."</div>
+    <div class="foot-links">
+      <a href="../index.html">Home</a>
+      <a href="../verify.html">Verify</a>
+      <a href="../contact/index.html">Contact</a>
+      <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">Source</a>
+    </div>
+    <div class="mono">AVBforge · &copy; <span id="year"></span></div>
+  </footer>
 
-        function showDetails(option) {
-            document.getElementById('options').classList.add('hidden');
-            const detailsDiv = document.getElementById('details');
-            detailsDiv.classList.add('visible');
+</div>
 
-            document.getElementById('details-icon').textContent = option.icon;
-            document.getElementById('details-title').textContent = option.name;
-            document.getElementById('details-info').innerHTML = option.details;
-            document.getElementById('details-address').textContent = option.address;
-            currentAddress = option.address;
-
-            const qrDiv = document.getElementById('qrcode');
-            qrDiv.innerHTML = '<div class="spinner"></div>';
-
-            setTimeout(() => {
-                qrDiv.innerHTML = '';
-                if (option.image) {
-                    const img = document.createElement('img');
-                    img.src = option.image;
-                    img.alt = `${option.name} QR Code`;
-                    img.onerror = () => {
-                        qrDiv.innerHTML = '<p style="color: var(--error);">Failed to load QR code image.</p>';
-                    };
-                    qrDiv.appendChild(img);
-                }
-            }, 300);
-        }
-
-        function backToOptions() {
-            document.getElementById('options').classList.remove('hidden');
-            document.getElementById('details').classList.remove('visible');
-            document.getElementById('qrcode').innerHTML = '';
-            document.getElementById('details-address').textContent = '';
-        }
-
-        function copyAddress() {
-            navigator.clipboard.writeText(currentAddress).then(() => {
-                showToast('Copied to clipboard!');
-            }).catch(() => {
-                showToast('Failed to copy');
-            });
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
-        }
-
-        // Initialize
-        loadOptions();
-    </script>
+<script>
+  (function () {
+    var root = document.documentElement;
+    if (localStorage.getItem('aa-theme') !== 'dark') root.setAttribute('data-theme', 'light');
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.addEventListener('click', function () {
+      if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('aa-theme','dark'); }
+      else { root.setAttribute('data-theme','light'); localStorage.setItem('aa-theme','light'); }
+    });
+  })();
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
+                            

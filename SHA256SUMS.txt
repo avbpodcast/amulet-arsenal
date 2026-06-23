@@ -40,3 +40,6 @@ ff4b7fc8462be42f7ca20c7b2c5f807e1d21931b133f88400508d1dadb3f78b9  Amulet Silent/
 48f85e732f9a6ed1ed8c3393c1aaf56387cc62b5e0d5d103576a1083bb8b5d86  Amulet-passphrase-gen/Amulet Picker v16.html
 
 # 11 · Amulet Relic ships as a Python script in the source repository (amulet_relic.py).
+
+# 12 · AVBforge PGP public key (RFC 9116 Encryption target)
+33912e1e0b17eecf5f059bcbb2b9fa9b2b69c39ba3c3da6d82e49327ce3aff05  .well-known/pgp-key.txt
