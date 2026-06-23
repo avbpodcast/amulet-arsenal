@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Development | AVBFORGE.COM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --btc-orange: #f7931a;
+            --btc-orange-dim: #c77a15;
+            --btc-gold: #ffd93d;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --card-border: #1e1e2e;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --text-muted: #555566;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+            --glow-orange: rgba(247, 147, 26, 0.15);
+            --glow-strong: rgba(247, 147, 26, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, var(--glow-orange) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--dark-bg) 0%, #0d0d14 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--btc-orange), var(--btc-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--glow-strong);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--btc-orange), var(--btc-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--btc-orange);
+            box-shadow: 0 0 40px var(--glow-orange);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        /* Donation Options */
+        .options-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--btc-orange);
+            background: rgba(247, 147, 26, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.active {
+            border-color: var(--btc-orange);
+            box-shadow: 0 0 20px var(--glow-orange);
+        }
+
+        .option-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .option-text .name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .option-text .desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Details Section */
+        .details-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .details-section.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .details-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .details-icon {
+            font-size: 1.5rem;
+        }
+
+        .details-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .details-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .details-info a {
+            color: var(--btc-orange);
+            text-decoration: none;
+        }
+
+        .details-info a:hover {
+            text-decoration: underline;
+        }
+
+        .address-box {
+            background: var(--dark-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .address-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--card-border);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--btc-orange);
+            color: var(--dark-bg);
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .qr-container img {
+            max-width: 280px;
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--card-border);
+            border-top: 3px solid var(--btc-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            border-color: var(--btc-orange);
+            color: var(--btc-orange);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(247, 147, 26, 0.08);
+            border: 1px solid var(--btc-orange-dim);
+            border-radius: 12px;
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .highlight-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .highlight-box strong {
+            color: var(--btc-orange);
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            padding: 24px 20px 16px;
+            margin-top: 40px;
+            border-top: 1px solid var(--card-border);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .site-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .site-footer a:hover {
+            color: var(--btc-orange);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-separator {
+            color: var(--text-muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--card-bg);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding-top: 24px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .option-btn {
+                padding: 16px;
+            }
+
+            .qr-container img {
+                max-width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">₿</div>
+            </div>
+            <h1>Support Development</h1>
+            <p class="subtitle">Your contributions fuel the development of open-source, privacy-focused Bitcoin tools. We operate on a value-for-value basis.</p>
+        </header>
+
+        <!-- Main Card -->
+        <div class="card">
+            <h2>Choose a Donation Method</h2>
+
+            <!-- Options -->
+            <div id="options" class="options-grid">
+                <!-- Buttons will be injected by JS -->
+            </div>
+
+            <!-- Details Section -->
+            <div id="details" class="details-section">
+                <div class="details-header">
+                    <span class="details-icon" id="details-icon">⚡</span>
+                    <span class="details-title" id="details-title"></span>
+                </div>
+                <p class="details-info" id="details-info"></p>
+                
+                <div class="address-box">
+                    <div class="address-label">Address</div>
+                    <div id="details-address"></div>
+                    <button class="copy-btn" onclick="copyAddress()">Copy</button>
+                </div>
+
+                <div class="qr-container" id="qrcode">
+                    <div class="spinner"></div>
+                </div>
+
+                <button class="back-btn" onclick="backToOptions()">← Back to options</button>
+            </div>
+        </div>
+
+        <!-- Highlight Box -->
+        <div class="highlight-box">
+            <p><strong>Why Donate?</strong> Your support helps maintain and improve these tools, ensuring privacy remains a human right. Every contribution counts!</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="https://github.com/avbpodcast/timeseed.io" target="_blank" rel="noopener">Source</a>
+            <span class="footer-separator">·</span>
+            <a href="https://allesvoorbitcoin.be/21tools/" target="_blank" rel="noopener">21 Tools</a>
+            <span class="footer-separator">·</span>
+            <a href="https://avbpodcast.github.io/timeseed.io/contact.html" target="_blank" rel="noopener">Contact</a>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        const donationOptions = [
+            {
+                name: "Lightning Network",
+                icon: "⚡",
+                desc: "Instant, low-fee payments",
+                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/MR21QR.png",
+                address: "Mr21@coinos.io",
+                details: "<strong>Lightning Address:</strong> Send sats instantly via Lightning Network to 'Mr21'."
+            },
+            {
+                name: "Bitcoin On-Chain",
+                icon: "₿",
+                desc: "Direct, without intermediaries",
+                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/onchain3.png",
+                address: "bc1qrjc6mduhqn7sp3l2dfu6e268lrvemkgm6akhm4",
+                details: "The preferred way to donate Bitcoin: on-chain, direct and without intermediaries."
+            },
+            {
+                name: "Silent Payment",
+                icon: "🔒",
+                desc: "Maximum privacy (BIP352)",
+                image: "https://raw.githubusercontent.com/avbpodcast/timeseed.io/main/silent1.png",
+                address: "sp1qqv5t58fjkc77l7repqgy7x5pudp4dh3vypddle7eyplassvgvfp85qu3lfu2dd87ws8ltetshtdqut3yg3r9qm4650u5fwruwe0ad4u38gkkq3hr",
+                details: "Alias: <strong>avb@danawallet.app</strong><br><br>Silent Payments are supported by Phoenix, Blue Wallet, DANA, Cake Wallet, and WabiSabi. <a href='https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki' target='_blank' rel='noopener'>Learn more about BIP353</a>."
+            }
+        ];
+
+        let currentAddress = '';
+
+        function loadOptions() {
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            donationOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerHTML = `
+                    <span class="option-icon">${option.icon}</span>
+                    <div class="option-text">
+                        <div class="name">${option.name}</div>
+                        <div class="desc">${option.desc}</div>
+                    </div>
+                `;
+                button.onclick = () => showDetails(option);
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function showDetails(option) {
+            document.getElementById('options').classList.add('hidden');
+            const detailsDiv = document.getElementById('details');
+            detailsDiv.classList.add('visible');
+
+            document.getElementById('details-icon').textContent = option.icon;
+            document.getElementById('details-title').textContent = option.name;
+            document.getElementById('details-info').innerHTML = option.details;
+            document.getElementById('details-address').textContent = option.address;
+            currentAddress = option.address;
+
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '<div class="spinner"></div>';
+
+            setTimeout(() => {
+                qrDiv.innerHTML = '';
+                if (option.image) {
+                    const img = document.createElement('img');
+                    img.src = option.image;
+                    img.alt = `${option.name} QR Code`;
+                    img.onerror = () => {
+                        qrDiv.innerHTML = '<p style="color: var(--error);">Failed to load QR code image.</p>';
+                    };
+                    qrDiv.appendChild(img);
+                }
+            }, 300);
+        }
+
+        function backToOptions() {
+            document.getElementById('options').classList.remove('hidden');
+            document.getElementById('details').classList.remove('visible');
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('details-address').textContent = '';
+        }
+
+        function copyAddress() {
+            navigator.clipboard.writeText(currentAddress).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(() => {
+                showToast('Failed to copy');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialize
+        loadOptions();
+    </script>
+</body>
+</html>
