@@ -1,6 +1,6 @@
 <!--
     Amulet - Bitcoin Offline Wallet Generator
-    Version: 1.52
+    Version: 1.56
     Copyright (c) 2025-2026 deadeyes[](https://x.com/deadeyes)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,7 +31,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZjMDY5Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIi8+PC9saW5lYXJHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9InMiIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y3OTMxYSIvPjxzdG9wIG9mZnNldD0iNTUlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIiBzdG9wLW9wYWNpdHk9Ii43Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSI2MCIgeT0iNjAiIHdpZHRoPSIzNDAiIGhlaWdodD0iMzQwIiByeD0iOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2IpIiBzdHJva2Utd2lkdGg9IjE0Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEwLDIzMikiIGZpbGw9InVybCgjYikiPjxyZWN0IHg9Ii0xNiIgeT0iLTEyMCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjMwIiByeD0iMyIvPjxyZWN0IHg9IjciIHk9Ii0xMjAiIHdpZHRoPSIxMyIgaGVpZ2h0PSIzMCIgcng9IjMiLz48cmVjdCB4PSItMTYiIHk9IjkyIiB3aWR0aD0iMTMiIGhlaWdodD0iMzAiIHJ4PSIzIi8+PHJlY3QgeD0iNyIgeT0iOTIiIHdpZHRoPSIxMyIgaGVpZ2h0PSIzMCIgcng9IjMiLz48cGF0aCBkPSJNLTQyLTkwTDIyLTkwQzYyLTkwIDg0LTcyIDg0LTQ2IDg0LTI0IDcwLTggNDgtMiA3NCA0IDk2IDIwIDk2IDUwIDk2IDgwIDcyIDk4IDMwIDk4TC00MiA5OFpNLTgtNjBMLTgtMTIgMjQtMTJDNDYtMTIgNTYtMjQgNTYtMzggNTYtNTAgNDYtNjAgMjQtNjBaTS04IDE2TC04IDcwIDMwIDcwQzU0IDcwIDY2IDU2IDY2IDQyIDY2IDI4IDU0IDE2IDMwIDE2WiIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzOTAsMzkwKSI+PGNpcmNsZSByPSI1MiIgZmlsbD0idXJsKCNzKSIgb3BhY2l0eT0iLjg1Ii8+PGNpcmNsZSByPSIyOCIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjkiLz48Y2lyY2xlIGN4PSItNTAiIGN5PSItMzAiIHI9IjUiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii42Ii8+PGNpcmNsZSBjeD0iNDAiIGN5PSItNDUiIHI9IjQiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii41Ii8+PGNpcmNsZSBjeD0iLTM1IiBjeT0iNDIiIHI9IjYiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii40NSIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iMjAiIHI9IjMuNSIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSItNjAiIGN5PSIxMCIgcj0iMyIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjQiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjU1IiByPSI0IiBmaWxsPSIjZjc5MzFhIiBvcGFjaXR5PSIuMzUiLz48L2c+PC9zdmc+Cg==">
-<title>Amulet · Bitcoin Offline Wallet Generator · v1.52</title>
+<title>Amulet · Bitcoin Offline Wallet Generator · v1.56</title>
 <style>
   :root{
     --bg0:#070b18;--bg1:#0d1326;--panel:#111935;--panel-2:#0b1226;
@@ -258,16 +258,21 @@
   .deck{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-top:10px}
   .pcard{aspect-ratio:2/3;border-radius:6px;background:#f4f6fb;color:#0f1522;border:1px solid #9aa5c4;
     display:flex;align-items:center;justify-content:center;flex-direction:column;
-    font-family:var(--mono);font-weight:700;font-size:11px;cursor:pointer;line-height:1;padding:2px;
+    font-family:var(--mono);font-weight:700;font-size:14px;cursor:pointer;line-height:1;padding:2px;
     transition:transform .08s ease, opacity .15s ease, box-shadow .15s ease}
-  .pcard .suit{font-size:13px;margin-top:2px}
+  .pcard .suit{font-size:17px;margin-top:3px}
   .pcard.red{color:#c1242a}
   .pcard.used{opacity:.18;cursor:not-allowed}
   .pcard:hover:not(.used){transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.35)}
+  /* v1.55: keep cells readable on narrow phones without overflowing */
+  @media (max-width:640px){
+    .pcard{font-size:12px}
+    .pcard .suit{font-size:14px;margin-top:2px}
+  }
 
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:32px}
-  .chip{background:var(--chip-bg);border:1px solid var(--line-2);border-radius:8px;padding:5px 9px;
-    font-family:var(--mono);font-size:12.5px;display:inline-flex;align-items:center;gap:6px}
+  .chip{background:var(--chip-bg);border:1px solid var(--line-2);border-radius:8px;padding:6px 10px;
+    font-family:var(--mono);font-size:13.5px;display:inline-flex;align-items:center;gap:6px}
   .chip.red{color:var(--red)}
   .chip .x{cursor:pointer;color:var(--muted)}
   .chip .x:hover{color:var(--err)}
@@ -315,6 +320,44 @@
   summary::-webkit-details-marker{display:none}
   summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--muted);transition:transform .2s}
   details[open] summary::before{transform:rotate(90deg)}
+  /* v1.54: verify-wallet mode ---------------------------------------- */
+  .verify-pill{margin-left:6px;background:linear-gradient(180deg,rgba(94,148,255,.16),rgba(94,148,255,.05));
+    border:1px solid rgba(94,148,255,.55);color:var(--accent-2);
+    border-radius:999px;padding:7px 14px 7px 12px;font-size:12.5px;font-weight:700;
+    letter-spacing:.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s ease, border-color .15s ease, transform .05s ease}
+  .verify-pill:hover{background:linear-gradient(180deg,rgba(94,148,255,.28),rgba(94,148,255,.10));border-color:rgba(94,148,255,.85)}
+  .verify-pill:active{transform:translateY(1px)}
+  .verify-pill .v-ic{font-size:14px}
+  #step-verify{padding:2px 0 6px}
+  .verify-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 14px}
+  .verify-head .back-link{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:8px}
+  .verify-head .back-link:hover{background:var(--panel-2);color:var(--ink)}
+  .verify-head h2{margin:0;font-size:20px;font-weight:700}
+  .verify-tabs{display:flex;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:5px;margin:0 0 18px;flex-wrap:wrap}
+  .verify-tabs button{flex:1;min-width:160px;background:transparent;border:0;color:var(--ink-dim);padding:10px 14px;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:background .15s ease}
+  .verify-tabs button.active{background:var(--panel);color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+  .verify-lane{display:none}
+  .verify-lane.active{display:block}
+  .lane-hint{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 14px}
+  .mnemo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px;margin-top:6px}
+  @media (max-width:640px){.mnemo-grid{grid-template-columns:repeat(2,1fr)}}
+  .mnemo-cell{display:flex;align-items:center;gap:6px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+  .mnemo-cell .mn{font-family:var(--mono);color:var(--muted);font-size:11px;min-width:20px}
+  .mnemo-cell input{flex:1;background:transparent;border:0;color:var(--ink);font-family:var(--mono);font-size:13px;padding:4px 2px;outline:none;min-width:0}
+  .mnemo-cell.bad{border-color:var(--err)}
+  .mnemo-cell.ok{border-color:rgba(53,211,154,.4)}
+  .verify-error{background:rgba(255,122,122,.10);border:1px solid rgba(255,122,122,.45);color:var(--err);padding:10px 13px;border-radius:9px;font-size:13px;margin:10px 0 0}
+  .verify-ok{background:rgba(53,211,154,.10);border:1px solid rgba(53,211,154,.45);color:var(--ok);padding:10px 13px;border-radius:9px;font-size:13px;margin:10px 0 0}
+  .file-drop{border:2px dashed var(--line-2);border-radius:12px;padding:22px 18px;text-align:center;cursor:pointer;background:var(--panel-2);color:var(--muted);font-size:13px;transition:border-color .15s ease,background .15s ease}
+  .file-drop:hover,.file-drop.drag-over{border-color:var(--accent);color:var(--ink);background:var(--panel)}
+  .file-drop-name{font-family:var(--mono);color:var(--ink);margin-top:8px;font-size:12px;word-break:break-all}
+  .verify-form-row{margin-top:14px}
+  .verify-form-row label{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:5px}
+  .verify-form-row input[type="text"], .verify-form-row input[type="password"], .verify-form-row textarea{width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);font-family:var(--mono);font-size:13px}
+  .verify-form-row textarea{min-height:74px;resize:vertical}
+  .verify-cta-row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+  .verify-cta-row .primary{padding:11px 20px}
   code.inline{background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:var(--mono);font-size:12px;color:var(--ink-dim)}
 
   /* extended keys list */
@@ -878,7 +921,7 @@
     <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="lg-btc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffc069"/><stop offset="100%" stop-color="#f7931a"/></linearGradient><radialGradient id="lg-splat" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f7931a"/><stop offset="55%" stop-color="#f7931a" stop-opacity=".7"/><stop offset="100%" stop-color="#f7931a" stop-opacity="0"/></radialGradient></defs><rect x="60" y="60" width="340" height="340" rx="8" fill="none" stroke="url(#lg-btc)" stroke-width="14"/><g transform="translate(210,232)" fill="url(#lg-btc)"><rect x="-16" y="-120" width="13" height="30" rx="3"/><rect x="7" y="-120" width="13" height="30" rx="3"/><rect x="-16" y="92" width="13" height="30" rx="3"/><rect x="7" y="92" width="13" height="30" rx="3"/><path d="M-42-90L22-90C62-90 84-72 84-46 84-24 70-8 48-2 74 4 96 20 96 50 96 80 72 98 30 98L-42 98ZM-8-60L-8-12 24-12C46-12 56-24 56-38 56-50 46-60 24-60ZM-8 16L-8 70 30 70C54 70 66 56 66 42 66 28 54 16 30 16Z"/></g><g transform="translate(390,390)"><circle r="52" fill="url(#lg-splat)" opacity=".85"/><circle r="28" fill="#f7931a" opacity=".9"/><circle cx="-50" cy="-30" r="5" fill="#f7931a" opacity=".6"/><circle cx="40" cy="-45" r="4" fill="#f7931a" opacity=".5"/><circle cx="-35" cy="42" r="6" fill="#f7931a" opacity=".45"/><circle cx="55" cy="20" r="3.5" fill="#f7931a" opacity=".5"/><circle cx="-60" cy="10" r="3" fill="#f7931a" opacity=".4"/><circle cx="25" cy="55" r="4" fill="#f7931a" opacity=".35"/><circle cx="-15" cy="-55" r="3.5" fill="#f7931a" opacity=".45"/><circle cx="60" cy="-15" r="2.5" fill="#f7931a" opacity=".35"/><circle cx="-40" cy="-50" r="2" fill="#f7931a" opacity=".3"/><circle cx="48" cy="48" r="3" fill="#f7931a" opacity=".3"/></g></svg></div>
     <div>
       <h1>Amulet</h1>
-      <div class="tag">Offline BIP‑39 · BIP‑32 · In your browser · v1.52</div>
+      <div class="tag">Offline BIP‑39 · BIP‑32 · In your browser · v1.56</div>
     </div>
     <span class="net-pill-wrap">
       <button class="net-pill checking" id="netPill" type="button" aria-live="polite" aria-haspopup="dialog"
@@ -896,6 +939,7 @@
       </span>
     </button>
     <button class="dec-icon-btn" id="openDecrypt" type="button" title="Decrypt an encrypted report (.enc)">🔓</button>
+    <button class="verify-pill" id="openVerify" type="button" title="Verify an existing wallet from its seed phrase, backup file, or dice/cards + CSPRNG"><span class="v-ic">🔍</span> Verify wallet</button>
   </div>
   <p class="lede"><strong>Built for long-term holders.</strong> A Bitcoin seed minted in your own room, on a machine you control, with no part you can't see. 256 bits from the browser's CSPRNG, optionally folded together with dice, cards, or keystrokes via SHA‑256. Reproducible to the byte if you ever want to check.</p>
 
@@ -1027,6 +1071,18 @@
       </div>
     </div>
 
+        <!-- v1.53: reproducible mode -->
+        <div id="reproWrap" style="margin-top:20px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;line-height:1.45">
+            <input type="checkbox" id="reproMode" style="margin-top:3px;width:16px;height:16px;cursor:pointer;flex-shrink:0">
+            <span>
+              <strong>Reproducible mode</strong> · optional. Ticking this lets your raw dice or card notes alone regenerate the wallet later.
+              <div class="tiny" style="margin-top:6px">Your backups already work without this. Every wallet made here can be reproduced from its seed phrase, or from the .txt / .pdf / .enc file it exports — anytime, via <strong>Verify wallet</strong> at the top of the page. Only tick this if you want the raw draws themselves to also count as a valid backup path. When ticked, the wallet's strength depends entirely on how well you shuffled or rolled.</div>
+            </span>
+          </label>
+          <div id="reproWarn" class="warn hidden" style="margin-top:12px"></div>
+        </div>
+
     <div class="row" style="margin-top:22px">
       <button class="primary" id="generate">Generate wallet</button>
     </div>
@@ -1038,6 +1094,99 @@
     <div class="spinner"></div>
     <div class="quote" id="quote"></div>
     <div class="sub">Gathering entropy · computing checksum…</div>
+  </section>
+
+  <!-- Step V: verify (v1.54) -->
+  <section id="step-verify" class="hidden">
+    <div class="verify-head">
+      <div><h2>Verify existing wallet</h2><div class="lane-hint" style="margin:2px 0 0">Check that a paper backup, an .enc file, or a set of entropy notes still yields the same wallet.</div></div>
+      <button type="button" class="back-link" id="verifyBack">← Back to Generate</button>
+    </div>
+
+    <div class="verify-tabs" role="tablist">
+      <button type="button" data-lane="mnemo" class="active">From seed phrase</button>
+      <button type="button" data-lane="file">From backup file</button>
+      <button type="button" data-lane="entropy">From entropy sources</button>
+    </div>
+
+    <!-- Lane 1: mnemonic -->
+    <div class="verify-lane active" data-lane="mnemo">
+      <p class="lane-hint">Type or paste your 12 or 24 words. Words are matched against the BIP‑39 English list, and the checksum is checked. Works for any wallet ever made by any tool.</p>
+      <div class="row" style="gap:12px;flex-wrap:wrap;align-items:center">
+        <div class="seg small" id="mnemoLen">
+          <button data-wc="12">12 words</button>
+          <button data-wc="24" class="active">24 words</button>
+        </div>
+        <button type="button" class="ghost small" id="mnemoPaste" title="Paste all words at once from clipboard">Paste all</button>
+        <button type="button" class="ghost small" id="mnemoClear">Clear</button>
+      </div>
+      <div id="mnemoGrid" class="mnemo-grid" style="margin-top:12px"></div>
+      <div class="verify-form-row">
+        <label for="mnemoPass">BIP‑39 passphrase (optional)</label>
+        <input type="text" id="mnemoPass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="mnemoStatus"></div>
+      <div class="verify-cta-row">
+        <button type="button" class="primary" id="mnemoVerifyBtn">Verify wallet</button>
+      </div>
+    </div>
+
+    <!-- Lane 2: file -->
+    <div class="verify-lane" data-lane="file">
+      <p class="lane-hint">Drop or pick a <code class="inline">.enc</code> or <code class="inline">.txt</code> file that this tool wrote for you. For an <code class="inline">.enc</code>, enter its password. For a PDF, open it, copy the twelve or twenty-four words, and paste them into the <em>From seed phrase</em> tab.</p>
+      <div class="file-drop" id="verifyDrop">
+        <div>Drop a file here, or click to pick one</div>
+        <input type="file" id="verifyFileInput" hidden accept=".enc,.txt">
+        <div class="file-drop-name" id="verifyFileName"></div>
+      </div>
+      <div class="verify-form-row" id="verifyPwRow" style="display:none">
+        <label for="verifyPw">Password (only for .enc)</label>
+        <input type="password" id="verifyPw" placeholder="The password you set at export" autocomplete="off">
+      </div>
+      <div class="verify-form-row">
+        <label for="verifyFilePass">BIP‑39 passphrase (optional)</label>
+        <input type="text" id="verifyFilePass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="verifyFileStatus"></div>
+      <div class="verify-cta-row">
+        <button type="button" class="primary" id="verifyFileBtn" disabled>Verify wallet</button>
+      </div>
+    </div>
+
+    <!-- Lane 3: entropy sources -->
+    <div class="verify-lane" data-lane="entropy">
+      <p class="lane-hint">Replay the exact same SHA‑256 chain the Generator used, so a v1.52 wallet made with dice or cards + a random CSPRNG becomes reproducible when you have both parts on hand. For v1.53/v1.54 reproducible-mode wallets, leave the CSPRNG blank.</p>
+      <div class="row" style="gap:12px;flex-wrap:wrap">
+        <div class="seg small" id="entWc">
+          <button data-wc="12">12 words</button>
+          <button data-wc="24" class="active">24 words</button>
+        </div>
+        <div class="seg small" id="entSrc">
+          <button data-src="dice" class="active">Dice</button>
+          <button data-src="cards">Cards</button>
+        </div>
+      </div>
+      <div class="verify-form-row">
+        <label for="entCsprng">CSPRNG hex (64 characters, from the original .txt / .pdf / .enc report). Leave blank for a v1.53+ reproducible wallet.</label>
+        <input type="text" id="entCsprng" placeholder="e.g. 3f9a…  or leave blank" autocomplete="off" spellcheck="false" maxlength="64">
+      </div>
+      <div class="verify-form-row" id="entDiceRow">
+        <label for="entDice">Dice rolls (digits 1–6, in the same order as recorded)</label>
+        <textarea id="entDice" placeholder="e.g.  3 5 2 6 1 4 4 2 6 3 …" autocomplete="off" spellcheck="false"></textarea>
+      </div>
+      <div class="verify-form-row" id="entCardsRow" style="display:none">
+        <label for="entCards">Card rounds (23 rounds of 4 cards for 24 words, 11 rounds for 12 words. Use short codes like <code class="inline">AH 7S KD TC</code>, one round per line)</label>
+        <textarea id="entCards" placeholder="AH 7S KD TC&#10;3S QH 9D 2C&#10;..." autocomplete="off" spellcheck="false" style="min-height:150px"></textarea>
+      </div>
+      <div class="verify-form-row">
+        <label for="entPass">BIP‑39 passphrase (optional)</label>
+        <input type="text" id="entPass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="entStatus"></div>
+      <div class="verify-cta-row">
+        <button type="button" class="primary" id="entVerifyBtn">Compute and verify</button>
+      </div>
+    </div>
   </section>
 
   <!-- Step 3: done -->
@@ -4547,7 +4696,7 @@ const SUIT_BY = Object.fromEntries(SUITS.map(s=>[s.c,s]));
 
 /* ========== helpers ========== */
 const $ = (s) => document.querySelector(s);
-const sections = { choose: $('#step-choose'), loading: $('#step-loading'), done: $('#step-done') };
+const sections = { choose: $('#step-choose'), loading: $('#step-loading'), done: $('#step-done'), verify: $('#step-verify') };
 function show(name){ for(const k in sections) sections[k].classList.toggle('hidden', k !== name); }
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -5797,6 +5946,19 @@ async function entropyToMnemonic(entropy){
 
 $('#generate').addEventListener('click', doGenerate);
 async function doGenerate(){
+  // v1.53: read the Reproducible-mode toggle. In this mode we skip the
+  // browser CSPRNG entirely, so the user's manual draws alone determine
+  // the wallet and can be replayed later for verification.
+  const reproMode = !!($('#reproMode') && $('#reproMode').checked);
+  const reproWarn = $('#reproWarn');
+  function showReproWarn(msg){
+    if(!reproWarn) return;
+    reproWarn.textContent = msg;
+    reproWarn.classList.remove('hidden');
+  }
+  function hideReproWarn(){ if(reproWarn) reproWarn.classList.add('hidden'); }
+  hideReproWarn();
+
   // guardrails: if user selected dice/cards but didn't submit, warn via a quick inline message
   if(source === 'dice' && !diceCommitted && diceEl.value.trim().length){
     if(!confirm('You entered dice rolls but didn\'t submit them. Continue with CSPRNG only?')) return;
@@ -5824,6 +5986,39 @@ async function doGenerate(){
   const useCards = (source === 'cards' && cardsCommitted);
   const useKeys  = (source === 'keys'  && keysCommitted);
   const useGrid  = (source === 'grid'  && gridCommitted);
+
+  // v1.53: Reproducible mode requires a fully-committed dice OR cards
+  // source. Keystrokes and the chaos grid depend on timing information
+  // that the user cannot re-enter identically later, so they are not
+  // acceptable reproducible sources.
+  if(reproMode){
+    if(!useDice && !useCards){
+      showReproWarn('Reproducible mode needs a dice or cards source. Pick one, complete every round, and commit it. Or uncheck Reproducible mode.');
+      return;
+    }
+    if(useCards && cardRounds.length < targetRounds(wordCount)){
+      showReproWarn('Reproducible mode with cards needs all ' + targetRounds(wordCount) + ' rounds committed. You have ' + cardRounds.length + '.');
+      return;
+    }
+    // Belt + braces: warn if dice roll count is unusually low (a partial
+    // roll set would produce a weak but reproducible wallet). 99 D6 rolls
+    // are ~256 bits.
+    if(useDice){
+      var rolls = (diceStrCommitted || '').replace(/[^1-6]/g,'').length;
+      var need  = wordCount === 24 ? 99 : 50;
+      if(rolls < need){
+        // v1.54: turned into a soft confirm. Some users may deliberately
+        // want to reproduce a lower-entropy wallet, or are experimenting.
+        // Full-strength requires 99 rolls for 24 words, 50 for 12.
+        var bits = (rolls * Math.log2(6)).toFixed(1);
+        var msg = 'Only ' + rolls + ' D6 rolls entered — roughly ' + bits + ' bits of entropy.\n'
+                + 'For a ' + wordCount + '-word seed the standard target is ' + (wordCount===24?'256':'128') + ' bits (' + need + ' rolls).\n\n'
+                + 'Continue anyway?';
+        if(!confirm(msg)){ showReproWarn('Cancelled. Add more dice rolls, then commit again, or uncheck reproducible mode.'); return; }
+      }
+    }
+  }
+
   const diceStr  = useDice  ? diceStrCommitted : '';
   const cardsStr = useCards ? cardsToString(cardRounds) : '';
   const keysStr  = useKeys  ? keysStrCommitted : '';
@@ -5835,9 +6030,17 @@ async function doGenerate(){
   const stop = rotateQuotes();
   const minDelay = new Promise(r => setTimeout(r, 2600));
 
-  const csprngBytes = new Uint8Array(32);
-  crypto.getRandomValues(csprngBytes);
-  const csprngHex = bytesToHex(csprngBytes);
+  // v1.53: in reproducible mode we deliberately do NOT ask the browser
+  // for random bytes. This makes the same draws produce the same wallet.
+  let csprngBytes, csprngHex;
+  if(reproMode){
+    csprngBytes = new Uint8Array(0);
+    csprngHex = '';
+  } else {
+    csprngBytes = new Uint8Array(32);
+    crypto.getRandomValues(csprngBytes);
+    csprngHex = bytesToHex(csprngBytes);
+  }
 
   // reproducible input format: includes source tag and word count so it's unambiguous
   const keysEnc = encodeURIComponent(keysStr);
@@ -5862,6 +6065,7 @@ async function doGenerate(){
   currentWallet = {
     wordCount, entropyBits: entropyBytes*8,
     source: sourceTag,
+    reproducible: reproMode,  // v1.53
     csprngHex, diceStr, cardsStr, keysStr, keysTHex, gridStr,
     gridClicksList: useGrid ? gridClicks.slice() : [],
     keysAnalysis: useKeys && keysAnalysis ? {
@@ -6468,6 +6672,378 @@ $('#download').addEventListener('click', () => downloadReport(currentWallet, 'tx
   }catch(e){}
 })();
 
+/* ========== v1.54: verify wallet mode ==========
+   Three lanes:
+     1. mnemo   — user types 12/24 words + optional passphrase.
+     2. file    — user drops .enc or .txt; we extract the words and treat as lane 1.
+     3. entropy — user pastes CSPRNG hex + dice or cards; we replay the SHA-256 chain
+                  the Generator used, and derive the mnemonic from that entropy.
+   Every lane ultimately hands a mnemonic (words[]) + optional passphrase to
+   verifyRenderFromMnemonic(), which populates currentWallet and calls render(w).
+   No downstream code (fingerprint, addresses, xpubs, SeedQR, PDF, .enc export)
+   needs any change; it all runs off currentWallet.words.
+   -------------------------------------------------- */
+async function verifyMnemonicToEntropy(words){
+  // Reverse of entropyToMnemonic. Returns {ok, entropy, csBits, csLen, error?}.
+  if(!(words.length === 12 || words.length === 24))
+    return { ok:false, error:'Need exactly 12 or 24 words. You have ' + words.length + '.' };
+  const idxs = new Array(words.length);
+  for(let i=0;i<words.length;i++){
+    const j = WORDLIST.indexOf(words[i]);
+    if(j < 0) return { ok:false, error:'Word #' + (i+1) + ' "' + words[i] + '" is not in the BIP-39 English list.' };
+    idxs[i] = j;
+  }
+  const bits = idxs.map(j => j.toString(2).padStart(11,'0')).join('');
+  const total = bits.length;
+  const csLen = total / 33;
+  const entLen = total - csLen;
+  const entBits = bits.slice(0, entLen);
+  const claimed = bits.slice(entLen);
+  const bytes = new Uint8Array(entLen / 8);
+  for(let i=0;i<bytes.length;i++){
+    bytes[i] = parseInt(entBits.slice(i*8, i*8+8), 2);
+  }
+  const hash = await sha256(bytes);
+  const expected = bytesToBinary(hash).slice(0, csLen);
+  if(claimed !== expected){
+    return { ok:false, error:'BIP-39 checksum failed. The last word (or a mistyped earlier word) does not match. Double-check every word.' };
+  }
+  return { ok:true, entropy:bytes, csBits:expected, csLen };
+}
+
+function verifyExtractWordsFromTxt(text){
+  // The Generator's .txt report has a "SEED PHRASE" section with a divider
+  // then numbered rows of "NN. word ... NN. word" (two columns) or single-column.
+  // We just extract every "NN. word" pattern in order and take the first 12 or 24.
+  const rx = /(?:^|\s)(\d{1,2})\.\s+([a-z]+)/g;
+  const found = [];
+  let m;
+  while((m = rx.exec(text)) !== null){
+    const idx = parseInt(m[1], 10);
+    if(idx >= 1 && idx <= 24) found.push([idx, m[2]]);
+  }
+  // Sort by numeric index, keep 12 or 24 in order.
+  found.sort((a,b) => a[0] - b[0]);
+  const words = found.map(p => p[1]);
+  // Trim to 24 or 12 depending on what we found.
+  if(words.length >= 24) return words.slice(0, 24);
+  if(words.length >= 12) return words.slice(0, 12);
+  return null;
+}
+
+async function verifyRenderFromMnemonic(words, passphrase, sourceLabel, extras){
+  // Populate currentWallet with a minimal, honest record and run the full
+  // render pipeline that the Generate flow uses.
+  const wordCount = words.length;
+  const check = await verifyMnemonicToEntropy(words);
+  if(!check.ok) throw new Error(check.error);
+  const entropyBytes = check.entropy;
+  const entropyHex = bytesToHex(entropyBytes);
+  const entropyHashHex = bytesToHex(await sha256(entropyBytes));
+  const combinedStr = (extras && extras.combinedStr) || '(verified from mnemonic — no combined string)';
+  const combinedHashHex = (extras && extras.combinedHashHex) || '';
+  currentWallet = {
+    wordCount, entropyBits: entropyBytes.length*8,
+    source: sourceLabel || 'verify',
+    reproducible: !!(extras && extras.reproducible),
+    csprngHex: (extras && extras.csprngHex) || '',
+    diceStr: (extras && extras.diceStr) || '',
+    cardsStr: (extras && extras.cardsStr) || '',
+    keysStr: '', keysTHex: '', gridStr: '',
+    gridClicksList: [],
+    keysAnalysis: null,
+    cardRoundsList: (extras && extras.cardRoundsList) || [],
+    combinedStr, combinedHashHex,
+    entropyHex, entropyHashHex,
+    words, checksumBits: check.csBits, checksumLen: check.csLen,
+    checksumWord: words[words.length - 1],
+    generatedAt: new Date().toISOString(),
+    score: {
+      label: 'verified', tier: 3, color: 'var(--accent-2)',
+      userBits: 0, diceBits: 0, cardBits: 0, keyBits: 0, gridBits: 0,
+      note: 'This wallet was verified from an existing backup, not freshly generated. All wallet details below are recomputed live from the seed phrase.',
+      flags: []
+    },
+    passphrase: '',
+    seedFingerprint: '',
+    seedHex: '',
+    masterFingerprint: '',
+    xpubs: [],
+  };
+  render(currentWallet);
+  resetSeedQr();
+  show('done');
+  requestAnimationFrame(() => {
+    const m = $('#mnemonic'); if(!m) return;
+    m.classList.remove('just-generated'); void m.offsetWidth; m.classList.add('just-generated');
+    setTimeout(() => m.classList.remove('just-generated'), 900);
+  });
+  const passEl = $('#passphrase'); if(passEl) passEl.value = passphrase || '';
+  await refreshXpubs(passphrase || '');
+}
+
+/* ---- Verify UI wiring ---- */
+(function verifyModeInit(){
+  const openBtn = document.getElementById('openVerify');
+  const backBtn = document.getElementById('verifyBack');
+  if(!openBtn || !backBtn) return;
+
+  openBtn.addEventListener('click', () => show('verify'));
+  backBtn.addEventListener('click', () => show('choose'));
+
+  // Tab switcher
+  const tabs = document.querySelectorAll('.verify-tabs button');
+  const lanes = document.querySelectorAll('.verify-lane');
+  tabs.forEach(b => b.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.toggle('active', x === b));
+    lanes.forEach(l => l.classList.toggle('active', l.dataset.lane === b.dataset.lane));
+  }));
+
+  /* === Lane 1: mnemonic ==================================================== */
+  let mnemoWc = 24;
+  const mnemoGrid = document.getElementById('mnemoGrid');
+  const mnemoStatus = document.getElementById('mnemoStatus');
+  const mnemoLenSeg = document.getElementById('mnemoLen');
+  function buildMnemoGrid(){
+    mnemoGrid.innerHTML = '';
+    for(let i=0;i<mnemoWc;i++){
+      const cell = document.createElement('div');
+      cell.className = 'mnemo-cell';
+      const num = document.createElement('span');
+      num.className = 'mn';
+      num.textContent = String(i+1).padStart(2,'0');
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.autocomplete = 'off';
+      inp.spellcheck = false;
+      inp.dataset.idx = String(i);
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.toLowerCase().replace(/[^a-z]/g,'');
+        // liveness: mark bad if not-in-list once we have a plausible word
+        if(inp.value.length >= 3){
+          const inList = WORDLIST.indexOf(inp.value) >= 0;
+          cell.classList.toggle('ok', inList);
+          cell.classList.toggle('bad', !inList);
+        } else {
+          cell.classList.remove('ok','bad');
+        }
+      });
+      inp.addEventListener('paste', (e) => {
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        const bits = text.trim().split(/\s+/).filter(Boolean);
+        if(bits.length > 1){
+          e.preventDefault();
+          fillMnemoFrom(parseInt(inp.dataset.idx,10), bits);
+        }
+      });
+      cell.appendChild(num); cell.appendChild(inp);
+      mnemoGrid.appendChild(cell);
+    }
+  }
+  function fillMnemoFrom(start, bits){
+    const inputs = mnemoGrid.querySelectorAll('input');
+    for(let k=0;k<bits.length && (start+k)<inputs.length;k++){
+      const w = bits[k].toLowerCase().replace(/[^a-z]/g,'');
+      inputs[start+k].value = w;
+      inputs[start+k].dispatchEvent(new Event('input'));
+    }
+  }
+  mnemoLenSeg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    mnemoLenSeg.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    mnemoWc = parseInt(b.dataset.wc, 10);
+    buildMnemoGrid();
+    mnemoStatus.innerHTML = '';
+  }));
+  buildMnemoGrid();
+
+  document.getElementById('mnemoPaste').addEventListener('click', async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      const bits = t.trim().split(/\s+/).filter(Boolean);
+      if(bits.length > mnemoWc){
+        // auto-switch to 24 if pasted 24
+        if(bits.length >= 24){ mnemoWc = 24; }
+        else if(bits.length >= 12){ mnemoWc = 12; }
+        mnemoLenSeg.querySelectorAll('button').forEach(x => x.classList.toggle('active', parseInt(x.dataset.wc,10) === mnemoWc));
+        buildMnemoGrid();
+      }
+      fillMnemoFrom(0, bits.slice(0, mnemoWc));
+    } catch(e){
+      mnemoStatus.innerHTML = '<div class="verify-error">Could not read clipboard: ' + escapeHtml(e.message) + '. Type or paste directly into the cells.</div>';
+    }
+  });
+  document.getElementById('mnemoClear').addEventListener('click', () => {
+    buildMnemoGrid();
+    mnemoStatus.innerHTML = '';
+  });
+
+  document.getElementById('mnemoVerifyBtn').addEventListener('click', async () => {
+    mnemoStatus.innerHTML = '';
+    const words = Array.from(mnemoGrid.querySelectorAll('input')).map(i => i.value.trim().toLowerCase());
+    if(words.some(w => !w)){
+      mnemoStatus.innerHTML = '<div class="verify-error">Some cells are empty. Fill all ' + mnemoWc + ' words first.</div>';
+      return;
+    }
+    const check = await verifyMnemonicToEntropy(words);
+    if(!check.ok){
+      mnemoStatus.innerHTML = '<div class="verify-error">' + escapeHtml(check.error) + '</div>';
+      return;
+    }
+    try {
+      const pass = document.getElementById('mnemoPass').value;
+      await verifyRenderFromMnemonic(words, pass, 'verify-mnemonic', null);
+    } catch(e){
+      mnemoStatus.innerHTML = '<div class="verify-error">' + escapeHtml(e.message) + '</div>';
+    }
+  });
+
+  /* === Lane 2: file ======================================================== */
+  const drop = document.getElementById('verifyDrop');
+  const finp = document.getElementById('verifyFileInput');
+  const fname = document.getElementById('verifyFileName');
+  const pwRow = document.getElementById('verifyPwRow');
+  const pwInput = document.getElementById('verifyPw');
+  const fbtn  = document.getElementById('verifyFileBtn');
+  const fstat = document.getElementById('verifyFileStatus');
+  let loadedFile = null; let loadedBytes = null;
+
+  function onFileChosen(file){
+    if(!file){ return; }
+    loadedFile = file;
+    fname.textContent = file.name;
+    fstat.innerHTML = '';
+    const isEnc = /\.enc$/i.test(file.name);
+    pwRow.style.display = isEnc ? 'block' : 'none';
+    const reader = new FileReader();
+    reader.onload = e => { loadedBytes = new Uint8Array(e.target.result); fbtn.disabled = false; };
+    reader.readAsArrayBuffer(file);
+  }
+  drop.addEventListener('click', () => finp.click());
+  finp.addEventListener('change', () => { if(finp.files[0]) onFileChosen(finp.files[0]); });
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('drag-over');
+    if(e.dataTransfer.files[0]) onFileChosen(e.dataTransfer.files[0]);
+  });
+
+  fbtn.addEventListener('click', async () => {
+    fstat.innerHTML = '';
+    if(!loadedBytes){ fstat.innerHTML = '<div class="verify-error">Pick a file first.</div>'; return; }
+    let text = null;
+    try {
+      if(/\.enc$/i.test(loadedFile.name)){
+        const pw = pwInput.value;
+        if(!pw){ fstat.innerHTML = '<div class="verify-error">This is an .enc file. Enter its password first.</div>'; return; }
+        text = await decryptFile(loadedBytes, pw);
+      } else {
+        text = new TextDecoder('utf-8').decode(loadedBytes);
+      }
+    } catch(e){
+      fstat.innerHTML = '<div class="verify-error">' + escapeHtml(e.message) + '</div>';
+      return;
+    }
+    const words = verifyExtractWordsFromTxt(text);
+    if(!words){
+      fstat.innerHTML = '<div class="verify-error">Could not find a 12- or 24-word seed phrase inside that file. Is it an Amulet report?</div>';
+      return;
+    }
+    const check = await verifyMnemonicToEntropy(words);
+    if(!check.ok){
+      fstat.innerHTML = '<div class="verify-error">Words extracted but BIP-39 checksum failed: ' + escapeHtml(check.error) + '</div>';
+      return;
+    }
+    try {
+      const pass = document.getElementById('verifyFilePass').value;
+      await verifyRenderFromMnemonic(words, pass, 'verify-file', null);
+    } catch(e){
+      fstat.innerHTML = '<div class="verify-error">' + escapeHtml(e.message) + '</div>';
+    }
+  });
+
+  /* === Lane 3: entropy replay ============================================== */
+  let entWc = 24; let entSrc = 'dice';
+  const entWcSeg = document.getElementById('entWc');
+  const entSrcSeg = document.getElementById('entSrc');
+  entWcSeg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    entWcSeg.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    entWc = parseInt(b.dataset.wc, 10);
+  }));
+  entSrcSeg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    entSrcSeg.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    entSrc = b.dataset.src;
+    document.getElementById('entDiceRow').style.display  = (entSrc === 'dice')  ? 'block' : 'none';
+    document.getElementById('entCardsRow').style.display = (entSrc === 'cards') ? 'block' : 'none';
+  }));
+
+  function parseCardsBlock(text){
+    // Accept "AH 7S KD TC" per line, or one big blob "AH7SKDTC|3SQH9D2C|..." (Amulet report format)
+    const rounds = [];
+    const raw = text.trim();
+    if(raw.indexOf('|') >= 0 && raw.indexOf('\n') < 0){
+      raw.split('|').forEach(s => {
+        s = s.trim();
+        if(!s) return;
+        // packed rounds: 4 cards, each is 2 chars, so 8 chars total
+        const r = [];
+        for(let i=0;i<s.length;i+=2){ r.push(s.slice(i,i+2).toUpperCase()); }
+        rounds.push(r);
+      });
+    } else {
+      raw.split(/\r?\n/).forEach(line => {
+        line = line.trim();
+        if(!line) return;
+        const parts = line.split(/\s+/).map(c => c.toUpperCase());
+        rounds.push(parts);
+      });
+    }
+    return rounds;
+  }
+
+  document.getElementById('entVerifyBtn').addEventListener('click', async () => {
+    const stat = document.getElementById('entStatus');
+    stat.innerHTML = '';
+    const csprngHex = (document.getElementById('entCsprng').value || '').trim().toLowerCase().replace(/\s+/g,'');
+    if(csprngHex && !/^[0-9a-f]{64}$/.test(csprngHex)){
+      stat.innerHTML = '<div class="verify-error">CSPRNG hex should be exactly 64 hex characters (0-9, a-f), or blank for reproducible-mode wallets.</div>';
+      return;
+    }
+    let diceStr = '', cardsStr = '', cardRoundsList = [];
+    if(entSrc === 'dice'){
+      diceStr = (document.getElementById('entDice').value || '').replace(/[^1-6]/g,'');
+      if(!diceStr){ stat.innerHTML = '<div class="verify-error">Enter your dice rolls (digits 1–6).</div>'; return; }
+    } else {
+      const rounds = parseCardsBlock(document.getElementById('entCards').value || '');
+      if(!rounds.length){ stat.innerHTML = '<div class="verify-error">Enter your card rounds, one round per line.</div>'; return; }
+      cardRoundsList = rounds;
+      cardsStr = rounds.map(r => r.join('')).join('|');
+    }
+    // Build the exact combinedStr the Generator uses:
+    //   wc:24|src:dice|csprng:HEX|dice:diceStr|cards:cardsStr|keys:|kt:|grid:
+    const sourceTag = (entSrc === 'dice') ? 'dice' : 'cards';
+    const combinedStr = 'wc:' + entWc + '|src:' + sourceTag + '|csprng:' + csprngHex
+      + '|dice:' + diceStr + '|cards:' + cardsStr + '|keys:|kt:|grid:';
+    const combinedHash = await sha256(enc.encode(combinedStr));
+    const entropyBytes = (entWc === 24) ? 32 : 16;
+    const entropy = combinedHash.slice(0, entropyBytes);
+    const { words } = await entropyToMnemonic(entropy);
+    try {
+      const pass = document.getElementById('entPass').value;
+      await verifyRenderFromMnemonic(words, pass, 'verify-entropy', {
+        combinedStr,
+        combinedHashHex: bytesToHex(combinedHash),
+        csprngHex,
+        diceStr,
+        cardsStr,
+        cardRoundsList,
+        reproducible: !csprngHex,
+      });
+    } catch(e){
+      stat.innerHTML = '<div class="verify-error">' + escapeHtml(e.message) + '</div>';
+    }
+  });
+})();
+
 /* ========== render results ========== */
 function renderDetailsOnly(w){
   const kv = $('#details');
@@ -6485,7 +7061,8 @@ function renderDetailsOnly(w){
   const rows = [
     ['Mode', `${w.wordCount} words (${w.entropyBits}-bit entropy)`],
     ['User source', SRC_LABEL[w.source] || w.source],
-    ['CSPRNG (hex)', w.csprngHex],
+    ['Reproducible', w.reproducible ? 'Yes — same draws will always produce this wallet' : 'No — browser CSPRNG was folded in'],
+    ['CSPRNG (hex)', w.reproducible ? '(not used in reproducible mode)' : w.csprngHex],
   ];
   if(usedDice) rows.push(['Dice rolls', w.diceStr]);
   if(usedCards){
@@ -6606,8 +7183,9 @@ function buildReport(w, addressBundle, silentPayment){
     'AMULET BITCOIN WALLET — SEED REPORT',
     line,
     `Generated (UTC) : ${w.generatedAt}`,
-    `Tool            : Amulet v1.52`,
+    `Tool            : Amulet v1.56`,
     `Mode            : ${w.wordCount} words (${w.entropyBits}-bit entropy)`,
+    `Reproducible    : ${w.reproducible ? 'YES (draws alone define this wallet)' : 'No (browser CSPRNG folded in)'}`,
     `Standard        : BIP-39 (English wordlist, 2048 words)`,
     `User source     : ${w.source}`,
     '',
@@ -6625,7 +7203,7 @@ function buildReport(w, addressBundle, silentPayment){
     'ENTROPY SOURCES',
     line,
     `CSPRNG (crypto.getRandomValues, 256 bits):`,
-    `  ${w.csprngHex}`,
+    `  ${w.reproducible ? '(not used — reproducible mode)' : w.csprngHex}`,
     '',
     ...(w.diceStr ? [
       `Dice rolls (D6): ${w.diceStr.length} rolls`,

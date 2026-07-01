@@ -1,0 +1,2 @@
+amulet_1_55.html
+SHA256: 9a34b59cee5ebc1cfca2053b1684bdd95308cf874b28b2f9529f5ce670dfb1fc

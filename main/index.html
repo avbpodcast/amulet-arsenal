@@ -7,7 +7,7 @@
 <title>Amulet · launcher</title>
 
 <!--
-  Amulet Main launcher v1.40 (June 2026)
+  Amulet Main launcher v1.44 (June 2026)
   ─────────────────────────────────────────
   A single self-contained HTML page. NO external dependencies: no CDN
   fonts, no CDN CSS, no JS framework. Opens and renders identically
@@ -17,6 +17,47 @@
   card opens the explicit versioned file of the corresponding tool via
   a relative path. URL-encoded spaces handle folder names that contain
   spaces.
+
+  v1.44 changes:
+    - Refresh the Wallet Generator link to v1.56. v1.56 rewrites
+      the Reproducible-mode caption so it no longer implies a
+      backup made without the toggle is somehow un-reproducible.
+      Every wallet stays fully reproducible from its seed phrase
+      or from the .txt / .pdf / .enc files this tool exports —
+      the toggle just adds one more valid backup path (the raw
+      dice or card notes themselves).
+
+  v1.43 changes:
+    - Refresh the Wallet Generator link to v1.55. v1.55 enlarges
+      the rank and suit glyphs on the card-picker grid so they
+      read easily at arm's length, with a small size step-down
+      on narrow phones so no cell overflows. The committed-round
+      chips get a small font bump too. CSS-only change, no logic
+      changes anywhere in the generation pipeline.
+
+  v1.42 changes:
+    - Refresh the Wallet Generator link to v1.54. v1.54 adds a
+      new "Verify wallet" button in the top-right of the page.
+      It opens a dedicated panel with three lanes to check any
+      existing backup: type the twelve or twenty-four words,
+      drop an .enc or .txt report file, or replay the exact
+      SHA-256 chain from CSPRNG hex + your dice or card notes.
+      All three land in the same detail card, so the seed
+      fingerprint, first 3 addresses, all xpubs, SeedQR and
+      PDF export can be re-derived on the spot from any wallet
+      ever made by Amulet (or by any other BIP-39 tool).
+
+      Also softens the v1.53 "99 dice rolls" hard block into a
+      confirmation dialog, in case you deliberately want to
+      reproduce a lower-entropy backup.
+
+  v1.41 changes:
+    - Refresh the Wallet Generator link to v1.53. v1.53 adds a
+      "Reproducible mode" checkbox above Generate. When ticked,
+      the browser random source is not folded in, so the same
+      dice or card draws will always produce the same wallet.
+      Handy for wiping everything and re-entering your draws to
+      confirm your paper backup regenerates the same 24 words.
 
   v1.40 changes:
     - Refresh the Amulet Scryer link to v1.19. The Scryer
@@ -617,7 +658,7 @@
             <span class="tag offline">works offline</span>
           </div>
           <p class="desc">Roll a fresh BIP-39 seed from CSPRNG + optional dice/cards/keystroke entropy. Exports plaintext report or AMLT-encrypted .enc.</p>
-          <div class="meta">amulet_1_52.html</div>
+          <div class="meta">amulet_1_56.html</div>
         </div>
       </a>
 
@@ -746,7 +787,7 @@
 
   <footer class="foot">
     <div>
-      Amulet Main · v1.40 · runs locally · no telemetry · single-file HTML, audit it before you trust it
+      Amulet Main · v1.44 · runs locally · no telemetry · single-file HTML, audit it before you trust it
     </div>
     <div style="margin-top:6px">
       <span style="opacity:.7">Tip: bookmark this page in your browser.</span>
