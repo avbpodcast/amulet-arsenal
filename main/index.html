@@ -7,7 +7,7 @@
 <title>Amulet · launcher</title>
 
 <!--
-  Amulet Main launcher v1.44 (June 2026)
+  Amulet Main launcher v1.46 (June 2026)
   ─────────────────────────────────────────
   A single self-contained HTML page. NO external dependencies: no CDN
   fonts, no CDN CSS, no JS framework. Opens and renders identically
@@ -17,6 +17,23 @@
   card opens the explicit versioned file of the corresponding tool via
   a relative path. URL-encoded spaces handle folder names that contain
   spaces.
+
+  v1.46 changes:
+    - Refresh the Wallet Generator link to v1.58. Two small
+      fixes to the Verify wallet mode (introduced in v1.54):
+
+      1. .enc backups now decrypt when you enter their password.
+         Previously the decrypt code that already powered the
+         header's decrypt button was not reachable from the
+         Verify wallet page; it now works from either place.
+
+      2. The card-input tab accepts every notation the tool
+         writes: packed with "|", one round per line, or the
+         pretty "#01 A♥ 7♠ K♦ T♣" form with unicode suits.
+         It also picks the cards section out of a whole
+         combined-input paste and treats "10" as the ten-rank.
+         Adds a round-count check so mistyped or half-pasted
+         input is caught before it produces the wrong wallet.
 
   v1.44 changes:
     - Refresh the Wallet Generator link to v1.56. v1.56 rewrites
@@ -658,7 +675,7 @@
             <span class="tag offline">works offline</span>
           </div>
           <p class="desc">Roll a fresh BIP-39 seed from CSPRNG + optional dice/cards/keystroke entropy. Exports plaintext report or AMLT-encrypted .enc.</p>
-          <div class="meta">amulet_1_56.html</div>
+          <div class="meta">amulet_1_58.html</div>
         </div>
       </a>
 
@@ -787,7 +804,7 @@
 
   <footer class="foot">
     <div>
-      Amulet Main · v1.44 · runs locally · no telemetry · single-file HTML, audit it before you trust it
+      Amulet Main · v1.46 · runs locally · no telemetry · single-file HTML, audit it before you trust it
     </div>
     <div style="margin-top:6px">
       <span style="opacity:.7">Tip: bookmark this page in your browser.</span>

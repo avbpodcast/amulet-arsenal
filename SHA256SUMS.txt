@@ -10,10 +10,10 @@
 # Source:      https://codeberg.org/avbforge/pages
 
 # 01 · Amulet Main (launcher)
-ea1538252795fad93496dff6f7a3a0af8a12a99fef41222d672cb11189a6362e  Amulet Main/AmuletMain_v1.44.html
+d2cc352b14317b49f89ef778662819439acb0f6bdd2a0b81d5f41038806d9a35  Amulet Main/AmuletMain_v1.46.html
 
 # 02 · Amulet Generator (wallet generator)
-fbecd6b2657a03c9754e8aa7275cac55d181a4e3fdce305e04e7c0ca6fffe1d6  Amulet Wallet Generator/amulet_1_56.html
+821b51ec9e1fc17c7a2d7a4bb0c0c365ca01cdcaf120e4a5cd090cebb3f8dbce  Amulet Wallet Generator/amulet_1_58.html
 
 # 03 · Amulet Vault
 6d3adc0ea1e2bc27b4dc5fee4f779e4ee4dbdddfeb20af1e36d8c2ae84580797  Amulet Vault/amulet_vault_v1.74.html
