@@ -1,0 +1,41 @@
+Amulet · Bitcoin Offline Wallet Generator
+Release v1.63 — 22 August 2026
+
+FILE     amulet_1_63.html
+SIZE     414810 bytes
+
+SHA-256
+69de86d4c8a8d14abbdc5d93f70af6295ee8ceb6268ad6cdc172c9af17a44a92
+
+BLAKE2b-512
+1d9a34b06769938be2da9ef9970652651408b6401337d5a2a701ed7357fda01fe0a784cbbf5a059a4173ad4b3404aa2b9228bcd3320b53041e1e4e864cb03006
+
+
+VERIFY BEFORE YOU USE IT
+────────────────────────────────────────────────────────────────────────
+Everything this tool promises rests on the file being the file that was
+audited. Check it.
+
+  Linux / BSD    sha256sum  amulet_1_63.html
+  macOS          shasum -a 256  amulet_1_63.html
+  Windows        certutil -hashfile amulet_1_63.html SHA256
+  PowerShell     Get-FileHash amulet_1_63.html -Algorithm SHA256
+
+The page also verifies itself: open it, expand "Verify this file before you
+trust it", and drop the .html onto the panel. It hashes the real bytes on
+disk and compares against a value you paste in.
+
+A MATCHING DIGEST PROVES THE FILE IS UNMODIFIED.
+IT DOES NOT PROVE THE FILE IS TRUSTWORTHY.
+────────────────────────────────────────────────────────────────────────
+That distinction is the whole point. A checksum is only worth as much as
+the channel it reached you through. If this file and this checksum came
+down the same wire, from the same server, a compromise of that server
+defeats both at once — you would be checking a forgery against its own
+forged digest.
+
+Get the digest from somewhere the file did not come from: a different
+device, a different network, a copy a colleague already trusts, a value
+published somewhere with its own history. Then compare.
+
+If the digests do not match, do not generate a wallet you intend to fund.

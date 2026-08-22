@@ -1,37 +1,9 @@
-<!--
-    Amulet - Bitcoin Offline Wallet Generator
-    Version: 1.58
-    Copyright (c) 2025-2026 deadeyes[](https://x.com/deadeyes)
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-
-    This tool is inspired by Ian Coleman's BIP39 tool (MIT licensed).
-    Includes the Chaos Grid entropy game and multiple low-effort entropy sources.
-    For real funds: ALWAYS use on a clean, offline, extension-free browser.
--->
-
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0031)https://avbforge.com/generator/ -->
+<html lang="en" data-theme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZjMDY5Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIi8+PC9saW5lYXJHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9InMiIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y3OTMxYSIvPjxzdG9wIG9mZnNldD0iNTUlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIiBzdG9wLW9wYWNpdHk9Ii43Ii8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZjc5MzFhIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSI2MCIgeT0iNjAiIHdpZHRoPSIzNDAiIGhlaWdodD0iMzQwIiByeD0iOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2IpIiBzdHJva2Utd2lkdGg9IjE0Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEwLDIzMikiIGZpbGw9InVybCgjYikiPjxyZWN0IHg9Ii0xNiIgeT0iLTEyMCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjMwIiByeD0iMyIvPjxyZWN0IHg9IjciIHk9Ii0xMjAiIHdpZHRoPSIxMyIgaGVpZ2h0PSIzMCIgcng9IjMiLz48cmVjdCB4PSItMTYiIHk9IjkyIiB3aWR0aD0iMTMiIGhlaWdodD0iMzAiIHJ4PSIzIi8+PHJlY3QgeD0iNyIgeT0iOTIiIHdpZHRoPSIxMyIgaGVpZ2h0PSIzMCIgcng9IjMiLz48cGF0aCBkPSJNLTQyLTkwTDIyLTkwQzYyLTkwIDg0LTcyIDg0LTQ2IDg0LTI0IDcwLTggNDgtMiA3NCA0IDk2IDIwIDk2IDUwIDk2IDgwIDcyIDk4IDMwIDk4TC00MiA5OFpNLTgtNjBMLTgtMTIgMjQtMTJDNDYtMTIgNTYtMjQgNTYtMzggNTYtNTAgNDYtNjAgMjQtNjBaTS04IDE2TC04IDcwIDMwIDcwQzU0IDcwIDY2IDU2IDY2IDQyIDY2IDI4IDU0IDE2IDMwIDE2WiIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzOTAsMzkwKSI+PGNpcmNsZSByPSI1MiIgZmlsbD0idXJsKCNzKSIgb3BhY2l0eT0iLjg1Ii8+PGNpcmNsZSByPSIyOCIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjkiLz48Y2lyY2xlIGN4PSItNTAiIGN5PSItMzAiIHI9IjUiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii42Ii8+PGNpcmNsZSBjeD0iNDAiIGN5PSItNDUiIHI9IjQiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii41Ii8+PGNpcmNsZSBjeD0iLTM1IiBjeT0iNDIiIHI9IjYiIGZpbGw9IiNmNzkzMWEiIG9wYWNpdHk9Ii40NSIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iMjAiIHI9IjMuNSIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSItNjAiIGN5PSIxMCIgcj0iMyIgZmlsbD0iI2Y3OTMxYSIgb3BhY2l0eT0iLjQiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjU1IiByPSI0IiBmaWxsPSIjZjc5MzFhIiBvcGFjaXR5PSIuMzUiLz48L2c+PC9zdmc+Cg==">
-<title>Amulet · Bitcoin Offline Wallet Generator · v1.58</title>
+<title>Amulet · Bitcoin Offline Wallet Generator · v1.63</title>
 <style>
   :root{
     --bg0:#070b18;--bg1:#0d1326;--panel:#111935;--panel-2:#0b1226;
@@ -234,6 +206,32 @@
   .adv-head strong{font-size:14px;font-weight:600}
   .adv-head .chev{transition:transform .2s;color:var(--muted);font-size:16px}
   .adv-body{padding:0 18px 18px;display:none}
+
+  /* v1.60 (F-06): file integrity panel */
+  .integrity{border:1px solid var(--line-2);border-radius:10px;margin:0 0 22px;background:var(--bg-2)}
+  .integrity>summary{cursor:pointer;padding:13px 16px;font-size:14px;font-weight:600;
+    display:flex;align-items:center;gap:10px;list-style:none;user-select:none}
+  .integrity>summary::-webkit-details-marker{display:none}
+  .integrity>summary::before{content:'▸';color:var(--muted);transition:transform .2s;display:inline-block}
+  .integrity[open]>summary::before{transform:rotate(90deg)}
+  .int-badge{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;background:var(--accent-dim,rgba(247,147,26,.15));color:var(--accent)}
+  .int-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+  .int-drop{border:1.5px dashed var(--line-2);border-radius:9px;padding:18px 14px;text-align:center;
+    cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:border-color .15s,background .15s}
+  .int-drop:hover,.int-drop:focus-visible,.int-drop.drag{border-color:var(--accent);background:rgba(247,147,26,.06);outline:none}
+  .int-out{font-family:var(--mono);font-size:12px;word-break:break-all;line-height:1.7;
+    background:var(--bg-3,rgba(0,0,0,.18));border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+  .int-out .int-hash{color:var(--accent);font-weight:600}
+  .int-expect-label{font-size:12px;color:var(--muted);margin-top:2px}
+  .int-expect{width:100%;font-family:var(--mono);font-size:12px;padding:9px 11px;border-radius:8px;
+    border:1px solid var(--line-2);background:var(--bg-3,rgba(0,0,0,.18));color:var(--ink)}
+  .int-verdict{font-size:13px;font-weight:600;padding:10px 13px;border-radius:8px;line-height:1.5}
+  .int-verdict.match{background:rgba(41,211,145,.12);color:var(--ok);border:1px solid rgba(41,211,145,.35)}
+  .int-verdict.nomatch{background:rgba(255,107,107,.12);color:var(--err);border:1px solid rgba(255,107,107,.4)}
+  .int-cmds{font-family:var(--mono);font-size:11.5px;line-height:1.75;margin:0;padding:11px 13px;
+    background:var(--bg-3,rgba(0,0,0,.18));border:1px solid var(--line);border-radius:8px;
+    overflow-x:auto;white-space:pre;color:var(--ink-dim)}
   .adv.open .adv-body{display:block}
   .adv.open .chev{transform:rotate(90deg)}
 
@@ -448,35 +446,10 @@
   .score-bar > div{height:100%;border-radius:999px;transition:width .8s ease}
   .score-note{font-size:12.5px;color:var(--ink-dim);flex-basis:100%;line-height:1.55}
   .score-note .flag{color:var(--err);display:block;margin-top:4px}
+  .score-note .info-note{color:var(--muted);display:block;margin-top:4px}  /* v1.60 */
   .score-pips{display:flex;gap:6px;margin-top:6px}
   .score-pips .pip{width:22px;height:7px;background:var(--track);border-radius:3px;border:1px solid var(--line-2)}
   .score-pips .pip.on{background:currentColor;border-color:transparent}
-
-  /* keystrokes quality meter */
-  .keys-area{width:100%;min-height:96px;background:var(--input-bg);color:var(--ink);
-    border:1px solid var(--line);border-radius:10px;padding:11px 12px;
-    font-family:var(--mono);font-size:13.5px;outline:none;resize:vertical;
-    transition:border-color .15s ease, box-shadow .15s ease}
-  .keys-area:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(247,147,26,.12)}
-  .qmeter{margin-top:12px;background:var(--input-bg);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
-  .qmeter .qrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .qmeter .qhead{font-size:13px;color:var(--ink);font-weight:600}
-  .qmeter .qscore{font-size:13px;color:var(--ink-dim);font-family:var(--mono)}
-  .qmeter .qbar{height:10px;background:var(--track);border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:8px 0 10px}
-  .qmeter .qbar > div{height:100%;border-radius:999px;width:0%;background:#36447a;
-    transition:width .25s ease, background .3s ease, box-shadow .3s ease}
-  .qmeter .qbar > div.low{background:linear-gradient(90deg,#ff6b6b,#ff8b5b)}
-  .qmeter .qbar > div.mid{background:linear-gradient(90deg,#ffb86b,#ffd47a)}
-  .qmeter .qbar > div.ok{background:linear-gradient(90deg,#35d39a,#7be0b6)}
-  .qmeter .qbar > div.full{background:linear-gradient(90deg,#7be0b6,#35d39a);box-shadow:0 0 18px rgba(53,211,154,.35)}
-  .qstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px 14px;margin-top:2px;font-size:12px;color:var(--muted)}
-  .qstats .stat b{color:var(--ink-dim);font-family:var(--mono);font-weight:500;margin-left:4px}
-  .qflags{margin-top:10px;padding:8px 10px;background:rgba(255,122,122,.10);border:1px solid rgba(255,122,122,.40);
-    border-radius:8px;font-size:12.5px;color:var(--err);display:none}
-  .qflags.on{display:block}
-  .qflags .flag{display:block}
-  .qflags .flag + .flag{margin-top:3px}
-  .qflags strong{color:var(--err);font-weight:700}
 
   /* v1.39: BIP-39 passphrase moved behind an explicit disclosure so it
      cannot be set by accident. A passphrase changes the whole wallet;
@@ -805,7 +778,7 @@
   }
   .chaos-grid.enough{animation:grid-enough-flicker 1.6s ease-in-out infinite;border-radius:10px}
   .chaos-grid.enough::after{
-    content:"entropy target reached — keep going if you like";
+    content:"enough entropy — you can commit now, or keep flipping";
     position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
     font-family:var(--mono);font-size:11px;color:var(--ok);letter-spacing:.02em;
     animation:grid-enough-flicker 1.6s ease-in-out infinite;
@@ -820,7 +793,7 @@
 </style>
 </head>
 <body>
-<div class="modal-backdrop" id="securityModal" role="dialog" aria-modal="true" aria-labelledby="secTitle">
+<div class="modal-backdrop" id="securityModal" role="dialog" aria-modal="true" aria-labelledby="secTitle" style="transition: opacity 0.2s; opacity: 0; display: none;">
   <div class="modal">
     <h2 id="secTitle"><span class="sig">⚠️</span> IMPORTANT SECURITY WARNING</h2>
     <p class="intro">For real Bitcoin funds</p>
@@ -835,7 +808,7 @@
       <a href="https://allesvoorbitcoin.be/donate" target="_blank" rel="noopener noreferrer">allesvoorbitcoin.be/donate</a>
     </div>
     <div class="modal-actions">
-      <button class="modal-ack" id="secAck" disabled>Please read · 3s</button>
+      <button class="modal-ack ready" id="secAck">I understand — continue</button>
     </div>
   </div>
 </div>
@@ -849,7 +822,7 @@
       This browser is currently connected to the internet. Generating a wallet here means your seed words and private keys exist in a process that could, in principle, be reached by malicious browser extensions, trackers, or compromised pages.
     </div>
     <div class="how">
-      <strong>For real funds, the safe workflow is:</strong> save this page (Ctrl/Cmd+S) → disconnect from Wi‑Fi / unplug Ethernet → reload the saved file from disk → confirm the pill in the top‑right reads <em>OFFLINE</em> → then generate.
+      <strong>For real funds, the safe workflow is:</strong> save this page (Ctrl/Cmd+S) → disconnect from Wi‑Fi / unplug Ethernet → reload the saved file from disk → confirm the pill in the top‑right reads <em>No network detected</em> → then generate. That pill reads the browser's own connection flag; it is a useful cross-check, not proof of an air gap — you are the one who can see the cable.
     </div>
     <label class="opt-row" for="onlineDontWarn">
       <input type="checkbox" id="onlineDontWarn">
@@ -881,7 +854,7 @@
         </div>
       </li>
       <li><strong>Open the saved file.</strong> Go to your Downloads folder and double‑click the <code class="inline">.html</code> file you just saved. It will open in your browser from disk — no server, no network.</li>
-      <li><strong>Verify the green pill.</strong> In the top‑right of this page the status should flip to <em style="color:var(--ok)">OFFLINE · SAFE</em> (green). Only then generate your wallet.</li>
+      <li><strong>Check the pill, then check it yourself.</strong> In the top‑right the status should flip to <em style="color:var(--ok)">No network detected</em> (green). That comes from the browser's <code class="inline">navigator.onLine</code> flag, which reports whether a network interface is up — not whether traffic can actually leave. Treat a green pill as one confirmation among several, alongside your own eyes on the Wi‑Fi indicator and the cable.</li>
     </ol>
     <div class="pro"><b>Pro tip:</b> for life‑changing amounts, use a clean machine that has never been online, a live OS from USB (e.g. Tails), or a dedicated hardware wallet. This page is a big step up from online generators, but an air‑gapped device is better still.</div>
     <div class="modal-actions">
@@ -911,27 +884,25 @@
     </p>
     <div class="row" style="margin-top:14px;justify-content:flex-end;gap:8px">
       <button type="button" class="ghost" id="wipeCancel">Cancel</button>
-      <button type="button" class="btn-danger" id="wipeConfirm" disabled>Wipe now <span id="wipeCountdown" style="opacity:.85">(3)</span></button>
+      <button type="button" class="btn-danger" id="wipeConfirm" disabled="">Wipe now <span id="wipeCountdown" style="opacity:.85">(3)</span></button>
     </div>
   </div>
 </div>
 
 <div class="card" id="app">
   <div class="brand">
-    <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="lg-btc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffc069"/><stop offset="100%" stop-color="#f7931a"/></linearGradient><radialGradient id="lg-splat" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f7931a"/><stop offset="55%" stop-color="#f7931a" stop-opacity=".7"/><stop offset="100%" stop-color="#f7931a" stop-opacity="0"/></radialGradient></defs><rect x="60" y="60" width="340" height="340" rx="8" fill="none" stroke="url(#lg-btc)" stroke-width="14"/><g transform="translate(210,232)" fill="url(#lg-btc)"><rect x="-16" y="-120" width="13" height="30" rx="3"/><rect x="7" y="-120" width="13" height="30" rx="3"/><rect x="-16" y="92" width="13" height="30" rx="3"/><rect x="7" y="92" width="13" height="30" rx="3"/><path d="M-42-90L22-90C62-90 84-72 84-46 84-24 70-8 48-2 74 4 96 20 96 50 96 80 72 98 30 98L-42 98ZM-8-60L-8-12 24-12C46-12 56-24 56-38 56-50 46-60 24-60ZM-8 16L-8 70 30 70C54 70 66 56 66 42 66 28 54 16 30 16Z"/></g><g transform="translate(390,390)"><circle r="52" fill="url(#lg-splat)" opacity=".85"/><circle r="28" fill="#f7931a" opacity=".9"/><circle cx="-50" cy="-30" r="5" fill="#f7931a" opacity=".6"/><circle cx="40" cy="-45" r="4" fill="#f7931a" opacity=".5"/><circle cx="-35" cy="42" r="6" fill="#f7931a" opacity=".45"/><circle cx="55" cy="20" r="3.5" fill="#f7931a" opacity=".5"/><circle cx="-60" cy="10" r="3" fill="#f7931a" opacity=".4"/><circle cx="25" cy="55" r="4" fill="#f7931a" opacity=".35"/><circle cx="-15" cy="-55" r="3.5" fill="#f7931a" opacity=".45"/><circle cx="60" cy="-15" r="2.5" fill="#f7931a" opacity=".35"/><circle cx="-40" cy="-50" r="2" fill="#f7931a" opacity=".3"/><circle cx="48" cy="48" r="3" fill="#f7931a" opacity=".3"/></g></svg></div>
+    <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><lineargradient id="lg-btc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffc069"></stop><stop offset="100%" stop-color="#f7931a"></stop></lineargradient><radialgradient id="lg-splat" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f7931a"></stop><stop offset="55%" stop-color="#f7931a" stop-opacity=".7"></stop><stop offset="100%" stop-color="#f7931a" stop-opacity="0"></stop></radialgradient></defs><rect x="60" y="60" width="340" height="340" rx="8" fill="none" stroke="url(#lg-btc)" stroke-width="14"></rect><g transform="translate(210,232)" fill="url(#lg-btc)"><rect x="-16" y="-120" width="13" height="30" rx="3"></rect><rect x="7" y="-120" width="13" height="30" rx="3"></rect><rect x="-16" y="92" width="13" height="30" rx="3"></rect><rect x="7" y="92" width="13" height="30" rx="3"></rect><path d="M-42-90L22-90C62-90 84-72 84-46 84-24 70-8 48-2 74 4 96 20 96 50 96 80 72 98 30 98L-42 98ZM-8-60L-8-12 24-12C46-12 56-24 56-38 56-50 46-60 24-60ZM-8 16L-8 70 30 70C54 70 66 56 66 42 66 28 54 16 30 16Z"></path></g><g transform="translate(390,390)"><circle r="52" fill="url(#lg-splat)" opacity=".85"></circle><circle r="28" fill="#f7931a" opacity=".9"></circle><circle cx="-50" cy="-30" r="5" fill="#f7931a" opacity=".6"></circle><circle cx="40" cy="-45" r="4" fill="#f7931a" opacity=".5"></circle><circle cx="-35" cy="42" r="6" fill="#f7931a" opacity=".45"></circle><circle cx="55" cy="20" r="3.5" fill="#f7931a" opacity=".5"></circle><circle cx="-60" cy="10" r="3" fill="#f7931a" opacity=".4"></circle><circle cx="25" cy="55" r="4" fill="#f7931a" opacity=".35"></circle><circle cx="-15" cy="-55" r="3.5" fill="#f7931a" opacity=".45"></circle><circle cx="60" cy="-15" r="2.5" fill="#f7931a" opacity=".35"></circle><circle cx="-40" cy="-50" r="2" fill="#f7931a" opacity=".3"></circle><circle cx="48" cy="48" r="3" fill="#f7931a" opacity=".3"></circle></g></svg></div>
     <div>
       <h1>Amulet</h1>
-      <div class="tag">Offline BIP‑39 · BIP‑32 · In your browser · v1.58</div>
+      <div class="tag">Offline BIP‑39 · BIP‑32 · In your browser · v1.63</div>
     </div>
     <span class="net-pill-wrap">
-      <button class="net-pill checking" id="netPill" type="button" aria-live="polite" aria-haspopup="dialog"
-              title="Click to see how to use this page offline">
-        <span class="dot"></span><span id="netLabel">checking…</span>
+      <button class="net-pill online" id="netPill" type="button" aria-live="polite" aria-haspopup="dialog" title="Click to see how to use this page offline">
+        <span class="dot"></span><span id="netLabel">Network up · risky</span>
       </button>
-      <span class="net-hint" id="netHint">Click for offline instructions</span>
+      <span class="net-hint" id="netHint">Click: how to go offline →</span>
     </span>
-    <button class="theme-switch" id="themeToggle" type="button" role="switch" aria-checked="false"
-            aria-label="Switch theme" data-hint="Switch to light" title="Switch to light theme">
+    <button class="theme-switch" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Switch theme" data-hint="Switch to light" title="Switch to light theme">
       <span class="ts-track">
         <span class="ts-icon ts-sun" aria-hidden="true">☀</span>
         <span class="ts-icon ts-moon" aria-hidden="true">🌙</span>
@@ -945,6 +916,43 @@
 
   <!-- Step 1: choose -->
   <section id="step-choose">
+
+    <!-- v1.60 (F-06): file integrity. Everything this page promises is downstream
+         of the bytes actually being the bytes that were audited. The page cannot
+         hash itself — reading its own source over file:// is blocked, and the
+         serialised DOM is not the file — so the user drops the .html in and we
+         hash what the filesystem really holds. -->
+    <details class="integrity" id="integrityBox">
+      <summary>Verify this file before you trust it <span class="int-badge">recommended</span></summary>
+      <div class="int-body">
+        <p class="tiny">This page was downloaded from somewhere. Nothing on it can prove the file
+           was not altered in transit or at rest — a modified copy could bias the entropy and
+           still look identical. The only real check is a SHA‑256 digest compared against a value
+           you obtained <strong>independently</strong> of the download: the project's release notes,
+           a signed manifest, a copy a friend already trusts.</p>
+
+        <div class="int-drop" id="intDrop" tabindex="0" role="button" aria-label="Choose or drop this HTML file to compute its SHA-256">
+          <strong>Drop this .html file here</strong>
+          <span class="tiny">or click to choose it — the same file you are looking at now</span>
+          <input type="file" id="intFile" accept=".html,text/html" hidden>
+        </div>
+
+        <div id="intOut" class="int-out hidden"></div>
+
+        <label class="int-expect-label" for="intExpect">Compare against a checksum you obtained elsewhere (optional)</label>
+        <input type="text" id="intExpect" class="int-expect" placeholder="paste the expected sha256 here" autocomplete="off" spellcheck="false">
+        <div id="intVerdict" class="int-verdict hidden"></div>
+
+        <p class="tiny" style="margin-top:12px">You can compute the same digest without this page, which is the better habit:</p>
+        <pre class="int-cmds">Linux / BSD    sha256sum  "Amulet.html"
+macOS          shasum -a 256  "Amulet.html"
+Windows        certutil -hashfile "Amulet.html" SHA256
+PowerShell     Get-FileHash "Amulet.html" -Algorithm SHA256</pre>
+        <p class="tiny"><strong>A matching digest proves the file is unmodified. It does not prove the file
+           is trustworthy</strong> — that depends entirely on where your expected value came from. A checksum
+           published on the same page that served the download proves nothing against a compromised server.</p>
+      </div>
+    </details>
 
     <div class="sec"><span class="num">1</span><span class="title">Seed length</span></div>
     <div class="seg" id="wcSeg">
@@ -967,7 +975,6 @@
           <button data-src="none" class="active">CSPRNG only</button>
           <button data-src="dice">🎲 Dice</button>
           <button data-src="cards">🃏 Cards</button>
-          <button data-src="keys">⌨️ Keystrokes</button>
           <button data-src="grid">🌀 Chaos Grid</button>
         </div>
 
@@ -980,11 +987,11 @@
         <!-- DICE -->
         <div class="src hidden" id="pane-dice">
           <h4>🎲 Dice rolls <span class="tiny" style="margin:0">· D6, values 1–6</span></h4>
-          <p class="tiny">Roll a six‑sided die and paste the values below (spaces, commas, or nothing). Suggested: <strong>50 rolls</strong> for ~128 bits, <strong>99 rolls</strong> for ~256 bits.</p>
+          <p class="tiny">Roll a six‑sided die and paste the values below (spaces, commas, or nothing). <strong>50 rolls</strong> is the minimum this tool accepts — that is 128 bits, the point below which your rolls would not survive a broken CSPRNG. <strong>99 rolls</strong> gives the full 256 bits for a 24‑word seed. Fewer than 50 cannot be committed: weak added entropy costs real effort and buys nothing.</p>
           <textarea id="dice" placeholder="e.g.  3 5 2 6 1 4 4 2 6 3 …"></textarea>
-          <div class="meter" id="diceMeter">0 valid rolls · ~0.00 bits</div>
+          <div class="meter" id="diceMeter"><span class="err">0 valid rolls · ~0.00 bits</span> <span class="tiny">50 rolls needed to reach the 128-bit floor</span></div>
           <div class="row" style="margin-top:10px">
-            <button class="primary" id="diceSubmit" disabled>Commit dice entropy</button>
+            <button class="primary" id="diceSubmit" disabled="">Commit dice entropy</button>
             <button class="ghost small" id="diceClear">Clear</button>
           </div>
           <div id="diceCommitted" class="committed hidden" style="margin-top:10px"></div>
@@ -999,17 +1006,17 @@
 
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
             <strong id="roundTitle">Round 1 of 11</strong>
-            <span class="tiny" id="roundsDone">0 rounds submitted</span>
+            <span class="tiny" id="roundsDone">0 / 11 rounds submitted</span>
           </div>
           <div class="progress"><div id="roundProgress" style="width:0%"></div></div>
 
           <input type="text" id="cardsInput" placeholder="e.g.  AH 7S KD TC" autocomplete="off" spellcheck="false" style="margin-top:12px">
           <div class="chips" id="cardChips"></div>
-          <div class="meter" id="cardMeter">0 / 4 cards in this round</div>
-          <div class="deck" id="deck"></div>
+          <div class="meter" id="cardMeter"><span class="warn">0 / 4 cards in this round</span></div>
+          <div class="deck" id="deck"><div class="pcard red" data-code="AH"><div>A</div><div class="suit">♥</div></div><div class="pcard red" data-code="2H"><div>2</div><div class="suit">♥</div></div><div class="pcard red" data-code="3H"><div>3</div><div class="suit">♥</div></div><div class="pcard red" data-code="4H"><div>4</div><div class="suit">♥</div></div><div class="pcard red" data-code="5H"><div>5</div><div class="suit">♥</div></div><div class="pcard red" data-code="6H"><div>6</div><div class="suit">♥</div></div><div class="pcard red" data-code="7H"><div>7</div><div class="suit">♥</div></div><div class="pcard red" data-code="8H"><div>8</div><div class="suit">♥</div></div><div class="pcard red" data-code="9H"><div>9</div><div class="suit">♥</div></div><div class="pcard red" data-code="TH"><div>T</div><div class="suit">♥</div></div><div class="pcard red" data-code="JH"><div>J</div><div class="suit">♥</div></div><div class="pcard red" data-code="QH"><div>Q</div><div class="suit">♥</div></div><div class="pcard red" data-code="KH"><div>K</div><div class="suit">♥</div></div><div class="pcard red" data-code="AD"><div>A</div><div class="suit">♦</div></div><div class="pcard red" data-code="2D"><div>2</div><div class="suit">♦</div></div><div class="pcard red" data-code="3D"><div>3</div><div class="suit">♦</div></div><div class="pcard red" data-code="4D"><div>4</div><div class="suit">♦</div></div><div class="pcard red" data-code="5D"><div>5</div><div class="suit">♦</div></div><div class="pcard red" data-code="6D"><div>6</div><div class="suit">♦</div></div><div class="pcard red" data-code="7D"><div>7</div><div class="suit">♦</div></div><div class="pcard red" data-code="8D"><div>8</div><div class="suit">♦</div></div><div class="pcard red" data-code="9D"><div>9</div><div class="suit">♦</div></div><div class="pcard red" data-code="TD"><div>T</div><div class="suit">♦</div></div><div class="pcard red" data-code="JD"><div>J</div><div class="suit">♦</div></div><div class="pcard red" data-code="QD"><div>Q</div><div class="suit">♦</div></div><div class="pcard red" data-code="KD"><div>K</div><div class="suit">♦</div></div><div class="pcard" data-code="AC"><div>A</div><div class="suit">♣</div></div><div class="pcard" data-code="2C"><div>2</div><div class="suit">♣</div></div><div class="pcard" data-code="3C"><div>3</div><div class="suit">♣</div></div><div class="pcard" data-code="4C"><div>4</div><div class="suit">♣</div></div><div class="pcard" data-code="5C"><div>5</div><div class="suit">♣</div></div><div class="pcard" data-code="6C"><div>6</div><div class="suit">♣</div></div><div class="pcard" data-code="7C"><div>7</div><div class="suit">♣</div></div><div class="pcard" data-code="8C"><div>8</div><div class="suit">♣</div></div><div class="pcard" data-code="9C"><div>9</div><div class="suit">♣</div></div><div class="pcard" data-code="TC"><div>T</div><div class="suit">♣</div></div><div class="pcard" data-code="JC"><div>J</div><div class="suit">♣</div></div><div class="pcard" data-code="QC"><div>Q</div><div class="suit">♣</div></div><div class="pcard" data-code="KC"><div>K</div><div class="suit">♣</div></div><div class="pcard" data-code="AS"><div>A</div><div class="suit">♠</div></div><div class="pcard" data-code="2S"><div>2</div><div class="suit">♠</div></div><div class="pcard" data-code="3S"><div>3</div><div class="suit">♠</div></div><div class="pcard" data-code="4S"><div>4</div><div class="suit">♠</div></div><div class="pcard" data-code="5S"><div>5</div><div class="suit">♠</div></div><div class="pcard" data-code="6S"><div>6</div><div class="suit">♠</div></div><div class="pcard" data-code="7S"><div>7</div><div class="suit">♠</div></div><div class="pcard" data-code="8S"><div>8</div><div class="suit">♠</div></div><div class="pcard" data-code="9S"><div>9</div><div class="suit">♠</div></div><div class="pcard" data-code="TS"><div>T</div><div class="suit">♠</div></div><div class="pcard" data-code="JS"><div>J</div><div class="suit">♠</div></div><div class="pcard" data-code="QS"><div>Q</div><div class="suit">♠</div></div><div class="pcard" data-code="KS"><div>K</div><div class="suit">♠</div></div></div>
 
           <div class="row" style="margin-top:12px">
-            <button class="primary" id="roundNext" disabled>Next round</button>
+            <button class="primary" id="roundNext" disabled="">Next round</button>
             <button class="ghost small" id="roundReset">Reset round</button>
             <button class="ghost small" id="cardsStartOver">Start over</button>
           </div>
@@ -1019,50 +1026,22 @@
         </div>
 
         <!-- KEYSTROKES -->
-        <div class="src hidden" id="pane-keys">
-          <h4>⌨️ Random keystrokes <span class="tiny" style="margin:0">· analysed live</span></h4>
-          <p class="tiny">Mash the keyboard without any pattern in mind — the analyser below measures Shannon &amp; bigram entropy, LZ compressibility, Rényi‑2 collision entropy and keyboard‑walk heuristics in real time. Predictable input (<code class="inline">qwerty</code>, <code class="inline">aaaa…</code>, <code class="inline">ababab</code>) is flagged so you know when to add more chaos.</p>
-          <textarea id="keys" class="keys-area" placeholder="…mash random characters here, 50+ chars recommended…" autocomplete="off" spellcheck="false"></textarea>
-          <div class="qmeter">
-            <div class="qrow">
-              <div class="qhead">Live quality</div>
-              <div class="qscore" id="keysScoreLabel">waiting for input</div>
-            </div>
-            <div class="qbar"><div id="keysBar"></div></div>
-            <div class="qstats" id="keysStats">
-              <div class="stat">Characters <b id="qChars">0</b></div>
-              <div class="stat">Shannon / char <b id="qShannon">—</b></div>
-              <div class="stat">Bigram / char <b id="qBigram">—</b></div>
-              <div class="stat">Rényi‑2 / char <b id="qRenyi">—</b></div>
-              <div class="stat">LZ78 bits / char <b id="qLZ">—</b></div>
-              <div class="stat">χ² / dof <b id="qChi">—</b></div>
-              <div class="stat">Timing bits <b id="qTiming">0</b></div>
-              <div class="stat">KL to uniform <b id="qKL">—</b></div>
-            </div>
-            <div class="qflags" id="keysFlags"></div>
-          </div>
-          <div id="keysStatus" class="committed hidden" style="margin-top:12px"></div>
-          <div class="row" style="margin-top:10px">
-            <button class="ghost small" id="keysClear">Clear</button>
-          </div>
-          <p class="tiny" style="margin:8px 0 0">Type at least 50 characters, then press <strong>Generate wallet</strong> below — your keystrokes &amp; timing are automatically mixed in.</p>
-        </div>
-
         <!-- CHAOS GRID -->
         <div class="src hidden" id="pane-grid">
           <h4>🌀 Chaos Grid <span class="tiny" style="margin:0">· flip tiles, break symbols</span></h4>
-          <p class="tiny">Tap or click any tile to flip it and reveal its symbol. Each click records its exact timestamp and pointer position adding to the entropy/randomness. Revealed tiles stay locked. When the <strong>same symbol has been revealed two times</strong>, every remaining tile carrying that symbol <strong>shatters</strong> and can't be selected anymore. Two rare tiles — <strong>🌀 spiral</strong> and <strong>∞ infinity</strong> — appear once each and, when flipped, <strong>restore every shattered tile</strong> with a fresh random symbol behind it. Keep flipping until the progress bar is full — <strong>~15 clicks is plenty</strong>… your instinct is the entropy.</p>
+          <p class="tiny">Tap or click any tile to flip it and reveal its symbol. Each click records its exact timestamp and pointer position adding to the entropy/randomness. Revealed tiles stay locked. When the <strong>same symbol has been revealed two times</strong>, every remaining tile carrying that symbol <strong>shatters</strong> and can't be selected anymore. Two rare tiles — <strong>🌀 spiral</strong> and <strong>∞ infinity</strong> — appear once each and, when flipped, <strong>restore every shattered tile</strong> with a fresh random symbol behind it. Keep flipping until the progress bar is full — <strong>about 30 clicks</strong> reaches the 128-bit floor. The bar tracks credited bits, not raw clicks, so a steady metronome rhythm scores less and needs more. If the board runs low on tiles a fresh one is dealt automatically and your clicks carry over, so you can always keep going. Your instinct is the entropy.</p>
           <div class="grid-wrap">
             <div class="grid-progress">
-              <div class="pbar"><div class="pfill" id="gridPFill"></div></div>
-              <div class="plabel"><span id="gridPLabel">0 clicks · 0.0 bits</span><span id="gridPTarget">target: 15 clicks</span></div>
+              <div class="pbar"><div class="pfill" id="gridPFill" style="width: 0%;"></div></div>
+              <div class="plabel"><span id="gridPLabel">0 clicks · ~0.0 bits</span><span id="gridPTarget">0 / 128 bits — about 30 clicks to go</span></div>
             </div>
-            <div class="chaos-grid" id="chaosGrid" role="group" aria-label="Chaos entropy grid"></div>
+            <div class="chaos-grid" id="chaosGrid" role="group" aria-label="Chaos entropy grid"><button type="button" class="chaos-cell" data-idx="0" aria-label="Tile 1"><span class="cell-back"></span><span class="cell-front" style="color: rgb(141, 226, 140);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 12 L58 42 L88 50 L58 58 L50 88 L42 58 L12 50 L42 42 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="1" aria-label="Tile 2"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 209, 102);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" d="M50 50 m0 0 a4 4 0 1 1 6 6 a10 10 0 1 1 -14 -14 a18 18 0 1 1 26 26 a26 26 0 1 1 -38 -38 a34 34 0 1 1 48 48"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="2" aria-label="Tile 3"><span class="cell-back"></span><span class="cell-front" style="color: rgb(41, 211, 145);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 90,84 10,84" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="3" aria-label="Tile 4"><span class="cell-back"></span><span class="cell-front" style="color: rgb(247, 147, 26);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="currentColor"></circle></svg></span></button><button type="button" class="chaos-cell" data-idx="4" aria-label="Tile 5"><span class="cell-back"></span><span class="cell-front" style="color: rgb(76, 217, 226);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 62,38 90,42 70,60 76,88 50,74 24,88 30,60 10,42 38,38" fill="currentColor" transform="rotate(10 50 50)"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="5" aria-label="Tile 6"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 209, 102);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,10 61,40 92,40 66,58 76,88 50,70 24,88 34,58 8,40 39,40" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="6" aria-label="Tile 7"><span class="cell-back"></span><span class="cell-front" style="color: rgb(179, 136, 255);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" d="M26 50 C26 30 48 30 50 50 C52 70 74 70 74 50 C74 30 52 30 50 50 C48 70 26 70 26 50 Z"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="7" aria-label="Tile 8"><span class="cell-back"></span><span class="cell-front" style="color: rgb(179, 136, 255);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,12 88,50 50,88 12,50" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="8" aria-label="Tile 9"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 107, 107);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,12 88,32 88,68 50,88 12,68 12,32" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="9" aria-label="Tile 10"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 209, 102);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" d="M50 50 m0 0 a4 4 0 1 1 6 6 a10 10 0 1 1 -14 -14 a18 18 0 1 1 26 26 a26 26 0 1 1 -38 -38 a34 34 0 1 1 48 48"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="10" aria-label="Tile 11"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 138, 122);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 86 C14 62 18 28 40 28 C48 28 50 34 50 38 C50 34 52 28 60 28 C82 28 86 62 50 86 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="11" aria-label="Tile 12"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 107, 107);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,12 88,32 88,68 50,88 12,68 12,32" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="12" aria-label="Tile 13"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 176, 107);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M55 10 L20 55 L45 55 L40 90 L78 42 L52 42 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="13" aria-label="Tile 14"><span class="cell-back"></span><span class="cell-front" style="color: rgb(179, 136, 255);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,12 88,50 50,88 12,50" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="14" aria-label="Tile 15"><span class="cell-back"></span><span class="cell-front" style="color: rgb(76, 217, 226);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 62,38 90,42 70,60 76,88 50,74 24,88 30,60 10,42 38,38" fill="currentColor" transform="rotate(10 50 50)"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="15" aria-label="Tile 16"><span class="cell-back"></span><span class="cell-front" style="color: rgb(141, 226, 140);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 12 L58 42 L88 50 L58 58 L50 88 L42 58 L12 50 L42 42 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="16" aria-label="Tile 17"><span class="cell-back"></span><span class="cell-front" style="color: rgb(41, 211, 145);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 90,84 10,84" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="17" aria-label="Tile 18"><span class="cell-back"></span><span class="cell-front" style="color: rgb(41, 211, 145);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 90,84 10,84" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="18" aria-label="Tile 19"><span class="cell-back"></span><span class="cell-front" style="color: rgb(141, 226, 140);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 12 L58 42 L88 50 L58 58 L50 88 L42 58 L12 50 L42 42 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="19" aria-label="Tile 20"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 107, 107);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,12 88,32 88,68 50,88 12,68 12,32" fill="currentColor"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="20" aria-label="Tile 21"><span class="cell-back"></span><span class="cell-front" style="color: rgb(76, 217, 226);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,14 62,38 90,42 70,60 76,88 50,74 24,88 30,60 10,42 38,38" fill="currentColor" transform="rotate(10 50 50)"></polygon></svg></span></button><button type="button" class="chaos-cell" data-idx="21" aria-label="Tile 22"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 176, 107);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M55 10 L20 55 L45 55 L40 90 L78 42 L52 42 Z" fill="currentColor"></path></svg></span></button><button type="button" class="chaos-cell" data-idx="22" aria-label="Tile 23"><span class="cell-back"></span><span class="cell-front" style="color: rgb(126, 200, 255);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="16" width="68" height="68" rx="8" fill="currentColor"></rect></svg></span></button><button type="button" class="chaos-cell" data-idx="23" aria-label="Tile 24"><span class="cell-back"></span><span class="cell-front" style="color: rgb(126, 200, 255);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="16" width="68" height="68" rx="8" fill="currentColor"></rect></svg></span></button><button type="button" class="chaos-cell" data-idx="24" aria-label="Tile 25"><span class="cell-back"></span><span class="cell-front" style="color: rgb(255, 209, 102);"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,10 61,40 92,40 66,58 76,88 50,70 24,88 34,58 8,40 39,40" fill="currentColor"></polygon></svg></span></button></div>
             <div class="grid-meta" id="gridMeta"><span>Revealed <b id="gridRevealed">0</b>/25</span><span>Broken <b id="gridBroken">0</b></span><span>Unique symbols hit <b id="gridUnique">0</b></span></div>
           </div>
+          <div id="gridRefillNote" class="tiny hidden" style="margin-top:10px;color:var(--muted);text-align:center"></div>
           <div id="gridStatus" class="committed hidden" style="margin-top:12px"></div>
           <div class="row" style="margin-top:10px">
-            <button class="primary" id="gridSubmit" disabled>Commit grid entropy</button>
+            <button class="primary" id="gridSubmit" disabled="">Commit grid entropy</button>
             <button class="ghost small" id="gridReset">New grid</button>
           </div>
           <p class="tiny" style="margin:8px 0 0">Click at least 10 tiles to unlock the commit button. Everything is hashed locally — nothing is transmitted.</p>
@@ -1120,10 +1099,10 @@
         <button type="button" class="ghost small" id="mnemoPaste" title="Paste all words at once from clipboard">Paste all</button>
         <button type="button" class="ghost small" id="mnemoClear">Clear</button>
       </div>
-      <div id="mnemoGrid" class="mnemo-grid" style="margin-top:12px"></div>
+      <div id="mnemoGrid" class="mnemo-grid" style="margin-top:12px"><div class="mnemo-cell"><span class="mn">01</span><input type="text" autocomplete="off" spellcheck="false" data-idx="0"></div><div class="mnemo-cell"><span class="mn">02</span><input type="text" autocomplete="off" spellcheck="false" data-idx="1"></div><div class="mnemo-cell"><span class="mn">03</span><input type="text" autocomplete="off" spellcheck="false" data-idx="2"></div><div class="mnemo-cell"><span class="mn">04</span><input type="text" autocomplete="off" spellcheck="false" data-idx="3"></div><div class="mnemo-cell"><span class="mn">05</span><input type="text" autocomplete="off" spellcheck="false" data-idx="4"></div><div class="mnemo-cell"><span class="mn">06</span><input type="text" autocomplete="off" spellcheck="false" data-idx="5"></div><div class="mnemo-cell"><span class="mn">07</span><input type="text" autocomplete="off" spellcheck="false" data-idx="6"></div><div class="mnemo-cell"><span class="mn">08</span><input type="text" autocomplete="off" spellcheck="false" data-idx="7"></div><div class="mnemo-cell"><span class="mn">09</span><input type="text" autocomplete="off" spellcheck="false" data-idx="8"></div><div class="mnemo-cell"><span class="mn">10</span><input type="text" autocomplete="off" spellcheck="false" data-idx="9"></div><div class="mnemo-cell"><span class="mn">11</span><input type="text" autocomplete="off" spellcheck="false" data-idx="10"></div><div class="mnemo-cell"><span class="mn">12</span><input type="text" autocomplete="off" spellcheck="false" data-idx="11"></div><div class="mnemo-cell"><span class="mn">13</span><input type="text" autocomplete="off" spellcheck="false" data-idx="12"></div><div class="mnemo-cell"><span class="mn">14</span><input type="text" autocomplete="off" spellcheck="false" data-idx="13"></div><div class="mnemo-cell"><span class="mn">15</span><input type="text" autocomplete="off" spellcheck="false" data-idx="14"></div><div class="mnemo-cell"><span class="mn">16</span><input type="text" autocomplete="off" spellcheck="false" data-idx="15"></div><div class="mnemo-cell"><span class="mn">17</span><input type="text" autocomplete="off" spellcheck="false" data-idx="16"></div><div class="mnemo-cell"><span class="mn">18</span><input type="text" autocomplete="off" spellcheck="false" data-idx="17"></div><div class="mnemo-cell"><span class="mn">19</span><input type="text" autocomplete="off" spellcheck="false" data-idx="18"></div><div class="mnemo-cell"><span class="mn">20</span><input type="text" autocomplete="off" spellcheck="false" data-idx="19"></div><div class="mnemo-cell"><span class="mn">21</span><input type="text" autocomplete="off" spellcheck="false" data-idx="20"></div><div class="mnemo-cell"><span class="mn">22</span><input type="text" autocomplete="off" spellcheck="false" data-idx="21"></div><div class="mnemo-cell"><span class="mn">23</span><input type="text" autocomplete="off" spellcheck="false" data-idx="22"></div><div class="mnemo-cell"><span class="mn">24</span><input type="text" autocomplete="off" spellcheck="false" data-idx="23"></div></div>
       <div class="verify-form-row">
         <label for="mnemoPass">BIP‑39 passphrase (optional)</label>
-        <input type="text" id="mnemoPass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+        <input type="text" id="mnemoPass" placeholder="Leave empty if you didn&#39;t use one" autocomplete="off" spellcheck="false">
       </div>
       <div id="mnemoStatus"></div>
       <div class="verify-cta-row">
@@ -1136,7 +1115,7 @@
       <p class="lane-hint">Drop or pick a <code class="inline">.enc</code> or <code class="inline">.txt</code> file that this tool wrote for you. For an <code class="inline">.enc</code>, enter its password. For a PDF, open it, copy the twelve or twenty-four words, and paste them into the <em>From seed phrase</em> tab.</p>
       <div class="file-drop" id="verifyDrop">
         <div>Drop a file here, or click to pick one</div>
-        <input type="file" id="verifyFileInput" hidden accept=".enc,.txt">
+        <input type="file" id="verifyFileInput" hidden="" accept=".enc,.txt">
         <div class="file-drop-name" id="verifyFileName"></div>
       </div>
       <div class="verify-form-row" id="verifyPwRow" style="display:none">
@@ -1145,11 +1124,11 @@
       </div>
       <div class="verify-form-row">
         <label for="verifyFilePass">BIP‑39 passphrase (optional)</label>
-        <input type="text" id="verifyFilePass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+        <input type="text" id="verifyFilePass" placeholder="Leave empty if you didn&#39;t use one" autocomplete="off" spellcheck="false">
       </div>
       <div id="verifyFileStatus"></div>
       <div class="verify-cta-row">
-        <button type="button" class="primary" id="verifyFileBtn" disabled>Verify wallet</button>
+        <button type="button" class="primary" id="verifyFileBtn" disabled="">Verify wallet</button>
       </div>
     </div>
 
@@ -1188,7 +1167,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
       </div>
       <div class="verify-form-row">
         <label for="entPass">BIP‑39 passphrase (optional)</label>
-        <input type="text" id="entPass" placeholder="Leave empty if you didn't use one" autocomplete="off" spellcheck="false">
+        <input type="text" id="entPass" placeholder="Leave empty if you didn&#39;t use one" autocomplete="off" spellcheck="false">
       </div>
       <div id="entStatus"></div>
       <div class="verify-cta-row">
@@ -1217,7 +1196,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
     <div class="pp-fp visible" id="seedFpRow">
       <div class="pp-fp-visual" id="seedFpVisual"></div>
       <div class="pp-fp-body">
-        <div class="pp-fp-label">Seed fingerprint<span class="pp-fp-pass" id="seedFpPassChip" hidden>includes BIP‑39 passphrase</span></div>
+        <div class="pp-fp-label">Seed fingerprint<span class="pp-fp-pass" id="seedFpPassChip" hidden="">includes BIP‑39 passphrase</span></div>
         <code class="pp-fp-code" id="seedFpCode">computing…</code>
         <div class="pp-fp-hint">SHA-256 of the full BIP-39 seed (mnemonic plus passphrase). Record it with your backup: it identifies this wallet seed. It is <strong>not</strong> the Amulet Vault passphrase fingerprint, which checks a vault master password and is shown as a square grid, not this colour bar.</div>
       </div>
@@ -1252,7 +1231,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
       <div class="pp-disc-body">
         <div class="pp-disc-warn">
           <strong>Read this before typing anything here.</strong>
-          A BIP‑39 passphrase (often called the &ldquo;25th word&rdquo;) is an
+          A BIP‑39 passphrase (often called the “25th word”) is an
           optional secret mixed into the seed. The same 24 words with a
           different passphrase produce a completely different wallet, with
           completely different addresses. Most wallets do not use one. If you
@@ -1292,11 +1271,13 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
 
     <details>
       <summary>Verify the checksum &amp; reproduce the seed by hand</summary>
+      <!-- v1.60: the panel below prints COMBINED INPUT, which is seed-equivalent. -->
+      <p class="tiny" style="margin:8px 0 0;color:var(--err)"><strong>Shoulder-surfing warning:</strong> the line below is the exact input that was hashed into your seed. Anyone who reads or photographs it can rebuild this wallet without ever seeing your words.</p>
       <div id="verify" style="margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--ink-dim);line-height:1.65"></div>
     </details>
 
     <div class="row" style="margin-top:12px">
-      <button class="primary" id="download" hidden>Download report (.txt)</button>
+      <button class="primary" id="download" hidden="">Download report (.txt)</button>
       <!-- v1.33: text colour hardcoded to #fff (was var(--ink), which flipped to dark in light theme and made the button label unreadable on its dark-blue background). -->
       <button class="primary" id="downloadEnc" style="display:none;background:linear-gradient(180deg,#2a3663,#19224a);color:#fff;border-color:var(--line-2)">🔒 Encrypted (.enc)</button>
       <button class="ghost" id="again">Generate another</button>
@@ -1310,7 +1291,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
          later in Amulet Scryer to watch this wallet's balance.</p>
       <div class="ex-grid">
         <label class="ex-tile selected">
-          <input type="radio" name="exFormat" value="all" checked>
+          <input type="radio" name="exFormat" value="all" checked="">
           <span class="ex-name">All three files</span>
           <span class="ex-exts">.enc · .txt · .pdf</span>
           <span class="ex-sub">Recommended. The encrypted backup plus both readable copies.</span>
@@ -1325,7 +1306,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
           <input type="radio" name="exFormat" value="txt">
           <span class="ex-name">Plain text</span>
           <span class="ex-exts">.txt</span>
-          <span class="ex-sub">The full report as readable text.</span>
+          <span class="ex-sub">The full report as readable text. Seed-equivalent — rebuilds the wallet on its own.</span>
         </label>
         <label class="ex-tile">
           <input type="radio" name="exFormat" value="pdf">
@@ -1335,7 +1316,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
         </label>
       </div>
       <button class="primary" id="reExportBtn">Download</button>
-      <p class="re-warn"><strong>The .txt and .pdf hold your seed in the clear</strong>, exactly like writing it on paper, and the PDF SeedQR is itself a scannable seed. Keep those files offline. The <code>.enc</code> file is encrypted with a password you choose.</p>
+      <p class="re-warn"><strong>The .txt and .pdf hold your seed in the clear</strong>, exactly like writing it on paper, and the PDF SeedQR is itself a scannable seed. They also record the exact input string that was hashed to build the seed, so <strong>either file rebuilds this wallet even with the word list removed</strong>. Treat them as the seed itself: offline only, never emailed, synced, or printed on a shared printer. The <code>.enc</code> file is encrypted with a password you choose and is the one to keep on a normal disk.</p>
     </div>
 
     <div class="wipe-wrap">
@@ -1358,7 +1339,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
     <div class="enc-error" id="encError"></div>
     <div class="enc-actions">
       <button class="enc-cancel" id="encCancel">Cancel</button>
-      <button class="enc-go" id="encGo" disabled>Encrypt &amp; download</button>
+      <button class="enc-go" id="encGo" disabled="">Encrypt &amp; download</button>
     </div>
     <div class="enc-info">AES‑256‑GCM · PBKDF2‑SHA‑256 · 600 000 iterations · random salt + IV · header sealed by auth tag (AMLT v2) · fully offline, no data leaves this page.</div>
   </div>
@@ -1379,7 +1360,7 @@ or:   #01 A♥ 7♠ K♦ T♣  #02 3♠ Q♥ 9♦ 2♣  ..." autocomplete="off" 
     <div class="enc-error" id="decryptError"></div>
     <div class="enc-actions">
       <button class="enc-cancel" id="decCancel">Cancel</button>
-      <button class="enc-go" id="decryptBtn" disabled>Decrypt</button>
+      <button class="enc-go" id="decryptBtn" disabled="">Decrypt</button>
     </div>
     <div id="decryptResult" style="display:none;margin-top:14px">
       <pre id="decryptOutput" style="background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:14px;font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);line-height:1.5;max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all"></pre>
@@ -4765,7 +4746,7 @@ function targetRounds(wc){ return wc === 24 ? 23 : 11; }
 
 /* ========== state ========== */
 let wordCount = 12;              // 12 or 24
-let source = 'none';             // 'none' | 'dice' | 'cards' | 'keys' | 'grid'
+let source = 'none';             // 'none' | 'dice' | 'cards' | 'grid'   (v1.62: 'keys' removed)
 let diceStrCommitted = '';       // committed dice digits
 let diceCommitted = false;
 
@@ -4808,11 +4789,12 @@ document.querySelectorAll('#srcSeg button').forEach(b => {
     if(s === source) return;
     source = s;
     document.querySelectorAll('#srcSeg button').forEach(x => x.classList.toggle('active', x === b));
-    ['none','dice','cards','keys','grid'].forEach(k => $('#pane-'+k).classList.toggle('hidden', k !== s));
+    // v1.62: 'keys' dropped — its pane no longer exists and $('#pane-keys')
+    // would be null, throwing before the selected pane could be revealed.
+    ['none','dice','cards','grid'].forEach(k => $('#pane-'+k).classList.toggle('hidden', k !== s));
     // switching source clears the other source's commitment
     if(s !== 'dice'){ diceStrCommitted=''; diceCommitted=false; renderDiceCommitted(); }
     if(s !== 'cards'){ resetCards(); }
-    if(s !== 'keys'){ resetKeys(); }
     if(s !== 'grid'){ resetGrid(); }
     updateCardsUI();
   });
@@ -4829,12 +4811,24 @@ function diceBitsFrom(n){ return n * Math.log2(6); }
 function updateDiceMeter(){
   const norm = normalizeDice(diceEl.value);
   const n = norm.length, bits = diceBitsFrom(n);
-  let cls='err', msg='enter at least a few rolls';
-  if(n >= 99){cls='ok'; msg='≥256 bits';}
-  else if(n >= 50){cls='ok'; msg='≥128 bits';}
-  else if(n > 0){cls='warn'; msg='supplemental — still fine';}
+  // v1.61: the meter now tracks the 128-bit floor, because that is the number
+  // that decides whether these rolls can be used at all. The old copy called a
+  // short roll set "supplemental — still fine"; it is not fine, it is refused.
+  const gate = userEntropyGate('dice', { diceStr: norm });
+  let cls, msg;
+  if(!n){
+    cls = 'err'; msg = `roll a die ${Math.ceil(USER_ENTROPY_FLOOR_BITS / Math.log2(6))} times to reach the ${USER_ENTROPY_FLOOR_BITS}-bit floor`;
+  } else if(gate.flags.length){
+    cls = 'err'; msg = gate.flags[0];
+  } else if(!gate.ok){
+    cls = 'warn'; msg = userEntropyShortfallText('dice', gate);
+  } else if(n >= 99){
+    cls = 'ok'; msg = 'full strength for a 24-word seed (≥256 bits)';
+  } else {
+    cls = 'ok'; msg = `floor cleared — survives a CSPRNG failure at ${gate.bits.toFixed(0)} bits`;
+  }
   diceMeter.innerHTML = `<span class="${cls}">${n} valid rolls · ~${bits.toFixed(2)} bits</span> <span class="tiny">${msg}</span>`;
-  diceSubmitBtn.disabled = (n < 1);
+  diceSubmitBtn.disabled = !gate.ok;
 }
 function renderDiceCommitted(){
   const el = $('#diceCommitted');
@@ -4867,13 +4861,58 @@ $('#diceClear').addEventListener('click', () => {
 });
 
 /* ========== keystrokes ========== */
-const keysEl = $('#keys');
-const keysBarEl = $('#keysBar');
-const keysScoreLabel = $('#keysScoreLabel');
-const keysFlagsEl = $('#keysFlags');
-const keysStatusEl = $('#keysStatus');
+/* v1.62: the keystroke source was removed — see the note above analyseKeys. */
 
 const KEYS_MIN_CHARS = 50;
+
+/* ===== v1.61: minimum strength for user-supplied entropy =====
+   User entropy exists for exactly one scenario: the browser CSPRNG is
+   backdoored, broken, or predictable. In that scenario the attacker knows the
+   csprng field of the combined string and brute-forces the rest, so the seed's
+   surviving security is EXACTLY the bits the user's draws contributed —
+   nothing more. A source that contributes 26 bits is therefore not "a little
+   defence in depth", it is theatre: it costs real effort and buys nothing in
+   the only situation it was added for.
+
+   The floor is 128 bits: the size of a 12-word BIP-39 seed, the accepted
+   minimum for Bitcoin, and the same number v1.59 already uses to gate
+   reproducible mode. One rule, four sources.
+
+   The gate reads CREDITED bits, not raw counts, so it is self-consistent with
+   the score shown on screen: patterned dice, metronome clicking or keyboard
+   walks all score lower and therefore demand more input to clear the same bar.
+   Pattern flags block outright — 50 rolls of the same face is 129 nominal bits
+   and zero real ones. */
+const USER_ENTROPY_FLOOR_BITS = 128;
+
+function userEntropyGate(src, payload){
+  payload = payload || {};
+  const s = scoreEntropy({
+    src,
+    diceStr: payload.diceStr || '',
+    rounds:  payload.rounds  || [],
+    keys:    payload.keys    || null,
+    grid:    payload.grid    || null,
+    targetBits: (wordCount === 24 ? 32 : 16) * 8,
+    repro: false,
+  });
+  const bits = s.userBits || 0;
+  const short = Math.max(0, USER_ENTROPY_FLOOR_BITS - bits);
+  return {
+    bits, short, flags: s.flags,
+    ok: bits >= USER_ENTROPY_FLOOR_BITS && s.flags.length === 0,
+    pct: Math.max(0, Math.min(100, (bits / USER_ENTROPY_FLOOR_BITS) * 100)),
+  };
+}
+
+/* How much more input is needed, phrased in the unit the user is working in. */
+function userEntropyShortfallText(src, g){
+  if(g.flags.length) return g.flags[0];
+  const per = { dice: Math.log2(6), cards: 22.43, grid: 5, keys: 3 }[src] || 1;
+  const more = Math.ceil(g.short / per);
+  const unit = { dice: 'more rolls', cards: 'more rounds', grid: 'more clicks', keys: 'more characters' }[src] || 'more input';
+  return `${g.bits.toFixed(1)} / ${USER_ENTROPY_FLOOR_BITS} bits — about ${more} ${unit} to go`;
+}
 let keyTimes = [];     // performance.now() timestamps (raw, may out-number current text)
 
 function shannonPerChar(s){
@@ -4972,6 +5011,33 @@ function computeTimingFromTimes(times, maxIntervals){
   return {bits, hex};
 }
 
+/* ===== v1.62: keystrokes are no longer an entropy source =====
+   Two defects, one fixable and one not.
+
+   Fixable: computeTimingFromTimes packs `Math.floor(dt*1000) & 0x7` and credits
+   a flat 2 bits per interval. On any browser that coarsens performance.now() to
+   1 ms — Firefox with resistFingerprinting, Tor Browser, i.e. exactly this
+   audience — dt is a whole number of milliseconds, dt*1000 is a multiple of
+   1000, and 1000 & 7 == 0. The field is then the constant zero for every
+   keystroke, and 65 characters were credited 128 bits of it.
+
+   Not fixable: the content estimators (Shannon, bigram, Renyi-2, LZ) all read
+   the observed distribution of the text itself, which cannot tell whether the
+   user typed something they already knew. Measured on this build:
+       honest keyboard mash, 67 chars .... 251 bits
+       Bitcoin genesis headline, 69 ...... 334 bits
+       a famous quotation, 68 ............ 311 bits
+       user's own email address x3, 59 ... 240 bits
+   Memorable text outscores genuine mashing. Language detection would catch the
+   quotation and the email address but never a memorised password, and that is
+   the case that costs someone their coins. Dice and cards work because a
+   physical randomiser makes the entropy; the chaos grid works because
+   involuntary motor noise does. Keystrokes asked the user to supply
+   unpredictability from memory, which is the one place it is not.
+
+   The functions below are kept because buildReport still renders keysStr and
+   keysAnalysis for wallets generated by earlier versions. They are no longer
+   reachable from the generator. */
 function analyseKeys(text, timingBits){
   if(!text) return {bits:0, perChar:0, walks:[], repeats:[], stats:{
     n:0, shannon:0, bigram:0, renyi:0, lz:0, chi:0, kl:0, timingBits:0
@@ -5001,92 +5067,6 @@ function analyseKeys(text, timingBits){
   };
 }
 
-function updateKeysMeter(){
-  const text = keysEl.value;
-  const n = text.length;
-  // Clamp timing bits to the current text length so deletes also shrink them.
-  const timing = computeTimingFromTimes(keyTimes, Math.max(0, n-1));
-  const a = analyseKeys(text, timing.bits);
-  keysAnalysis = { ...a, timingHex: timing.hex };
-  const target = wordCount === 24 ? 256 : 128;
-  const pct = Math.max(0, Math.min(100, (a.bits/target)*100));
-  keysBarEl.style.width = pct + '%';
-  keysBarEl.classList.remove('low','mid','ok','full');
-  if(!text)           { keysBarEl.classList.add('low'); keysScoreLabel.textContent = 'waiting for input'; }
-  else if(pct < 40)   { keysBarEl.classList.add('low'); }
-  else if(pct < 75)   { keysBarEl.classList.add('mid'); }
-  else if(pct < 100)  { keysBarEl.classList.add('ok'); }
-  else                { keysBarEl.classList.add('full'); }
-  if(text){
-    keysScoreLabel.textContent =
-      `${a.bits.toFixed(1)} / ${target} effective bits  ·  ${pct.toFixed(0)}%`;
-  }
-  $('#qChars').textContent   = a.stats.n;
-  $('#qShannon').textContent = text ? a.stats.shannon.toFixed(2)+' bits' : '—';
-  $('#qBigram').textContent  = text ? a.stats.bigram.toFixed(2)+' bits'  : '—';
-  $('#qRenyi').textContent   = text ? a.stats.renyi.toFixed(2)+' bits'   : '—';
-  $('#qLZ').textContent      = text ? a.stats.lz.toFixed(2)+' bits'      : '—';
-  $('#qChi').textContent     = text ? a.stats.chi.toFixed(2)              : '—';
-  $('#qTiming').textContent  = a.stats.timingBits + ' bits';
-  $('#qKL').textContent      = text ? a.stats.kl.toFixed(2)+' bits'      : '—';
-
-  const allFlags = [...a.walks, ...a.repeats];
-  if(allFlags.length){
-    keysFlagsEl.classList.add('on');
-    keysFlagsEl.innerHTML = `<strong>Predictable patterns detected — add more random chaos:</strong>` +
-      allFlags.map(f => `<span class="flag">• ${escapeHtml(f)}</span>`).join('');
-  } else {
-    keysFlagsEl.classList.remove('on'); keysFlagsEl.innerHTML = '';
-  }
-
-  // Ready-to-use status, no manual commit step.
-  if(n === 0){
-    keysStatusEl.classList.add('hidden'); keysStatusEl.innerHTML = '';
-  } else if(n < KEYS_MIN_CHARS){
-    keysStatusEl.classList.remove('hidden');
-    keysStatusEl.style.background = 'rgba(255,184,107,.08)';
-    keysStatusEl.style.borderColor = 'rgba(255,184,107,.35)';
-    keysStatusEl.style.color = '#ffd9a8';
-    keysStatusEl.innerHTML = `<span>⌛ Keep typing — ${n} / ${KEYS_MIN_CHARS} characters minimum before this can be used.</span>`;
-  } else {
-    keysStatusEl.classList.remove('hidden');
-    const bits = a.bits.toFixed(0);
-    if(allFlags.length){
-      // Has patterns — clearly separate "ready" from the caveat and the action
-      keysStatusEl.style.background = 'rgba(255,184,107,.08)';
-      keysStatusEl.style.borderColor = 'rgba(255,184,107,.35)';
-      keysStatusEl.style.color = '#ffd9a8';
-      keysStatusEl.innerHTML =
-        `<span><span class="ok-icon" style="color:var(--warn)">⚠</span> <strong>Usable, but strength will be graded “Weak”.</strong><br>` +
-        `Your input contains predictable patterns (listed above), so the pattern bonus is lost. ` +
-        `Keep typing more unpredictable chaos to raise the grade, or click <strong>Generate wallet</strong> below to continue as‑is.<br>` +
-        `<small style="color:var(--muted)">Captured: ${n} characters · ~${bits} bits of randomness.</small></span>`;
-    } else {
-      // Clean input — short, reassuring message with clear next step
-      keysStatusEl.style.background = 'rgba(53,211,154,.08)';
-      keysStatusEl.style.borderColor = 'rgba(53,211,154,.35)';
-      keysStatusEl.style.color = '#b9f0d3';
-      keysStatusEl.innerHTML =
-        `<span><span class="ok-icon">✓</span> <strong>Ready to generate.</strong> ` +
-        `Click <strong>Generate wallet</strong> below to use this input.<br>` +
-        `<small style="color:var(--muted)">Captured: ${n} characters · ~${bits} bits of randomness.</small></span>`;
-    }
-  }
-}
-
-function resetKeys(){
-  keysEl.value = '';
-  keyTimes = [];
-  keysStrCommitted=''; keysTimingHex=''; keysCommitted=false;
-  keysStatusEl.classList.add('hidden'); keysStatusEl.innerHTML = '';
-  updateKeysMeter();
-}
-
-keysEl.addEventListener('keydown', () => { keyTimes.push(performance.now()); });
-keysEl.addEventListener('input',  updateKeysMeter);
-keysEl.addEventListener('paste',  () => setTimeout(updateKeysMeter, 0));
-
-$('#keysClear').addEventListener('click', resetKeys);
 
 /* ========== cards ========== */
 const deckEl = $('#deck');
@@ -5199,11 +5179,13 @@ function renderCardsCommitted(){
   const el = $('#cardsCommitted');
   const tot = targetRounds(wordCount);
   if(!cardsCommitted){ el.classList.add('hidden'); el.innerHTML=''; return; }
-  let bits = 0;
-  for(const r of cardRounds){ for(let i=0;i<r.length;i++) bits += Math.log2(52 - i); }
+  // v1.60: show the credited figure, which accounts for whether the draws
+  // actually corroborate a reshuffle before each round.
+  const dc = cardsDeckCheck(cardRounds);
+  const bits = dc.bits;
   el.classList.remove('hidden');
   el.innerHTML = `
-    <span><span class="ok-icon">✓</span> Cards entropy committed · ${cardRounds.length} rounds × 4 cards · ~${bits.toFixed(1)} bits</span>
+    <span><span class="ok-icon">✓</span> Cards entropy committed · ${cardRounds.length} rounds × 4 cards · ~${bits.toFixed(1)} bits${dc.noReshuffle ? ' <span style="color:var(--muted)">(no reshuffle detected — credited on the single-deck model)</span>' : ''}</span>
     <button class="ghost small" id="cardsRevoke">Start over</button>
   `;
   $('#cardsRevoke').addEventListener('click', () => { resetCards(); updateCardsUI(); });
@@ -5227,11 +5209,34 @@ updateCardsUI();
 
 /* ========== chaos grid (v1.20) ========== */
 const GRID_SIZE = 25;                 // 5x5
-const GRID_MIN_CLICKS = 10;
-const GRID_TARGET_CLICKS = 15;
+const GRID_MIN_CLICKS = 10;          // legacy floor, superseded by USER_ENTROPY_FLOOR_BITS
+const GRID_TARGET_CLICKS = 30;       // v1.61: 30 clicks is where credited bits reach 128
 const GRID_MAX_BITS_PER_CLICK = 5;    // conservative cap
 const GRID_MAX_TOTAL_BITS = 128;      // overall cap regardless of play length
-const GRID_ENOUGH_BITS = 80;          // v1.22: flicker threshold — "you have enough"
+
+/* v1.63: the board must never strand the player.
+   Symptom: "entropy target reached" appeared while Commit stayed disabled, and
+   the grid could run out of clickable tiles before the 128-bit floor was met.
+
+   Cause: 25 tiles, and revealing a symbol twice shatters every remaining tile
+   carrying it, so a board burns down in the low twenties of clicks. Getting
+   past that depended on happening to flip one of the three restore tiles, and
+   often it did not happen. Driving the real board 300 times: 39% of sessions
+   ran out of tiles entirely, at a median of 22 clicks and 110 bits — short of
+   the floor, nothing left to click, no way forward but Start over.
+
+   Fix: whenever fewer than GRID_MIN_LIVE tiles remain, deal a fresh board. The
+   click log and every credited bit are untouched; the player simply always has
+   somewhere to click. log2(liveBefore) prices a choice on a fresh board exactly
+   as on the first one, and the 128-bit global cap still bounds the total, so
+   this adds opportunity without inflating credit. */
+const GRID_MIN_LIVE = 4;             // refill before the board can dead-end
+let   gridBoardsDealt = 1;           // boards used this session
+
+/* The shimmer threshold is now the commit threshold. It was 80 bits, which is
+   why the grid announced "entropy target reached" while Commit sat disabled at
+   110 of the 128 bits actually required. */
+const GRID_ENOUGH_BITS = USER_ENTROPY_FLOOR_BITS;
 
 // 10 regular SVG symbols + 2 rare "restore" specials (spiral, infinity).
 // Drawn inline so they render identically offline on every OS.
@@ -5306,7 +5311,8 @@ function gridScoreBreakdown(clicks){
     n: (clicks && clicks.length) || 0,
     cellBits: 0, timingBits: 0, positionBits: 0,
     cellPenalty: 1, timingPenalty: 1, positionPenalty: 1,
-    flags: []
+    flags: [],      // blocking: pathological input
+    notes: []       // v1.62: advisory, already priced by the penalty multipliers
   };
   if(!clicks || clicks.length < 2) return out;
   const n = clicks.length;
@@ -5329,9 +5335,15 @@ function gridScoreBreakdown(clicks){
   }
   if(bestMono >= n - 1){ out.cellPenalty *= 0.15; out.flags.push('cell order is almost perfectly sequential'); }
   else if(bestMono >= Math.ceil(n * 0.6)){ out.cellPenalty *= 0.4; out.flags.push('cell order is largely sequential'); }
-  // Penalty B: too few distinct cells (rare since each click locks a unique cell, but guard anyway)
-  const distinctCells = new Set(idxs).size;
-  if(distinctCells < Math.ceil(n * 0.8)) out.cellPenalty *= 0.5;
+  /* v1.62: Penalty B deleted — it was a pure false positive.
+     onGridClick returns early on an already-revealed or broken tile, so an idx
+     can only reappear in the log AFTER a spiral or infinity tile has restored
+     the board and dealt that cell a fresh CSPRNG symbol. At that moment it is a
+     legitimate choice among liveBefore alternatives and log2(liveBefore) has
+     already priced it correctly. Worse, the threshold was unsatisfiable: only
+     25 cells exist, so from 32 clicks onward ceil(0.8n) > 25 and the 0.5x
+     penalty fired for every possible player — punishing exactly the extended
+     play needed to reach the 128-bit floor. */
   out.cellBits = rawCell * out.cellPenalty;
 
   // ----- 2. TIMING bits from inter-click jitter -----
@@ -5345,8 +5357,12 @@ function gridScoreBreakdown(clicks){
   let rawTiming = 0;
   for(const g of gaps) rawTiming += Math.min(3, Math.max(0, Math.log2(1 + Math.abs(g - meanG))));
   // Penalty by coefficient of variation: tight cadence → no credit.
+  /* v1.62: a fairly-regular cadence is an observation, not a defect. It already
+     costs a 0.4x penalty; also treating it as a hard blocker double-counted it
+     and rejected 58% of ordinary ~600ms +/-120ms clickers. Metronome-grade
+     regularity still blocks — that one is pathological. */
   if(cv < 0.08){ out.timingPenalty *= 0.0; out.flags.push('click cadence is suspiciously regular (metronome-like)'); }
-  else if(cv < 0.2){ out.timingPenalty *= 0.4; out.flags.push('click cadence is fairly regular'); }
+  else if(cv < 0.2){ out.timingPenalty *= 0.4; out.notes.push('click cadence is fairly regular — credited at 40%'); }
   else if(cv < 0.4){ out.timingPenalty *= 0.8; }
   // Gate: require at least a few gaps with real jitter (>30 ms sd) before crediting more than 16 timing bits.
   if(sdG < 30) rawTiming = Math.min(rawTiming, 16);
@@ -5366,8 +5382,24 @@ function gridScoreBreakdown(clicks){
   let sdXY = 0;
   for(const o of offs) sdXY += (o.x-centroid.x)*(o.x-centroid.x) + (o.y-centroid.y)*(o.y-centroid.y);
   sdXY = Math.sqrt(sdXY / n);
-  if(sdXY < 4){ out.positionPenalty *= 0.0; out.flags.push('pointer hits are near-identical within each tile'); }
-  else if(sdXY < 10){ out.positionPenalty *= 0.4; }
+  /* v1.62: thresholds are now relative to tile size. They used to be absolute
+     pixels (4 and 10) while a tile is ~70px on desktop and ~55px on a phone, so
+     identical relative aim scatter passed on one device and was penalised on
+     the other. Users were being docked for having a small screen. cw is
+     recorded per click; older logs without it fall back to the 70px desktop
+     tile the constants were originally chosen against. */
+  const REF_CELL = 70;
+  const cw = clicks.reduce((a,c) => a + (c.cw || REF_CELL), 0) / n;
+  const scale = cw / REF_CELL;
+  /* v1.62: advisory, not blocking. A steady hand on a 70px tile can genuinely
+     land within a few pixels of centre; endpoint scatter for a target that size
+     is typically 3-7px, so this is a plausible human. The penalty already takes
+     the position channel to zero, and the 128-bit floor then decides whether
+     what remains is enough. Blocking as well would double-count it, which is
+     the same mistake the cadence flag was making. Metronome-exact timing stays
+     blocking below, because that one is not humanly achievable. */
+  if(sdXY < 4 * scale){ out.positionPenalty *= 0.0; out.notes.push('pointer hits are near-identical within each tile — position channel credited at zero'); }
+  else if(sdXY < 10 * scale){ out.positionPenalty *= 0.4; out.notes.push('pointer hits are tightly clustered — credited at 40%'); }
   out.positionBits = rawPos * out.positionPenalty;
 
   return out;
@@ -5394,7 +5426,12 @@ function buildGrid(){
   updateGridStats();
   renderGridStatus();
 }
-function resetGrid(){ buildGrid(); }
+function resetGrid(){
+  gridBoardsDealt = 1;                       // v1.63
+  const note = document.getElementById('gridRefillNote');
+  if(note){ note.classList.add('hidden'); note.textContent = ''; }
+  buildGrid();
+}
 
 function renderGrid(){
   gridEl.innerHTML = '';
@@ -5431,7 +5468,9 @@ function onGridClick(ev){
   const cy = rect.top + rect.height/2;
   const offX = Math.round(ex - cx);
   const offY = Math.round(ey - cy);
-  gridClicks.push({ t: performance.now(), x: Math.round(ex), y: Math.round(ey), idx, sym: cell.sym, liveBefore, offX, offY });
+  // v1.62: cw lets the scorer judge aim scatter relative to tile size. It is
+  // NOT part of serializeGridClicks, so the seed string format is unchanged.
+  gridClicks.push({ t: performance.now(), x: Math.round(ex), y: Math.round(ey), idx, sym: cell.sym, liveBefore, offX, offY, cw: rect.width });
   cell.revealed = true;
   btn.classList.add('flipped','just-flipped');
   setTimeout(() => btn.classList.remove('just-flipped'), 400);
@@ -5477,7 +5516,16 @@ function onGridClick(ev){
       });
     }
   }
+  // v1.63: never leave the player with nothing to click.
+  const refilled = gridRefillIfNeeded();
   updateGridStats();
+  if(refilled && !gridCommitted){
+    const note = document.getElementById('gridRefillNote');
+    if(note){
+      note.textContent = `Fresh board dealt (#${gridBoardsDealt}) — your ${gridClicks.length} clicks and every bit are kept.`;
+      note.classList.remove('hidden');
+    }
+  }
   renderGridStatus();
 }
 // v1.21 fix: update the existing button in place instead of swapping the DOM node.
@@ -5500,6 +5548,17 @@ function renderCell(i){
     front.innerHTML = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' + sym.svg + '</svg>';
   }
 }
+/* v1.63: deal a fresh board when the current one is nearly spent. Returns true
+   if a refill happened so the caller can say why the tiles changed. */
+function gridRefillIfNeeded(){
+  const live = gridCells.filter(c => !c.revealed && !c.broken).length;
+  if(live >= GRID_MIN_LIVE) return false;
+  gridCells = gridAssignSymbols().map(sym => ({ sym, revealed:false, broken:false }));
+  gridBoardsDealt++;
+  renderGrid();
+  return true;
+}
+
 function updateGridStats(){
   const n = gridClicks.length;
   const revealed = gridCells.filter(c => c.revealed).length;
@@ -5507,18 +5566,27 @@ function updateGridStats(){
   const uniqueSyms = new Set(gridClicks.map(c => c.sym)).size;
   const bits = gridBitsFrom(gridClicks);
   const br = gridScoreBreakdown(gridClicks);
-  const pct = Math.min(100, (n / GRID_TARGET_CLICKS) * 100);
+  // v1.63: the bar tracks bits toward the floor, not raw clicks. Clicks were
+  // misleading — the bar could read 73% at 110 of 128 bits, or 100% while the
+  // Commit button was still disabled.
+  const gGate = userEntropyGate('grid', { grid: { clicks: gridClicks.slice() } });
+  const pct = Math.min(100, (gGate.bits / USER_ENTROPY_FLOOR_BITS) * 100);
   gridPFill.style.width = pct.toFixed(1) + '%';
   const chan = n >= 2 ? ` · cells ${br.cellBits.toFixed(1)} · timing ${br.timingBits.toFixed(1)} · pos ${br.positionBits.toFixed(1)}` : '';
   gridPLabel.textContent = `${n} clicks · ~${bits.toFixed(1)} bits${chan}`;
-  // v1.22: flicker the grid once the entropy target is comfortably reached.
-  // User can keep flipping — this just signals "you're already good".
-  gridEl.classList.toggle('enough', bits >= GRID_ENOUGH_BITS && !gridCommitted);
-  gridPTarget.textContent = n >= GRID_TARGET_CLICKS ? 'target reached ✓' : `target: ${GRID_TARGET_CLICKS} clicks`;
+  // v1.63: shimmer only when the entropy really can be committed — same
+  // condition as the button, so the two can never disagree again.
+  gridEl.classList.toggle('enough', gGate.ok && !gridCommitted);
   gridRevealedEl.textContent = revealed;
   gridBrokenEl.textContent = broken;
   gridUniqueEl.textContent = uniqueSyms;
-  gridSubmitBtn.disabled = (n < GRID_MIN_CLICKS) || gridCommitted;
+  // v1.61: same 128-bit floor as every other source, read off credited bits.
+  gridSubmitBtn.disabled = !gGate.ok || gridCommitted;
+  gridPTarget.textContent = !n
+    ? `0 / ${USER_ENTROPY_FLOOR_BITS} bits — flip tiles to begin`
+    : gGate.ok
+      ? `enough — commit whenever you like (${gGate.bits.toFixed(0)} bits)`
+      : userEntropyShortfallText('grid', gGate);
   gridSubmitBtn.textContent = gridCommitted ? 'Committed ✓' : 'Commit grid entropy';
 }
 function renderGridStatus(){
@@ -5558,12 +5626,62 @@ function rotateQuotes(){
   return 0;
 }
 
+/* ========== v1.60: cards — check the reshuffle assumption, don't assume it ==========
+   The per-round credit of log2(52·51·50·49) = 22.43 bits only holds if every
+   round really is dealt from a full, freshly shuffled deck. A user who shuffles
+   once and then deals four cards at a time off the same deck gets substantially
+   less, and until now nothing noticed.
+
+   It is detectable. Inside any run of 13 rounds (52 cards), dealing off one
+   un-reshuffled deck yields each card at most once — zero duplicates — while
+   genuine per-round reshuffling yields about 18. We take the leanest such
+   window, because the count across a whole 23-round session is uninformative:
+   92 cards drawn from 52 must repeat under any scheme.
+
+   Calibration: over 100,000 simulated honest sessions the leanest window never
+   fell below 5 duplicates (11 rounds) or 8 (23 rounds), against trigger
+   thresholds of 4.5 and 6.1. Zero false positives; both lazy-dealing regimes
+   (single pass, and dealing the same order twice) were caught every time. */
+function cardsDeckCheck(rounds){
+  const all = [];
+  for(const r of rounds) for(const c of r) all.push(c);
+  const N = all.length, R = rounds.length;
+
+  // Credit assuming a full reshuffled deck every round.
+  let perRound = 0;
+  for(const r of rounds){ for(let i=0;i<r.length;i++) perRound += Math.log2(52 - i); }
+  // Credit if the whole session came off ONE shuffled deck (sampling without
+  // replacement). Caps at log2(52!) = 225.6 bits — a deck cannot hold more.
+  let singleDeck = 0;
+  for(let i=0;i<Math.min(N,52);i++) singleDeck += Math.log2(52 - i);
+
+  const W = Math.min(R, 13);
+  let minWinDupes = Infinity;
+  for(let s=0; s + W <= R; s++){
+    const win = [];
+    for(let i=s;i<s+W;i++) for(const c of rounds[i]) win.push(c);
+    minWinDupes = Math.min(minWinDupes, win.length - new Set(win).size);
+  }
+  const expWinDupes = 4*W - 52*(1 - Math.pow(48/52, W));
+  const noReshuffle = isFinite(minWinDupes) && expWinDupes >= 3 && minWinDupes < expWinDupes/3;
+
+  // An exactly repeated round is duplicated input, not randomness.
+  const seenRounds = new Set(); let repeatedRounds = 0;
+  for(const r of rounds){ const k = r.join(''); if(seenRounds.has(k)) repeatedRounds++; seenRounds.add(k); }
+
+  const bits = noReshuffle ? Math.min(perRound, singleDeck) : perRound;
+  return { bits, perRound, singleDeck, noReshuffle, repeatedRounds, minWinDupes, expWinDupes };
+}
+
 /* ========== entropy quality scoring ========== */
-function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits}){
+function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits, repro}){
   let userBits = 0, diceB = 0, cardB = 0, keyB = 0, gridB = 0;
+  const infos = [];   // v1.60: observations worth showing that are not defects
+  let deckCheck = null;
   if(src === 'dice'){ diceB = diceStr.length * Math.log2(6); userBits = diceB; }
   if(src === 'cards'){
-    for(const r of rounds){ for(let i=0;i<r.length;i++) cardB += Math.log2(52 - i); }
+    deckCheck = cardsDeckCheck(rounds);
+    cardB = deckCheck.bits;
     userBits = cardB;
   }
   if(src === 'keys' && keys && keys.analysis){ keyB = keys.analysis.bits; userBits = keyB; }
@@ -5588,6 +5706,7 @@ function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits}){
     // v1.21: honest breakdown — its flags become first-class flags on the wallet.
     const br = gridScoreBreakdown(clicks);
     for(const f of br.flags) flags.push('chaos grid: ' + f);
+    for(const f of (br.notes || [])) infos.push('chaos grid: ' + f);   // v1.62: advisory only
     // v1.22b: removed the extra standalone cap. The per-channel bored-user
     // penalties already zero out pathological play, and gridBitsFrom already
     // caps at GRID_MAX_TOTAL_BITS (128). The previous 96-bit standalone cap
@@ -5607,6 +5726,25 @@ function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits}){
     }
     if(sequentialRounds >= 2) flags.push(`${sequentialRounds} rounds have sequential rank order`);
     if(sameSuitRounds >= 3)   flags.push(`${sameSuitRounds} rounds are all the same suit`);
+
+    /* v1.60: report what the deck check found. A repeated round is duplicated
+       input and is a real defect, so it flags. A missing reshuffle is not
+       automatically a defect — one shuffled deck still carries up to 225.6
+       bits — so it is re-credited honestly and reported as an observation.
+       It only escalates to a flag if the corrected figure lands under the
+       128-bit floor, which is where it would actually cost the user. */
+    if(deckCheck){
+      if(deckCheck.repeatedRounds > 0){
+        flags.push(`${deckCheck.repeatedRounds} round${deckCheck.repeatedRounds>1?'s':''} repeat an earlier round exactly`);
+      }
+      if(deckCheck.noReshuffle){
+        const msg = `deck does not appear to have been reshuffled between rounds `
+                  + `(${deckCheck.minWinDupes} repeated cards in 13 rounds where ~${deckCheck.expWinDupes.toFixed(0)} are expected) — `
+                  + `credited ${deckCheck.bits.toFixed(1)} bits instead of ${deckCheck.perRound.toFixed(1)}`;
+        if(deckCheck.bits < 128) flags.push('cards: ' + msg);
+        else infos.push('cards: ' + msg);
+      }
+    }
   }
 
   // Score reflects the actual cryptographic quality of the delivered entropy,
@@ -5614,6 +5752,39 @@ function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits}){
   // produces a cryptographically strong seed; user entropy is a bonus layer
   // of defense-in-depth, not a baseline requirement.
   let tier, label, color, note;
+
+  /* v1.59: reproducible mode is scored on its own terms.
+     Every branch below this block assumes the 256-bit CSPRNG is in the mix.
+     In reproducible mode it is not — doGenerate() skips crypto.getRandomValues
+     entirely and the seed is a pure function of the user's draws. Scoring that
+     wallet with the CSPRNG-backed ladder produced notes that were simply false
+     ("CSPRNG + some user entropy") and rated a 51.7-bit wallet "Very Good".
+     Here the only thing that matters is userBits, measured against the 128-bit
+     floor below which a Bitcoin seed is brute-forceable. */
+  const SEED_FLOOR_BITS = 128;
+  /* A whole number of draws rarely lands exactly on the seed size: 99 D6 rolls
+     are 255.87 bits, so a strict `>= targetBits` would rate the tool's own
+     documented full-strength roll count as short of it. One bit of tolerance
+     absorbs the rounding without letting a genuinely short set through — one
+     roll fewer (98) is 253.3 bits, well outside it. */
+  const MEETS_TARGET = userBits >= targetBits - 1;
+  if(repro){
+    if(flags.length){
+      tier=0; label='Weak'; color='#ff6b6b';
+      note=`Reproducible mode: no CSPRNG entropy is used, so your draws are the entire seed — and a suspicious pattern was detected in them. Re‑roll / re‑shuffle before putting funds on this wallet.`;
+    } else if(userBits < SEED_FLOOR_BITS){
+      tier=0; label='Weak'; color='#ff6b6b';
+      note=`Reproducible mode: no CSPRNG entropy is used, so your draws are the entire seed. They supply only ${userBits.toFixed(1)} bits — below the ${SEED_FLOOR_BITS}-bit minimum for a Bitcoin seed. This wallet is brute‑forceable. Add more draws.`;
+    } else if(!MEETS_TARGET){
+      tier=2; label='Very Good'; color='#7ec8ff';
+      note=`Reproducible mode: no CSPRNG entropy is used — the seed is derived entirely from your ${userBits.toFixed(1)} bits of draws. That clears the ${SEED_FLOOR_BITS}-bit minimum but is short of this wallet's ${targetBits}-bit seed size. Add more draws for full strength.`;
+    } else {
+      tier=3; label='Excellent'; color='#29d391';
+      note=`Reproducible mode: your draws alone supply ${userBits.toFixed(1)} bits, meeting this wallet's ${targetBits}-bit seed size. No CSPRNG entropy is used — by design, so the same draws always reproduce this wallet.`;
+    }
+    return { tier, label, color, note, userBits, diceBits: diceB, cardBits: cardB, keyBits: keyB, gridBits: gridB, flags, infos, deckCheck, repro:true };
+  }
+
   if(flags.length){
     tier=0; label='Weak'; color='#ff6b6b';
     note='Suspicious pattern detected in user input — the CSPRNG still protects the seed, but the added entropy itself is not trustworthy. Consider re‑rolling / re‑shuffling.';
@@ -5630,7 +5801,7 @@ function scoreEntropy({src, diceStr, rounds, keys, grid, targetBits}){
     tier=3; label='Excellent'; color='#29d391';
     note=`User entropy alone meets or exceeds the ${targetBits}-bit seed size — two fully independent, cryptographically strong sources.`;
   }
-  return { tier, label, color, note, userBits, diceBits: diceB, cardBits: cardB, keyBits: keyB, gridBits: gridB, flags };
+  return { tier, label, color, note, userBits, diceBits: diceB, cardBits: cardB, keyBits: keyB, gridBits: gridB, flags, infos, deckCheck };
 }
 
 /* ========== BIP-32 / BIP-39 seed derivation ========== */
@@ -5967,32 +6138,49 @@ async function doGenerate(){
   function hideReproWarn(){ if(reproWarn) reproWarn.classList.add('hidden'); }
   hideReproWarn();
 
-  // guardrails: if user selected dice/cards but didn't submit, warn via a quick inline message
-  if(source === 'dice' && !diceCommitted && diceEl.value.trim().length){
-    if(!confirm('You entered dice rolls but didn\'t submit them. Continue with CSPRNG only?')) return;
-  }
-  if(source === 'cards' && !cardsCommitted && (cardRounds.length || currentRoundCards.length)){
-    if(!confirm(`Cards flow in progress (${cardRounds.length}/${targetRounds(wordCount)} rounds). Continue with CSPRNG only?`)) return;
-  }
-  // Auto-capture keystrokes: if the user is on the keys source and has typed enough,
-  // use what's in the box. If they typed fewer than the minimum, fall back to CSPRNG-only.
-  if(source === 'keys' && !keysCommitted){
-    if(keysEl.value.length >= KEYS_MIN_CHARS){
-      const t = computeTimingFromTimes(keyTimes, Math.max(0, keysEl.value.length - 1));
-      keysStrCommitted = keysEl.value;
-      keysTimingHex    = t.hex;
-      keysCommitted    = true;
-    }
+  /* v1.61: partially-entered sources are refused, not silently dropped.
+     Previously a half-finished source produced a confirm() offering to
+     "continue with CSPRNG only", and clicking OK quietly discarded the work.
+     Both outcomes were bad: the user either added entropy too weak to matter,
+     or lost their input without noticing. Now anything below the 128-bit floor
+     stops generation with the shortfall stated. Entering nothing at all is
+     still fine — that is simply a CSPRNG-only wallet, which is fully valid. */
+  function blockWeak(src, gate, whatsThere){
+    showReproWarn(
+      `This ${whatsThere} carries about ${gate.bits.toFixed(0)} bits — below the `
+      + `${USER_ENTROPY_FLOOR_BITS}-bit floor. User entropy only protects you if the browser's `
+      + `CSPRNG is broken, and in that case these bits would be the whole seed. `
+      + (gate.flags.length
+          ? `Problem found: ${gate.flags[0]}. `
+          : `${userEntropyShortfallText(src, gate)}. `)
+      + `Add more, or switch the source back to "CSPRNG only" to generate without it.`
+    );
   }
 
-  if(source === 'grid' && !gridCommitted && gridClicks.length >= 10){
+  if(source === 'dice' && !diceCommitted && normalizeDice(diceEl.value).length){
+    const g = userEntropyGate('dice', { diceStr: normalizeDice(diceEl.value) });
+    if(!g.ok){ blockWeak('dice', g, 'set of dice rolls'); return; }
+  }
+  if(source === 'cards' && !cardsCommitted && (cardRounds.length || currentRoundCards.length)){
+    const g = userEntropyGate('cards', { rounds: cardRounds });
+    if(!g.ok){ blockWeak('cards', g, 'card session'); return; }
+  }
+  /* v1.62: the keystroke source was removed as an entropy source. The keys:
+     and kt: fields stay in the combined string, always empty, so the string
+     format is unchanged and every wallet ever made by this tool still
+     reproduces byte-for-byte. Wallets that DID use keystrokes verify exactly
+     as before through the seed-phrase, .txt and .enc lanes. */
+
+  if(source === 'grid' && !gridCommitted && gridClicks.length){
+    const g = userEntropyGate('grid', { grid: { clicks: gridClicks.slice() } });
+    if(!g.ok){ blockWeak('grid', g, 'grid session'); return; }
     gridStrCommitted = serializeGridClicks(gridClicks);
     gridCommitted = true;
   }
 
   const useDice  = (source === 'dice'  && diceCommitted);
   const useCards = (source === 'cards' && cardsCommitted);
-  const useKeys  = (source === 'keys'  && keysCommitted);
+  const useKeys  = false;   // v1.62: source removed
   const useGrid  = (source === 'grid'  && gridCommitted);
 
   // v1.53: Reproducible mode requires a fully-committed dice OR cards
@@ -6008,21 +6196,27 @@ async function doGenerate(){
       showReproWarn('Reproducible mode with cards needs all ' + targetRounds(wordCount) + ' rounds committed. You have ' + cardRounds.length + '.');
       return;
     }
-    // Belt + braces: warn if dice roll count is unusually low (a partial
-    // roll set would produce a weak but reproducible wallet). 99 D6 rolls
-    // are ~256 bits.
+    // Require a full roll set. 99 D6 rolls are ~256 bits, 50 are ~129 bits.
     if(useDice){
       var rolls = (diceStrCommitted || '').replace(/[^1-6]/g,'').length;
       var need  = wordCount === 24 ? 99 : 50;
       if(rolls < need){
-        // v1.54: turned into a soft confirm. Some users may deliberately
-        // want to reproduce a lower-entropy wallet, or are experimenting.
-        // Full-strength requires 99 rolls for 24 words, 50 for 12.
+        /* v1.59: hard gate, replacing v1.54's dismissible confirm().
+           The confirm() treated roll count as advice, but in reproducible
+           mode there is no CSPRNG standing behind a short roll set — the
+           dice ARE the seed. 20 rolls is 51.7 bits, which is brute-forceable,
+           and the wallet was still written out as a "24-word / 256-bit" seed.
+           Outside reproducible mode nothing changes: the CSPRNG covers any
+           roll count, so partial sets stay perfectly usable there. */
         var bits = (rolls * Math.log2(6)).toFixed(1);
-        var msg = 'Only ' + rolls + ' D6 rolls entered — roughly ' + bits + ' bits of entropy.\n'
-                + 'For a ' + wordCount + '-word seed the standard target is ' + (wordCount===24?'256':'128') + ' bits (' + need + ' rolls).\n\n'
-                + 'Continue anyway?';
-        if(!confirm(msg)){ showReproWarn('Cancelled. Add more dice rolls, then commit again, or uncheck reproducible mode.'); return; }
+        showReproWarn(
+          'Reproducible mode needs ' + need + ' D6 rolls for a ' + wordCount + '-word seed. '
+          + 'You committed ' + rolls + ' (~' + bits + ' bits), and in reproducible mode no CSPRNG '
+          + 'entropy is added — those rolls would be the entire seed, which is brute-forceable. '
+          + 'Clear the dice box, roll ' + need + ' times and commit again — or uncheck Reproducible '
+          + 'mode to generate with the CSPRNG, where any number of rolls is fine.'
+        );
+        return;
       }
     }
   }
@@ -6068,6 +6262,7 @@ async function doGenerate(){
     keys: useKeys ? { analysis: keysAnalysis, timingBits: keysAnalysis ? keysAnalysis.stats.timingBits : 0 } : null,
     grid: useGrid ? { clicks: gridClicks.slice() } : null,
     targetBits: entropyBytes*8,
+    repro: reproMode,   // v1.59: without this the scorer credits a CSPRNG that was never drawn
   });
 
   currentWallet = {
@@ -6613,7 +6808,7 @@ $('#download').addEventListener('click', () => downloadReport(currentWallet, 'tx
 
     // 2. Scrub DOM regions that might contain secrets
     try{
-      var killIds = ['mnemonic','details','verify','addressList','xpubList','keysStatus','step-done','step-loading'];
+      var killIds = ['mnemonic','details','verify','addressList','xpubList','step-done','step-loading'];
       killIds.forEach(function(id){
         var el = document.getElementById(id);
         if(el){ el.innerHTML = ''; }
@@ -7174,6 +7369,7 @@ function render(w){
     <div class="score-note">
       ${escapeHtml(sc.note)}
       ${sc.flags.map(f=>`<span class="flag">⚠ ${escapeHtml(f)}</span>`).join('')}
+      ${(sc.infos||[]).map(f=>`<span class="info-note">ℹ ${escapeHtml(f)}</span>`).join('')}
     </div>`;
   $('#scorecard').className = 'scorecard';
 
@@ -7214,8 +7410,22 @@ function buildReport(w, addressBundle, silentPayment){
   return [
     'AMULET BITCOIN WALLET — SEED REPORT',
     line,
+    /* v1.60: say plainly what this file is. It carries the seed phrase AND the
+       exact input string that was hashed to produce it, so the wallet can be
+       reconstructed from this file two independent ways — the mnemonic, or by
+       replaying COMBINED INPUT below. Redacting the word list would not make
+       it safe. Anyone holding this file holds the coins. */
+    '!! THIS FILE IS EQUIVALENT TO YOUR SEED PHRASE !!',
+    '   It contains the seed words, and separately the exact string that was',
+    '   hashed to create them (see COMBINED INPUT). Either one alone rebuilds',
+    '   this wallet and spends its funds. Removing the word list does not make',
+    '   this file safe to keep online, email, sync, print at a shop, or back up',
+    '   to cloud storage. Store it exactly as you would store the seed phrase',
+    '   itself — offline, or not at all. To keep a copy on a normal disk, use',
+    '   the encrypted .enc export instead.',
+    line,
     `Generated (UTC) : ${w.generatedAt}`,
-    `Tool            : Amulet v1.58`,
+    `Tool            : Amulet v1.63`,
     `Mode            : ${w.wordCount} words (${w.entropyBits}-bit entropy)`,
     `Reproducible    : ${w.reproducible ? 'YES (draws alone define this wallet)' : 'No (browser CSPRNG folded in)'}`,
     `Standard        : BIP-39 (English wordlist, 2048 words)`,
@@ -7231,6 +7441,7 @@ function buildReport(w, addressBundle, silentPayment){
     `User-contributed bits : ${w.score.userBits.toFixed(2)}  (dice ${w.score.diceBits.toFixed(2)} + cards ${w.score.cardBits.toFixed(2)} + keys ${(w.score.keyBits||0).toFixed(2)} + grid ${(w.score.gridBits||0).toFixed(2)})`,
     `Note                  : ${w.score.note}`,
     ...(w.score.flags.length ? ['Flags                 :', ...w.score.flags.map(f => '  ⚠ ' + f)] : []),
+    ...((w.score.infos && w.score.infos.length) ? ['Notes                 :', ...w.score.infos.map(f => '  · ' + f)] : []),
     '',
     'ENTROPY SOURCES',
     line,
@@ -7244,6 +7455,19 @@ function buildReport(w, addressBundle, silentPayment){
     ] : []),
     ...(w.cardRoundsList.length ? [
       `Playing cards (1 deck, 7+ shuffles per round, 4 cards per round):`,
+      /* v1.60: state whether the per-round reshuffle was actually corroborated
+         by the draws, and which entropy figure was credited as a result. */
+      ...(w.score.deckCheck ? [
+        `  reshuffle check: ${w.score.deckCheck.noReshuffle
+            ? 'NOT corroborated — only ' + w.score.deckCheck.minWinDupes + ' repeated cards in the leanest 13-round window, ~'
+              + w.score.deckCheck.expWinDupes.toFixed(0) + ' expected if reshuffled'
+            : 'consistent with a reshuffle before every round (' + w.score.deckCheck.minWinDupes
+              + ' repeated cards in the leanest 13-round window, ~' + w.score.deckCheck.expWinDupes.toFixed(0) + ' expected)'}`,
+        `  credited      : ${w.score.deckCheck.bits.toFixed(2)} bits` +
+          (w.score.deckCheck.noReshuffle
+            ? ` (single-deck model; ${w.score.deckCheck.perRound.toFixed(2)} would need a true per-round reshuffle)`
+            : ''),
+      ] : []),
       cardsBlock,
       ''
     ] : []),
@@ -7594,6 +7818,92 @@ async function downloadReport(w, format){
   setTimeout(()=>URL.revokeObjectURL(url), 1500);
 }
 
+/* ===== v1.60 (F-06): verify this file's own SHA-256 =====
+   The page cannot hash itself: fetch() on a file:// URL is blocked, and
+   document.documentElement.outerHTML is the parsed and re-serialised DOM, which
+   differs from the bytes on disk. So the user hands us the actual file and we
+   hash exactly what the filesystem holds. Comparison is constant-time-ish and
+   whitespace/case tolerant, because people paste checksums out of terminals. */
+(function(){
+  var drop   = document.getElementById('intDrop');
+  var input  = document.getElementById('intFile');
+  var out    = document.getElementById('intOut');
+  var expect = document.getElementById('intExpect');
+  var verdict= document.getElementById('intVerdict');
+  if(!drop || !input || !out) return;
+
+  var lastHash = '';
+
+  function fmtBytes(n){
+    if(n < 1024) return n + ' bytes';
+    if(n < 1048576) return (n/1024).toFixed(1) + ' KB';
+    return (n/1048576).toFixed(2) + ' MB';
+  }
+
+  function normalise(v){ return (v||'').replace(/[^0-9a-fA-F]/g,'').toLowerCase(); }
+
+  function renderVerdict(){
+    var want = normalise(expect.value);
+    if(!lastHash || !want){ verdict.classList.add('hidden'); return; }
+    verdict.classList.remove('hidden');
+    if(want.length !== 64){
+      verdict.className = 'int-verdict nomatch';
+      verdict.textContent = 'That is not a SHA-256 digest — expected 64 hex characters, got ' + want.length + '.';
+      return;
+    }
+    // length-independent compare; both sides are fixed 64 chars here
+    var diff = 0;
+    for(var i=0;i<64;i++) diff |= (lastHash.charCodeAt(i) ^ want.charCodeAt(i));
+    if(diff === 0){
+      verdict.className = 'int-verdict match';
+      verdict.textContent = '✓ Match. This file is byte-for-byte the one that digest describes. '
+        + 'That is only meaningful if the digest came from a source independent of wherever you downloaded this file.';
+    } else {
+      verdict.className = 'int-verdict nomatch';
+      verdict.textContent = '✗ No match. These are not the same file. Do not generate a wallet you intend to fund '
+        + 'with this copy until you know why — re-download from a source you trust and compare again.';
+    }
+  }
+
+  async function hashFile(file){
+    out.classList.remove('hidden');
+    out.textContent = 'Hashing ' + file.name + '…';
+    try {
+      var buf = await file.arrayBuffer();
+      var digest = await crypto.subtle.digest('SHA-256', buf);
+      var bytes = new Uint8Array(digest);
+      var hex = '';
+      for(var i=0;i<bytes.length;i++) hex += bytes[i].toString(16).padStart(2,'0');
+      lastHash = hex;
+      out.innerHTML = '<div>' + escapeHtml(file.name) + ' · ' + fmtBytes(file.size) + '</div>'
+                    + '<div class="int-hash">' + hex + '</div>';
+      renderVerdict();
+    } catch(e){
+      lastHash = '';
+      out.textContent = 'Could not read that file: ' + (e && e.message ? e.message : e);
+    }
+  }
+
+  drop.addEventListener('click', function(){ input.click(); });
+  drop.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); input.click(); }
+  });
+  input.addEventListener('change', function(){
+    if(input.files && input.files[0]) hashFile(input.files[0]);
+  });
+  ['dragenter','dragover'].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); drop.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag'); });
+  });
+  drop.addEventListener('drop', function(e){
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) hashFile(f);
+  });
+  expect.addEventListener('input', renderVerdict);
+})();
+
 /* init */
 updateDiceMeter();
 
@@ -7612,21 +7922,33 @@ updateDiceMeter();
   var lastState = null; // null | 'offline' | 'online'
 
   /* v1.31: Zero-network check — uses navigator.onLine + browser events only.
-     No fetch(), no XMLHttpRequest, no packets leave the machine. */
+     No fetch(), no XMLHttpRequest, no packets leave the machine.
+     v1.60: that also bounds what this can tell you. It is an interface-state
+     flag, not a reachability test, and deliberately stays that way — probing
+     the network to prove you are off it would defeat the purpose. The wording
+     around it was corrected to match what it actually measures. */
   function setState(state){
     lastState = state;
     pill.classList.remove('checking','online','offline');
     var hint = document.getElementById('netHint');
+    /* v1.60: report what was measured, not a verdict on it.
+       This reads navigator.onLine, which reflects whether the browser has a
+       network interface it believes is up — not whether anything is actually
+       reachable, and not whether this machine is being observed. A VM with a
+       virtual adapter, a captive portal, or a LAN with no route out can all
+       report misleadingly. Saying "safe" put a security conclusion on a signal
+       that cannot support one; the pill now states the reading and leaves the
+       conclusion to the user, who is the only one who can see the cable. */
     if(state === 'online'){
       pill.classList.add('online');
-      label.textContent = 'Online · risky';
-      pill.title = 'Click to see how to use this page offline';
+      label.textContent = 'Network up · risky';
+      pill.title = 'The browser reports an active network connection. Click to see how to use this page offline.';
       if(hint) hint.textContent = 'Click: how to go offline →';
     } else {
       pill.classList.add('offline');
-      label.textContent = 'Offline · safe';
-      pill.title = 'No internet reachable. Click to review the offline workflow.';
-      if(hint) hint.textContent = 'Click to review offline steps';
+      label.textContent = 'No network detected';
+      pill.title = 'The browser reports no network connection. This is a hint from navigator.onLine, not proof of an air gap — confirm it yourself. Click to review the offline workflow.';
+      if(hint) hint.textContent = 'A hint, not proof — verify yourself →';
     }
   }
 
@@ -8143,5 +8465,5 @@ updateDiceMeter();
   update();
 })();
 </script>
-</body>
-</html>
+
+<div id="extension-dpfof"></div></body></html>

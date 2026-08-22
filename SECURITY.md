@@ -29,7 +29,7 @@ Reports in English or Dutch are both fine.
 - **Acknowledgement within 72 hours** of your report.
 - A first assessment (accepted / needs more info / declined, with reasoning) within 7 days.
 - A fix and coordinated disclosure target of **90 days** from acknowledgement. If a fix lands earlier, disclosure can move up; if the issue is unusually complex, I will propose a new date rather than go silent.
-- You will be credited in the release notes as we see fit and/or if you wish.
+- You will be credited in the release notes if you wish (or kept anonymous — your choice).
 
 There is currently no paid bug bounty program.
 
@@ -56,4 +56,4 @@ Only the latest published version of each tool receives security fixes. Because 
 
 ## Safe Harbor
 
-Good-faith security research on these tools is welcome. If you make a good-faith effort to comply with this policy — no data destruction, no privacy violations against third parties, no extortion, and reasonable time for a fix before public disclosure. I will not pursue legal action against you and will work with you openly. Testing is safest against your own local copies of the tools, which is exactly how they are meant to be used.
+Good-faith security research on these tools is welcome. If you make a good-faith effort to comply with this policy — no data destruction, no privacy violations against third parties, no extortion, and reasonable time for a fix before public disclosure — I will not pursue legal action against you and will work with you openly. Testing is safest against your own local copies of the tools, which is exactly how they are meant to be used.

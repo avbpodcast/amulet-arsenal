@@ -1,170 +1,180 @@
-# Amulet Wallet Generator
+# Amulet · Bitcoin Offline Wallet Generator
 
-**Release Candidate 1 (version 1.51)**
+**v1.63** — a single HTML file that generates a BIP-39 seed phrase and the
+Bitcoin wallets derived from it, entirely inside your browser, with no network
+access of any kind.
 
-A single offline web page that creates a fresh Bitcoin wallet on your own
-computer. It rolls a brand new BIP-39 recovery phrase, shows you the wallet's
-keys and first addresses, and lets you save a backup. Nothing leaves your
-machine.
+SHA-256 `69de86d4c8a8d14abbdc5d93f70af6295ee8ceb6268ad6cdc172c9af17a44a92`
 
-The current file is `amulet_1_51.html`. Each release keeps the previous file
-next to it, so older versions are never overwritten.
+---
 
+## Contents
 
-## What it is, in one paragraph
+| File | What it is |
+|---|---|
+| `amulet_1_63.html` | The tool. One self-contained file, no dependencies. |
+| `CHECKSUMS.txt` | SHA-256 and BLAKE2b digests, and how to check them. |
+| `RELEASE-NOTES.md` | Full changelog and security findings, v1.58 → v1.62. |
+| `README.md` | This file. |
 
-When you create a Bitcoin wallet, everything depends on one secret: the
-recovery phrase (also called the seed phrase or mnemonic). The Amulet Wallet
-Generator produces that phrase using your computer's secure random generator,
-optionally mixed with randomness you supply yourself, and then shows you the
-public keys and addresses that follow from it. It is meant to be opened
-offline, read once, and trusted only after you have looked at it.
+---
 
+## Before anything else: verify the file
 
-## Before you trust it
+Everything below is worthless if the file is not the file that was audited.
+A modified copy could bias the entropy and look identical.
 
-This tool guards money, so treat it with suspicion until you are satisfied.
+```
+Linux / BSD    sha256sum  amulet_1_63.html
+macOS          shasum -a 256  amulet_1_63.html
+Windows        certutil -hashfile amulet_1_63.html SHA256
+PowerShell     Get-FileHash amulet_1_63.html -Algorithm SHA256
+```
 
-It is a single `.html` file. There is no installer and no background service.
-It makes no network calls: you can open it with your internet disconnected,
-or on a computer that has never been online, and it works exactly the same.
+Compare against `CHECKSUMS.txt` — but read the warning there first. **A checksum
+is only worth as much as the channel it reached you through.** If the file and
+the digest came down the same wire from the same server, a compromise of that
+server defeats both at once. Get the digest from somewhere the file did not come
+from.
 
-The whole program, including the word lists and the cryptography, is inside
-that one file. Anyone who can read code can audit it. A matching
-`hash_generator_v1.51.txt` file sits next to it: if you received this tool
-from someone else, compare the SHA-256 hash of the `.html` file against that
-record before you rely on it.
+The page can also verify itself: open it, expand *"Verify this file before you
+trust it"*, and drop the `.html` onto the panel.
 
-The safest way to use it is on an air-gapped computer: one that is offline
-and ideally will never go online again.
+---
 
+## Using it
 
-## How to create a wallet
+**For real funds, work offline.** The intended workflow:
 
-1. Copy the `.html` file to the offline computer and open it by
-   double-clicking. Any modern browser will do.
-2. Choose how long the recovery phrase should be. Twelve words is the common
-   choice; twenty-four words is the longer, more conservative option.
-3. Optionally add your own randomness. The generator already uses your
-   computer's secure random generator on its own, which is enough by itself.
-   On top of that you may, if you wish, contribute dice rolls, playing cards,
-   keystrokes, or clicks on a chaos grid. Extra randomness can only ever add
-   to the result; it can never weaken it.
-4. Generate. The recovery phrase appears.
-5. Write the words down, in order, on paper or stamped steel. Check them
-   twice. This written copy is your wallet.
+1. Save the file to disk.
+2. Disconnect from Wi-Fi. Unplug the Ethernet cable.
+3. Open the saved file from disk.
+4. Confirm the pill in the top-right reads **"No network detected"** — treat it
+   as one confirmation among several, not proof. You are the one who can see the
+   cable.
+5. Generate.
+6. Write the seed phrase on paper or steel. Never photograph it. Never type it
+   into an internet-connected device.
+7. Use the **Reset and wipe all data on this browser** button before closing the tab.
 
+The page makes no network requests — verified at runtime with every non-`file://`
+request intercepted. There is no `fetch`, no `XMLHttpRequest`, no WebSocket, no
+external script, style, font or image. But an air gap protects you from things
+this page cannot control, which is the point of working offline.
 
-## The result screen
+---
 
-After generating, the page shows six sections.
+## Choosing entropy
 
-**Seed phrase.** The recovery words themselves. A "Hide words" button blanks
-them out so you can step away from the screen without exposing them.
+**CSPRNG only is the default, and it is sufficient.** The browser's
+`crypto.getRandomValues` supplies 256 bits from the operating system. That is a
+cryptographically strong seed on its own, and most people should stop here.
 
-**Seed fingerprint and SeedQR.** A short code and a small colour bar that act
-as a quick visual identifier for this particular seed. Two different seeds
-produce two different fingerprints, so you can tell wallets apart at a glance.
-The same section holds the SeedQR, described further down.
+The other sources exist for one scenario: **you do not trust the CSPRNG.** If it
+were backdoored or broken, an attacker would know that part of the input and
+brute-force the rest — so your wallet's surviving security would be exactly what
+your own draws contributed, and nothing more.
 
-**Entropy quality.** A plain-language read-out of how strong the randomness
-was, including anything you contributed.
+That is why no source can be used below **128 bits**:
 
-**Details.** The full record: the exact random inputs, the intermediate
-hashes, and the checksum, so a careful reader can reproduce the phrase by
-hand with any independent BIP-39 tool.
+| Source | Minimum | Bits | Verifiable by you? |
+|---|---|---|---|
+| **Dice** (D6) | 50 rolls | 129.2 | **Yes** — `50 × log₂(6)`, arithmetic you can check on paper |
+| **Dice**, full strength | 99 rolls | 255.9 | Yes |
+| **Cards** | 6 rounds of 4 | 135.8 | Mostly — assumes a genuine shuffle, which is partly detected |
+| **Chaos grid** | ~30 clicks | 128.0 | No — relies on estimates of your click timing and aim |
 
-**Extended keys.** The public and private extended keys for the standard
-address types, with their derivation paths. The public keys can be imported
-into a watch-only wallet to monitor funds without exposing the seed.
+The grid deals a fresh board automatically if it runs low on tiles, keeping your
+clicks, so it can never leave you stranded below the floor.
 
-**Preview addresses.** The first few receive addresses for each address type,
-plus a Silent Payment address and a reusable Payment Code, so you can confirm
-the wallet before funding it.
+**If you want entropy you can fully verify yourself, use dice.**
 
+Sources are mixed in as `SHA-256(csprng ‖ your input)`, so they can only ever
+add. Adding nothing is a perfectly valid choice.
 
-## The optional passphrase
+### Reproducible mode
 
-Hidden behind a disclosure is a BIP-39 passphrase, sometimes called the
-"25th word". It is an extra secret mixed into the seed. The same words with a
-different passphrase produce a completely different wallet. Most people do not
-use one. If you are not sure you want it, leave that box closed and empty.
+Ticking *Reproducible mode* skips the CSPRNG entirely, so your dice or card notes
+alone regenerate the wallet later. Your backups already work without this — every
+wallet reproduces from its seed phrase, or from the `.txt` / `.pdf` / `.enc`
+export.
 
+Because there is no CSPRNG behind it, this mode demands the **full** count: 99
+D6 rolls for a 24-word seed, 50 for a 12-word one. Keystrokes and the chaos grid
+are not accepted, as their timing cannot be re-entered identically.
 
-## The SeedQR
+---
 
-The SeedQR is your recovery phrase encoded as a QR code, in the format used by
-the SeedSigner offline signing device. Instead of typing every word by hand,
-an offline signer can rebuild the wallet by scanning the code.
+## Handling what it produces
 
-It sits behind a closed warning for a reason: that QR code is your seed.
-Anyone who photographs or scans it can spend your coins. Reveal it only when
-you mean to, scan it only with an offline signing device, and never point a
-phone camera or an internet-connected webcam at it.
+**The `.txt` and `.pdf` exports are equivalent to your seed phrase.** They
+contain the words, *and separately* the exact string that was hashed to create
+them — either one rebuilds the wallet and spends the funds. Removing the word
+list does not make them safe. Do not email them, sync them, or print them on a
+shared printer.
 
+The **`.enc`** export is encrypted with AES-256-GCM using a password you choose,
+derived with PBKDF2-HMAC-SHA256 at 600,000 iterations. That is the one to keep on
+a normal disk.
 
-## Saving a backup
+The **SeedQR** in the PDF is a scannable seed. Point only an offline signing
+device at it — never a phone camera.
 
-At the bottom of the result screen you can download the wallet report. Pick
-one of four options:
+---
 
-- **All three files** (the default): the encrypted file plus both readable
-  copies, downloaded one after another.
-- **Encrypted** (`.enc`): the report sealed with a password you choose. This
-  is the only format safe to keep on an everyday, online computer.
-- **Plain text** (`.txt`): the full report as readable text.
-- **PDF document** (`.pdf`): a printable report that also includes a SeedQR
-  page, so a printed copy is a complete paper backup.
+## What it implements
 
-The `.txt` and `.pdf` files hold your seed in the clear, exactly like writing
-it on paper. Keep them offline. The encrypted `.enc` file can be opened again,
-and decrypted back to plain text, using the unlock tab on the start screen.
+BIP-39 (English wordlist, 12 or 24 words) · BIP-32 · BIP-44 legacy · BIP-49
+nested SegWit · BIP-84 native SegWit · BIP-86 Taproot · BIP-47 payment codes ·
+BIP-352 silent payments · SLIP-132 extended keys · SeedSigner-format SeedQR.
 
+Verified against `bitcoinjs-lib`, `bip39` and `bip32`: **235 of 235 assertions
+matched exactly**, including published BIP-39, BIP-84, BIP-86 and BIP-47 test
+vectors, across three mnemonics and three passphrases.
 
-## Security, the short version
+---
 
-The recovery phrase is the money. Whoever holds it owns the coins.
+## Verifying a wallet you already have
 
-Write it on paper or steel and store it offline. Do not store it digitally in
-the clear, do not email it, do not photograph or screenshot it, and never type
-it into a website, a search bar, or a chat. If you must keep a digital copy,
-use the encrypted `.enc` export and a strong password.
+The **Verify wallet** button checks that a paper backup, an `.enc` file, or a set
+of dice/card notes still yields the same wallet. Use it before funding a new
+wallet, and again whenever you want to confirm a backup is still good.
 
-When you are finished, the result screen has a button that wipes the seed and
-keys from the browser tab. Use it, then close the tab.
+---
 
-Before you move real money in, confirm you can recover the wallet: take the
-written words and restore them into a separate, trusted wallet, and check that
-the first address matches the preview.
+## What this tool does not protect you against
 
+- **A compromised machine.** Malware with access to your browser can read the
+  seed as it is generated. Work offline, on a machine you trust.
+- **A compromised download.** Verify the checksum, from an independent source.
+- **Your own backup.** Paper burns and steel gets lost. Test your backup by
+  restoring it before you put real money behind it.
+- **Shoulders and cameras.** The seed and the combined input string are both
+  visible on screen.
 
-## What is under the hood
+---
 
-The recovery phrase is a standard BIP-39 mnemonic from the 2048-word English
-list, with a valid checksum. The seed is derived per BIP-39, and the keys and
-addresses per BIP-32, for the legacy, nested SegWit, native SegWit, and
-Taproot address types (derivation paths `m/44'`, `m/49'`, `m/84'`, `m/86'`).
-The encrypted export uses AES-256-GCM with a key stretched from your password
-by PBKDF2.
+## Known limitations
 
-Because it follows the public standards, a wallet made here can be restored in
-any other standards-compliant wallet, and a wallet made elsewhere behaves the
-same way here.
+Stated plainly, because a wallet tool that hides these is not worth trusting:
 
+- **Card entropy** assumes a genuine shuffle. The tool detects a *missing*
+  reshuffle between rounds but cannot judge shuffle quality within one.
+- **Chaos grid entropy** assumes your cell choices are close to uniform. Humans
+  are imperfect randomisers, and a session this short cannot statistically verify
+  it. A conservative discount is built in, but it is assumed rather than
+  measured.
+- **Grid timing and aim entropy** assumes the machine is not observing you.
 
-## Release Candidate 1
+`RELEASE-NOTES.md` has the full detail, including the security findings from the
+v1.58 audit and what they mean for wallets made with earlier versions.
 
-Version 1.50 was Release Candidate 1. It passed an eight-point smoke test with
-no faults: the inline scripts all parse, the page loads cleanly, the BIP-39
-seed matches the published TREZOR test vector, address derivation matches the
-published BIP-44/49/84/86 test vectors, the SeedQR encodes correctly, the
-fingerprint colour bar is deterministic, the PDF export produces a valid
-document, and the "Hide words" toggle genuinely conceals the seed.
+---
 
-Version 1.51, the current file, is the same build with one small change: the
-encrypted `.enc` backup now downloads under the exact filename that the
-Amulet Scryer expects, so the watch-only import works without renaming.
+## License and provenance
 
-A release candidate is a build believed to be ready, published so it can be
-used and reviewed before being declared final. Please report anything that
-looks wrong.
+Bundles `noble-secp256k1` (MIT) and `qrcode-generator` by Kazuhiko Arase (MIT),
+both carrying their license notices inline, plus a RIPEMD-160 implementation that
+carries no attribution comment in the source — check its provenance yourself if
+that matters to you. The BIP-39 English wordlist is byte-identical to the
+official list.
