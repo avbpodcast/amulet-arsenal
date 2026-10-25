@@ -7,7 +7,7 @@
 <title>Amulet · launcher</title>
 
 <!--
-  Amulet Main launcher v1.46 (June 2026)
+  Amulet Main launcher v1.47 (October 2026)
   ─────────────────────────────────────────
   A single self-contained HTML page. NO external dependencies: no CDN
   fonts, no CDN CSS, no JS framework. Opens and renders identically
@@ -17,6 +17,17 @@
   card opens the explicit versioned file of the corresponding tool via
   a relative path. URL-encoded spaces handle folder names that contain
   spaces.
+
+  v1.47 changes:
+    - Refresh the Amulet Scryer link to v1.20. The Scryer now has a
+      "Backup & restore" section in its Settings: export your watched
+      wallets and every setting (custom endpoints, gap limit, rate
+      delay, auto-refresh, ...) to one file, optionally encrypted with
+      a passphrase (Argon2id + AES-256-GCM), and restore it in any
+      browser or on any machine. Wallets you already watch in Scryer
+      v1.19 are picked up unchanged. Explorer consents are never
+      stored in a backup: a restored Scryer asks again before it
+      contacts an explorer.
 
   v1.46 changes:
     - Refresh the Wallet Generator link to v1.58. Two small
@@ -771,7 +782,7 @@
             <span class="tag online">needs internet</span>
           </div>
           <p class="desc">Watch-only balance viewer. Reads xpub/ypub/zpub or single addresses, queries mempool.space + blockstream.info in rotation. Auto-refresh every 10 min.</p>
-          <div class="meta">arsenal-scryer_v1.19.html</div>
+          <div class="meta">arsenal-scryer_v1.20.html</div>
         </div>
       </a>
 
@@ -804,7 +815,7 @@
 
   <footer class="foot">
     <div>
-      Amulet Main · v1.46 · runs locally · no telemetry · single-file HTML, audit it before you trust it
+      Amulet Main · v1.47 · runs locally · no telemetry · single-file HTML, audit it before you trust it
     </div>
     <div style="margin-top:6px">
       <span style="opacity:.7">Tip: bookmark this page in your browser.</span>
