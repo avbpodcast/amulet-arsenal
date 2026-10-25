@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Amulet Scryer v1.19 · watch-only balance viewer</title>
+<title>Amulet Scryer v1.20 · watch-only balance viewer</title>
 <meta name="description" content="A viewing glass for extended public keys. Derive addresses, sum balances, peer at the chain without surrendering spend access." />
 <!-- v1.02: Google Fonts dropped. The new CSS uses the system-ui sans
      stack (matching Amulet Vault), so no third-party font fetch happens
@@ -898,7 +898,7 @@
   <!-- ============ FOOTER ============ -->
   <footer class="foot">
     <div>
-      Amulet Scryer &middot; v1.19 &middot; watch-only. No keys. No telemetry. No CDN.
+      Amulet Scryer &middot; v1.20 &middot; watch-only. No keys. No telemetry. No CDN.
     </div>
     <div style="display:flex; gap:1.5rem;">
       <a href="#" data-github>GitHub</a>
@@ -942,9 +942,61 @@
     <div id="consent-list" class="help" style="margin-top:0; line-height:1.6;">No explorer consents recorded.</div>
     <button class="btn btn-ghost" id="clear-consents" style="margin-top:8px; font-size:12px;" type="button">Clear all explorer consents</button>
 
+    <!-- v1.20: backup & restore -->
+    <label>Backup &amp; restore</label>
+    <div class="help" style="margin-top:0; line-height:1.6;">Save your watched wallets and every setting (including custom endpoints and limits) into one file, and load it again in any browser or on any machine. The file contains your public keys only &mdash; never a seed or private key.</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+      <button class="btn btn-ghost" id="backup-export-open" type="button" style="font-size:12px;">&#128228; Export backup&hellip;</button>
+      <button class="btn btn-ghost" id="backup-restore-open" type="button" style="font-size:12px;">&#128229; Restore from backup&hellip;</button>
+    </div>
+    <input type="file" id="backup-file" accept=".json,application/json" style="display:none">
+
     <div class="modal-actions">
       <button class="btn btn-ghost" id="settings-cancel">Cancel</button>
       <button class="btn btn-primary" id="settings-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- v1.20: backup & restore dialog (export / restore a single file) -->
+<!-- ============ BACKUP & RESTORE MODAL (v1.20) ============ -->
+<div class="modal-scrim" id="backup-modal" role="dialog" aria-modal="true" aria-labelledby="backup-title">
+  <div class="modal" style="max-width:600px">
+    <h2 id="backup-title"><em>Backup</em> &amp; restore</h2>
+    <div class="sub" id="backup-sub">Local file &middot; nothing is uploaded</div>
+
+    <div id="backup-export-pane" style="display:none">
+      <div class="help" id="backup-export-summary" style="margin-top:0; line-height:1.6;"></div>
+      <div class="banner info" style="margin-top:12px; padding:8px 12px; font-size:12.5px;">
+        <span>The file lists every public key you watch. Anyone holding it can see all your addresses and balances. Add a passphrase to encrypt it, and store it like a private document.</span>
+      </div>
+      <label for="backup-pass">Passphrase (optional &mdash; encrypts the file with Argon2id + AES-256-GCM)</label>
+      <input id="backup-pass" class="field" type="password" autocomplete="new-password" style="width:100%;" placeholder="Leave empty for a plain .json file">
+      <input id="backup-pass2" class="field" type="password" autocomplete="new-password" style="width:100%; margin-top:8px;" placeholder="Repeat passphrase">
+      <div class="help">Explorer consents are never exported: a restored copy asks once before it contacts any explorer.</div>
+    </div>
+
+    <div id="backup-unlock-pane" style="display:none">
+      <div class="help" id="backup-unlock-file" style="margin-top:0;"></div>
+      <label for="backup-unlock-pass">Passphrase</label>
+      <input id="backup-unlock-pass" class="field" type="password" autocomplete="off" style="width:100%;">
+    </div>
+
+    <div id="backup-preview-pane" style="display:none">
+      <div class="import-preview" id="backup-preview" style="margin-top:12px;"></div>
+      <div id="backup-endpoint-warn" class="banner error" style="display:none; margin-top:10px; padding:8px 12px; font-size:12.5px;"></div>
+      <label style="margin-top:14px;">How to restore</label>
+      <label style="display:block; text-transform:none; letter-spacing:0; font-size:13px; margin:6px 0;"><input type="radio" name="backup-mode" value="replace" checked> <strong>Replace everything</strong> &mdash; wallets and settings become exactly what the file contains.</label>
+      <label style="display:block; text-transform:none; letter-spacing:0; font-size:13px; margin:6px 0;"><input type="radio" name="backup-mode" value="merge"> <strong>Merge</strong> &mdash; add wallets that are not in this Scryer yet; keep current settings.</label>
+    </div>
+
+    <div id="backup-msg" class="banner error" style="display:none; margin-top:12px; padding:8px 12px; font-size:12.5px;"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="backup-close" type="button">Close</button>
+      <button class="btn btn-primary" id="backup-export-go" type="button" style="display:none">Download backup</button>
+      <button class="btn btn-primary" id="backup-unlock-go" type="button" style="display:none">Unlock</button>
+      <button class="btn btn-primary" id="backup-apply" type="button" style="display:none">Restore</button>
     </div>
   </div>
 </div>
@@ -2482,6 +2534,7 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
         if (obj && obj.type === "amulet-wallet") return "vault-enc";
         if (obj && obj.type === "amulet-vault-meta") return "vault-meta";
         if (obj && obj.magic === "AMULET_WATCH_ONLY_V1") return "watch-only";  // v1.13
+        if (obj && obj.magic === "AMULET_SCRYER_BACKUP_V1") return "scryer-backup";   // v1.20
       } catch {}
       if (/\[(?:P2SH_ADDRESS|BITCOIN_ADDRESS)\]/.test(text)) return "timelock-txt";
     }
@@ -3007,6 +3060,11 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
     // Single file
     IMPORT.kind = detectFileKind(IMPORT.bytes, file.name);
     if (IMPORT.kind === "timelock-txt") { await runImport(""); return; }
+    // v1.20 — a Scryer backup is not a vault file; point to Settings → Backup & restore
+    if (IMPORT.kind === "scryer-backup") {
+      importError("This is a Scryer backup, not a vault file. Close this dialog and use Settings \u2192 Backup & restore \u2192 Restore from backup.");
+      return;
+    }
     // v1.13 — watch-only imports go straight through (no password ever asked)
     if (IMPORT.kind === "watch-only")  { await runImport(""); return; }
     if (IMPORT.kind === "vault-enc" || IMPORT.kind === "amlt-enc") {
@@ -3623,6 +3681,352 @@ var ScryerCrypto=(()=>{var Oe=Object.defineProperty;var ao=Object.getOwnProperty
   // Pressing Enter inside the bulk box should apply it (handy shortcut)
   document.getElementById('import-bulk-pw').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('import-bulk-apply').click();
+  });
+
+  /* ═══════════════════════════════════════════════════════════════
+     v1.20 — BACKUP & RESTORE
+     One file carries every watched wallet and every setting, so a
+     Scryer can be rebuilt in another browser or on another machine.
+     The file holds public keys only. Optional passphrase encryption
+     (Argon2id + AES-256-GCM) reuses the bundle already in this page.
+     Explorer consents are deliberately NOT carried across: a restored
+     Scryer asks again before it contacts any explorer.
+     ═══════════════════════════════════════════════════════════════ */
+  const BACKUP_MAGIC = 'AMULET_SCRYER_BACKUP_V1';
+  const BACKUP_APP_VERSION = '1.20';
+  const BACKUP_KDF = { m: 65536, t: 3, p: 1 };      // Argon2id: 64 MiB, 3 passes
+  const BACKUP = { env: null, clean: null, meta: null, dropped: 0 };
+
+  const _bk = id => document.getElementById(id);
+  const _isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  const _clampInt = (v, lo, hi, def) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.max(lo, Math.min(hi, Math.trunc(n))) : def;
+  };
+  const _validDate = s => typeof s === 'string' && s.length < 40 && !isNaN(Date.parse(s));
+
+  function bytesToB64(bytes) {
+    let s = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(s);
+  }
+  async function sha256Hex(str) {
+    const d = await crypto.subtle.digest('SHA-256', ENC_TE.encode(str));
+    return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  async function aesGcmEncrypt(keyBytes, iv, pt, aad) {
+    const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
+    const params = aad ? { name: 'AES-GCM', iv, additionalData: aad } : { name: 'AES-GCM', iv };
+    return new Uint8Array(await crypto.subtle.encrypt(params, key, pt));
+  }
+  function downloadText(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }
+
+  function backupMsg(text, kind) {
+    const el = _bk('backup-msg');
+    if (!text) { el.style.display = 'none'; el.textContent = ''; return; }
+    el.className = 'banner ' + (kind || 'error');
+    el.textContent = text;
+    el.style.display = '';
+  }
+  function backupShow(pane) {
+    for (const id of ['backup-export-pane', 'backup-unlock-pane', 'backup-preview-pane']) {
+      _bk(id).style.display = (id === pane) ? '' : 'none';
+    }
+    _bk('backup-export-go').style.display = (pane === 'backup-export-pane')  ? '' : 'none';
+    _bk('backup-unlock-go').style.display = (pane === 'backup-unlock-pane')  ? '' : 'none';
+    _bk('backup-apply').style.display     = (pane === 'backup-preview-pane') ? '' : 'none';
+  }
+  function backupOpen() { backupMsg(''); _bk('backup-modal').classList.add('show'); }
+  function backupClose() {
+    _bk('backup-modal').classList.remove('show');
+    BACKUP.env = null; BACKUP.clean = null; BACKUP.meta = null; BACKUP.dropped = 0;
+    for (const id of ['backup-pass', 'backup-pass2', 'backup-unlock-pass']) _bk(id).value = '';
+    _bk('backup-file').value = '';
+    backupMsg('');
+  }
+
+  /* ---------- EXPORT ---------- */
+  function backupSnapshot() {
+    const s = structuredClone(state);
+    delete s.consentedEndpoints;            // consents never travel
+    return s;
+  }
+  async function buildBackupPayload() {
+    const st = backupSnapshot();
+    return {
+      magic: BACKUP_MAGIC, format: 1,
+      app: 'Amulet Scryer', scryerVersion: BACKUP_APP_VERSION,
+      exportedAt: new Date().toISOString(),
+      stateSha256: await sha256Hex(JSON.stringify(st)),
+      state: st,
+    };
+  }
+
+  _bk('backup-export-open').addEventListener('click', () => {
+    const n = state.instruments.length;
+    _bk('backup-export-summary').textContent =
+      `${n} watched ${n === 1 ? 'wallet' : 'wallets'}, ${state.endpoints.length} explorer ` +
+      `${state.endpoints.length === 1 ? 'endpoint' : 'endpoints'}, all settings and ` +
+      `${state.history.length} history ${state.history.length === 1 ? 'point' : 'points'}.`;
+    _bk('backup-pass').value = ''; _bk('backup-pass2').value = '';
+    _bk('backup-sub').textContent = 'Export a backup file · nothing is uploaded';
+    backupShow('backup-export-pane');
+    backupOpen();
+  });
+
+  _bk('backup-export-go').addEventListener('click', async () => {
+    backupMsg('');
+    const pw = _bk('backup-pass').value, pw2 = _bk('backup-pass2').value;
+    if (pw !== pw2) { backupMsg('The two passphrases do not match.'); return; }
+    if (pw && pw.length < 8) { backupMsg('Use at least 8 characters, or leave the passphrase empty for a plain file.'); return; }
+    const btn = _bk('backup-export-go');
+    btn.disabled = true;
+    try {
+      const payload = await buildBackupPayload();
+      const day = payload.exportedAt.slice(0, 10);
+      let text, name;
+      if (!pw) {
+        text = JSON.stringify(payload, null, 2);
+        name = `scryer-backup-${day}.amulet-scryer.json`;
+      } else {
+        backupMsg('Encrypting…', 'info');
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv   = crypto.getRandomValues(new Uint8Array(12));
+        const key  = await argon2idKdf(pw, salt, BACKUP_KDF.m, BACKUP_KDF.t, BACKUP_KDF.p, 32);
+        let ct;
+        try {
+          ct = await aesGcmEncrypt(key, iv, ENC_TE.encode(JSON.stringify(payload)), ENC_TE.encode(BACKUP_MAGIC));
+        } finally { _zero(key); }
+        text = JSON.stringify({
+          magic: BACKUP_MAGIC, format: 1, encrypted: true,
+          app: 'Amulet Scryer', scryerVersion: BACKUP_APP_VERSION, exportedAt: payload.exportedAt,
+          kdf: { name: 'Argon2id', salt: bytesToB64(salt), m: BACKUP_KDF.m, t: BACKUP_KDF.t, p: BACKUP_KDF.p },
+          cipher: 'AES-256-GCM', iv: bytesToB64(iv), ct: bytesToB64(ct),
+        }, null, 2);
+        name = `scryer-backup-${day}-encrypted.amulet-scryer.json`;
+      }
+      downloadText(name, text);
+      backupClose();
+      flash(`Backup saved as ${name}.`, 'info');
+    } catch (e) {
+      backupMsg('Export failed: ' + (e && e.message ? e.message : e));
+    } finally { btn.disabled = false; }
+  });
+
+  /* ---------- RESTORE: validate + sanitise (the file is untrusted input) ---------- */
+  function sanitizeBackupState(raw) {
+    if (!_isObj(raw)) throw new Error('The backup has no state section.');
+    const schema = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 0;
+    if (schema > SCHEMA_VERSION) throw new Error(`This backup was made by a newer Scryer (schema ${schema}). Open it with a newer version.`);
+    if (schema < SCHEMA_VERSION) throw new Error(`This backup uses an unsupported old schema (${schema}).`);
+
+    const endpoints = []; const seenEp = new Set();
+    for (const e of (Array.isArray(raw.endpoints) ? raw.endpoints : [])) {
+      if (typeof e !== 'string') continue;
+      const u = e.trim();
+      if (!u || u.length > 300 || seenEp.has(u)) continue;
+      let p; try { p = new URL(u); } catch { continue; }
+      if ((p.protocol !== 'https:' && p.protocol !== 'http:') || p.username || p.password) continue;
+      seenEp.add(u); endpoints.push(u);
+      if (endpoints.length >= 10) break;
+    }
+    if (!endpoints.length) endpoints.push(...DEFAULT_ENDPOINTS);
+
+    const ar = Number(raw.autoRefreshMins);
+    const out = {
+      schemaVersion: SCHEMA_VERSION,
+      denom: raw.denom === 'sats' ? 'sats' : 'btc',
+      endpoints,
+      rateDelay: _clampInt(raw.rateDelay, 0, 5000, defaultState.rateDelay),
+      gapLimit: _clampInt(raw.gapLimit, 1, 100, defaultState.gapLimit),
+      hardCap: _clampInt(raw.hardCap, 1, 5000, defaultState.hardCap),
+      autoRefreshMins: ar === 0 ? 0 : _clampInt(ar, 5, 120, defaultState.autoRefreshMins),
+      lastConsult: _validDate(raw.lastConsult) ? raw.lastConsult : null,
+      history: [],
+      instruments: [],
+    };
+    for (const h of (Array.isArray(raw.history) ? raw.history : [])) {
+      if (_isObj(h) && _validDate(h.t) && typeof h.total === 'number' && Number.isFinite(h.total)) {
+        out.history.push({ t: h.t, total: h.total });
+      }
+    }
+    out.history = out.history.slice(-30);
+
+    const ADDR = ['p2wpkh', 'p2sh-p2wpkh', 'p2pkh', 'legacy'];
+    const BADGE = ['zpub', 'ypub', 'xpub', 'addr', 'timelock'];
+    const seenKey = new Set(); const seenId = new Set(); let dropped = 0;
+    for (const it of (Array.isArray(raw.instruments) ? raw.instruments : [])) {
+      if (out.instruments.length >= 500) { dropped++; continue; }
+      if (!_isObj(it) || typeof it.key !== 'string') { dropped++; continue; }
+      const key = it.key.trim();
+      const det = detectKeyType(key);
+      if (!det) { dropped++; continue; }
+      if (det.kind === 'extended') {
+        try { HDKey.fromExtendedKey(toXpub(key)); } catch { dropped++; continue; }
+      }
+      const nk = _normalizedKey(key);
+      if (seenKey.has(nk)) { dropped++; continue; }
+      seenKey.add(nk);
+      let id = (typeof it.id === 'string' && /^[0-9a-f-]{36}$/i.test(it.id) && !seenId.has(it.id)) ? it.id : crypto.randomUUID();
+      seenId.add(id);
+      const inst = {
+        id,
+        name: (typeof it.name === 'string' && it.name.trim() ? it.name.trim() : `Instrument ${out.instruments.length + 1}`).slice(0, 200),
+        key,
+        type: det.kind,                                   // derived from the key, never trusted from the file
+        addrType: (det.kind === 'extended' && ADDR.includes(it.addrType)) ? it.addrType : det.addr,
+        badge: BADGE.includes(it.badge) && (det.kind === 'extended' ? it.badge !== 'addr' && it.badge !== 'timelock' : (it.badge === 'addr' || it.badge === 'timelock')) ? it.badge : det.badge,
+        path: (typeof it.path === 'string' && it.path.length <= 40 && /^(m(\/\d+'?)*)?$/.test(it.path) && det.kind === 'extended') ? it.path : det.path,
+        balance: (typeof it.balance === 'number' && Number.isFinite(it.balance)) ? it.balance : null,
+        lastScan: _validDate(it.lastScan) ? it.lastScan : null,
+      };
+      if (Number.isInteger(it.addressesScanned) && it.addressesScanned >= 0 && it.addressesScanned <= 100000) inst.addressesScanned = it.addressesScanned;
+      if (typeof it.fp === 'string' && /^[0-9a-f]{8}$/i.test(it.fp)) inst.fp = it.fp;
+      if (it.error === null) inst.error = null;      // a clean scan state; error TEXT is never imported
+      out.instruments.push(inst);
+    }
+    BACKUP.dropped = dropped;
+    return out;
+  }
+
+  async function backupDecrypt(env, pw) {
+    const k = env.kdf;
+    if (!_isObj(k) || k.name !== 'Argon2id') throw new Error('Unsupported encryption in this backup.');
+    if (!(k.m >= 8192 && k.m <= 262144 && k.t >= 1 && k.t <= 10 && k.p >= 1 && k.p <= 4)) throw new Error('Backup uses out-of-range key-derivation settings.');
+    let salt, iv, ct;
+    try { salt = b64ToBytes(k.salt); iv = b64ToBytes(env.iv); ct = b64ToBytes(env.ct); }
+    catch { throw new Error('The backup file is damaged (bad encoding).'); }
+    let key = null, pt = null;
+    try {
+      key = await argon2idKdf(pw, salt, k.m, k.t, k.p, 32);
+      pt  = await aesGcmDecrypt(key, iv, ct, ENC_TE.encode(BACKUP_MAGIC));
+      return JSON.parse(ENC_TD.decode(pt));
+    } catch (e) {
+      if (e instanceof SyntaxError) throw new Error('The decrypted backup is damaged.');
+      throw new Error(/AES-GCM/.test(e && e.message) ? 'Wrong passphrase, or the file is damaged.' : e.message);
+    } finally { _zero(key, pt); }
+  }
+
+  async function backupFromPayload(p) {
+    if (!_isObj(p) || p.magic !== BACKUP_MAGIC || !_isObj(p.state)) throw new Error('This is not a Scryer backup file.');
+    const h = await sha256Hex(JSON.stringify(p.state));
+    if (p.stateSha256 !== h) throw new Error('Integrity check failed: the file is damaged or was edited by hand.');
+    BACKUP.clean = sanitizeBackupState(p.state);
+    BACKUP.meta = { exportedAt: _validDate(p.exportedAt) ? p.exportedAt : null, ver: typeof p.scryerVersion === 'string' ? p.scryerVersion.slice(0, 12) : '?' };
+    backupRenderPreview();
+  }
+
+  function backupRenderPreview() {
+    const c = BACKUP.clean, m = BACKUP.meta;
+    const existing = new Set(state.instruments.map(i => _normalizedKey(i.key)));
+    const fresh = c.instruments.filter(i => !existing.has(_normalizedKey(i.key))).length;
+    const rows = [
+      ['Made by', `Amulet Scryer v${m.ver}` + (m.exportedAt ? ` · ${formatTime(m.exportedAt)}` : '')],
+      ['Watched wallets', `${c.instruments.length} (${fresh} not yet in this Scryer)`],
+      ['Explorer endpoints', c.endpoints.map(endpointLabel).join(', ')],
+      ['Settings', `gap limit ${c.gapLimit} · rate delay ${c.rateDelay} ms · auto-refresh ${c.autoRefreshMins ? c.autoRefreshMins + ' min' : 'off'} · hard cap ${c.hardCap} · ${c.denom}`],
+      ['History points', String(c.history.length)],
+    ];
+    const box = _bk('backup-preview');
+    box.innerHTML = rows.map(([k, v]) => `<dl><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></dl>`).join('');
+    const warn = _bk('backup-endpoint-warn');
+    const custom = c.endpoints.filter(e => !PUBLIC_EXPLORER_HOSTS.has((() => { try { return new URL(e).hostname; } catch { return ''; } })()));
+    if (custom.length) {
+      warn.textContent = 'This backup contacts explorers other than mempool.space and blockstream.info: ' + custom.join(', ') +
+        '. Your addresses are sent to every endpoint you scan with. Restore only if you recognise them.';
+      warn.style.display = '';
+    } else { warn.style.display = 'none'; }
+    if (BACKUP.dropped) backupMsg(`${BACKUP.dropped} entr${BACKUP.dropped === 1 ? 'y' : 'ies'} in the file could not be validated and will be skipped.`, 'info');
+    else backupMsg('');
+    _bk('backup-sub').textContent = 'Restore from a backup file · nothing is uploaded';
+    backupShow('backup-preview-pane');
+  }
+
+  async function backupHandleFile(file) {
+    backupMsg('');
+    if (file.size > 20 * 1024 * 1024) { backupOpen(); backupShow(''); backupMsg('That file is too large to be a Scryer backup.'); return; }
+    backupOpen();
+    backupShow('');
+    try {
+      const obj = JSON.parse(await file.text());
+      if (!_isObj(obj) || obj.magic !== BACKUP_MAGIC) throw new Error('This is not a Scryer backup file.');
+      if (obj.encrypted === true) {
+        BACKUP.env = obj;
+        _bk('backup-unlock-file').textContent = `${file.name} is encrypted. Enter the passphrase you chose when exporting.`;
+        _bk('backup-unlock-pass').value = '';
+        _bk('backup-sub').textContent = 'Restore from a backup file · nothing is uploaded';
+        backupShow('backup-unlock-pane');
+        _bk('backup-unlock-pass').focus();
+      } else {
+        await backupFromPayload(obj);
+      }
+    } catch (e) {
+      backupShow('');
+      backupMsg(e instanceof SyntaxError ? 'This file is not valid JSON.' : (e && e.message ? e.message : String(e)));
+    }
+  }
+
+  _bk('backup-restore-open').addEventListener('click', () => { _bk('backup-file').value = ''; _bk('backup-file').click(); });
+  _bk('backup-file').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) backupHandleFile(f); });
+  _bk('backup-close').addEventListener('click', backupClose);
+  _bk('backup-modal').addEventListener('click', e => { if (e.target.id === 'backup-modal') backupClose(); });
+  _bk('backup-unlock-pass').addEventListener('keydown', e => { if (e.key === 'Enter') _bk('backup-unlock-go').click(); });
+
+  _bk('backup-unlock-go').addEventListener('click', async () => {
+    const pw = _bk('backup-unlock-pass').value;
+    if (!pw) { backupMsg('Enter the passphrase.'); return; }
+    const btn = _bk('backup-unlock-go');
+    btn.disabled = true; backupMsg('Decrypting…', 'info');
+    try {
+      const payload = await backupDecrypt(BACKUP.env, pw);
+      await backupFromPayload(payload);
+    } catch (e) {
+      backupMsg(e && e.message ? e.message : String(e));
+    } finally { btn.disabled = false; }
+  });
+
+  /* ---------- RESTORE: apply ---------- */
+  _bk('backup-apply').addEventListener('click', () => {
+    const c = BACKUP.clean;
+    if (!c) return;
+    const mode = (document.querySelector('input[name="backup-mode"]:checked') || {}).value || 'replace';
+    if (mode === 'replace' && state.instruments.length &&
+        !confirm(`Replace the ${state.instruments.length} wallet(s) and all settings in this Scryer with the backup?`)) return;
+
+    if (_scanAbortController) { try { _scanAbortController.abort(); } catch {} _scanAbortController = null; }
+    let summary;
+    if (mode === 'replace') {
+      const origins = new Set(c.endpoints.map(endpointOrigin));
+      const keep = (state.consentedEndpoints || []).filter(o => origins.has(o));   // never gain consents; keep valid local ones
+      state = { ...structuredClone(defaultState), ...structuredClone(c), consentedEndpoints: keep, schemaVersion: SCHEMA_VERSION };
+      summary = `Restored ${c.instruments.length} wallet(s) and all settings.`;
+    } else {
+      const ids = new Set(state.instruments.map(i => i.id));
+      const items = c.instruments.map(i => {
+        const copy = { ...i };
+        if (ids.has(copy.id)) copy.id = crypto.randomUUID();
+        return copy;
+      });
+      const { added, skipped } = addInstrumentsDedup(items);
+      summary = `Merged: added ${added} wallet(s)` + (skipped ? `, skipped ${skipped} already present.` : '.');
+    }
+    try { localStorage.setItem(STORE_KEY + ':seeded', '1'); } catch {}   // demo wallets must not reappear
+    saveState();
+    backupClose();
+    document.getElementById('settings-modal').classList.remove('show');
+    renderAll();
+    cancelAutoRefresh();
+    const allConsented = state.endpoints.every(e => state.consentedEndpoints.includes(endpointOrigin(e)));
+    if (state.lastConsult && state.autoRefreshMins > 0 && state.instruments.length > 0 && allConsented) scheduleAutoRefresh();
+    flash(summary, 'info');
   });
 
   // Flash messages
