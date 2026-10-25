@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Meatgrinder · Beyond: the Hand — one-pager</title>
+<link rel="canonical" href="https://avbforge.com/thehand/index.html">
+<meta name="description" content="Make a Bitcoin seed yourself, offline, with dice, cards, dominoes or coins. Locked in an .age file straight away.">
+<style>
+:root{--bg:#f4f5f8;--card:#fff;--ink:#111827;--mut:#4b5563;--acc:#f7931a;--line:#e5e7eb}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--ink:#f3f4f6;--mut:#9ca3af;--line:#2a2e37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:32px 16px}
+h1{font-size:2.2rem;margin:0;letter-spacing:.04em}
+h1 span{color:var(--acc)}
+.tag{color:var(--mut);margin:.3rem 0 1.4rem;font-size:1.1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+h2{font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin:0 0 .6rem}
+ul{margin:0;padding-left:1.1rem}li{margin:.25rem 0}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+@media(max-width:700px){.shots{grid-template-columns:1fr}}
+figure{margin:0}figure img{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+figcaption{color:var(--mut);font-size:.85rem;margin-top:.4rem}
+.warn{border-left:4px solid var(--acc)}
+a{color:var(--acc)}
+footer{color:var(--mut);font-size:.85rem;margin-top:20px;text-align:center}
+@media print{body{background:#fff;color:#000}.card{break-inside:avoid}}
+</style></head><body><main>
+<p style="margin:0 0 14px;font-size:.9rem"><a href="https://avbforge.com/#arsenal">← AVBforge · Amulet Arsenal</a> · Project Meatgrinder (mirror of the one-pager at <a href="https://allesvoorbitcoin.be/21tools/thehand/">allesvoorbitcoin.be</a>)</p>
+<h1>BEYOND<span>:</span> the Hand</h1>
+<p class="tag">Make a Bitcoin seed yourself, offline, with dice, cards, dominoes or coins. Locked in an .age file straight away.</p>
+
+<div class="shots">
+<figure><img src="./s0.png" alt="Start screen of Beyond: the Hand"><figcaption>Start screen: 12 or 24 words, extra tools.</figcaption></figure>
+<figure><img src="./s1.png" alt="Choosing the dice method"><figcaption>Pick your method, then follow it step by step.</figcaption></figure>
+</div>
+
+<div class="grid">
+<section class="card"><h2>What you get</h2><ul>
+<li>A 12 or 24 word BIP-39 seed</li>
+<li>QR code for SeedSigner</li>
+<li>First 3 bitcoin addresses and the zpub</li>
+<li>Everything encrypted at once with <b>age</b> (.age): paper A = seed, paper B = lock words</li>
+<li>Optional BIP-39 passphrase and a word of your own</li>
+</ul></section>
+<section class="card"><h2>Entropy sources</h2><ul>
+<li>Dice (d6), cards (ranked), dominoes, coins</li>
+<li>SeedPills and SeedSticks, converted offline on the spot</li>
+<li><b>Buffer mechanisms</b>: choose the mathematical minimum (dice: 50 rolls for 12 words, 99 for 24) or, better, a surplus (64 / 128 rolls)</li>
+<li>SHA-256 mixes everything; surplus draws only add safety</li>
+</ul></section>
+<section class="card"><h2>Safe by design</h2><ul>
+<li>Offline and open source (MIT)</li>
+<li>HTML page: the browser is told to block every connection (CSP)</li>
+<li>Checksums (SHA256SUMS) for every release file</li>
+<li>The script scans for leftover data as far as possible</li>
+</ul></section>
+<section class="card"><h2>Use it</h2><ul>
+<li><b>HTML</b>: open the file in your browser, no install</li>
+<li><b>CLI</b>: Python script, same method</li>
+<li>Linux, Ubuntu and macOS supported; Windows works but is not recommended</li>
+<li>Best on a live system (e.g. Ubuntu "Try Ubuntu"), Wi-Fi off</li>
+</ul></section>
+</div>
+
+<p class="card warn" style="margin-top:16px"><b>Test first.</b> Try it with a throwaway wallet before real sats go near it. Full manual, entropy notes and changelog are in the README and docs.</p>
+
+<p class="card"><b>Download v1.1.42:</b> <a href="https://github.com/avbpodcast/Beyond-the-hand/releases/tag/v1.1.42">github.com/avbpodcast/Beyond-the-hand/releases/tag/v1.1.42</a><br>
+All releases: <a href="https://github.com/avbpodcast/Beyond-the-hand/releases/">github.com/avbpodcast/Beyond-the-hand/releases</a><br>
+Source: <a href="https://github.com/avbpodcast/Beyond-the-hand">github.com/avbpodcast/Beyond-the-hand</a></p>
+<section class="card" style="margin-top:16px"><h2>Checksums (SHA-256)</h2>
+<pre style="margin:0;overflow-x:auto;font:12px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-all">b55dcb10292fe7e8bede41aab96b4e1d1c72d3168ce23a07b5a839fb2f83f19a  beyond-wallet-hand.py
+2d6e69257a0e130ecc476a6c0b46be73eece41bae7eae45829787934427b61f1  beyond_wallet_core.py
+ed6138becc7e7e6fcdc89144e751ed741ffcef5f4b6b87043b8554d1f79708a0  beyond-wallet-hand-v1.1.42.html</pre>
+<p style="margin:.6rem 0 0;color:var(--mut);font-size:.85rem">Check your download: <code>sha256sum -c SHA256SUMS.txt</code><br>Not sure how? Use the <a href="https://allesvoorbitcoin.be/sidequests/checksum/">checksum checker</a>: drop your file in and compare, it works locally in your browser.</p></section>
+<p class="card" style="margin-top:16px;text-align:center"><b>Value for value:</b> if this tool is useful to you, support it at <a href="https://allesvoorbitcoin.be/donate">allesvoorbitcoin.be/donate</a></p>
+<footer>Beyond: the Hand · MIT · free and open source</footer>
+</main>
+</body></html>
