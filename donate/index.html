@@ -75,6 +75,10 @@
   .channel p { font-size:16px; color:color-mix(in srgb, var(--ink) 82%, var(--ink-dim)); margin:0 0 14px; }
   .channel .value { font-family:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:14.5px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--gold) 5%, transparent); color:var(--gold); word-break:break-all; display:block; }
 
+  .channel .tip-row { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+  .channel .tip-row .tip-info { flex:1 1 260px; min-width:0; }
+  .channel .qr { width:168px; height:168px; flex:0 0 auto; border-radius:10px; border:1px solid var(--line); display:block; }
+
   .closer { margin-top:30px; font-size:15px; color:var(--ink-dim); font-style:italic; }
   .closer b { color:var(--gold); font-style:normal; font-weight:600; }
   .closer a { color:var(--gold); }
@@ -128,11 +132,16 @@
     The Amulet Arsenal is free, open source, and made for sovereign Bitcoiners. If a tool here saved you a hardware-wallet purchase, simplified an inheritance plan, or just made your Bitcoin life easier, value-for-value is welcome.
   </p>
 
-  <div class="channel">
+  <div class="channel" id="tip">
     <p class="kicker">Onchain Bitcoin</p>
     <h3>Native SegWit (BIP-84)</h3>
-    <p>One-shot, no third party.</p>
-    <span class="value">bc1qskg2ffr2g3kt3vun4528p9wzah3gnqwgrylcgh</span>
+    <div class="tip-row">
+      <div class="tip-info">
+        <p>One-shot, no third party. Scan with any Bitcoin wallet.</p>
+        <span class="value">bc1qskg2ffr2g3kt3vun4528p9wzah3gnqwgrylcgh</span>
+      </div>
+      <svg role="img" aria-label="QR code for the onchain donation address" viewBox="0 0 37 37" class="qr"><title>bitcoin:bc1qskg2ffr2g3kt3vun4528p9wzah3gnqwgrylcgh</title><path fill="#fff" d="M0 0h37v37h-37z"/><path class="qrline" stroke="#1b1611" d="M2 2.5h7m2 0h2m4 0h2m2 0h2m1 0h1m3 0h7m-33 1h1m5 0h1m3 0h1m4 0h3m2 0h1m1 0h3m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m3 0h2m2 0h1m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h3m1 0h1m2 0h1m2 0h1m1 0h2m3 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h1m1 0h2m3 0h1m2 0h1m3 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m2 0h1m1 0h1m2 0h5m2 0h1m-25 1h1m2 0h1m1 0h2m1 0h1m2 0h3m1 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h1m-28 1h3m2 0h1m1 0h1m1 0h3m2 0h1m4 0h2m2 0h2m1 0h2m1 0h2m1 0h1m-32 1h1m3 0h4m8 0h1m1 0h2m4 0h2m1 0h5m-33 1h3m1 0h1m2 0h1m1 0h1m4 0h1m1 0h2m2 0h3m5 0h2m1 0h2m-33 1h3m1 0h3m5 0h1m2 0h1m4 0h1m3 0h4m1 0h1m2 0h1m-33 1h1m7 0h3m2 0h1m1 0h2m4 0h4m2 0h4m1 0h1m-33 1h3m1 0h1m1 0h7m5 0h1m2 0h1m1 0h1m2 0h1m1 0h1m1 0h2m-30 1h1m1 0h1m3 0h2m1 0h2m2 0h1m1 0h3m1 0h2m1 0h5m2 0h2m-32 1h3m2 0h4m1 0h4m4 0h1m1 0h1m4 0h1m1 0h5m-33 1h3m1 0h1m3 0h2m2 0h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m2 0h1m-33 1h1m1 0h1m3 0h1m1 0h1m1 0h1m1 0h2m4 0h1m1 0h1m4 0h4m1 0h3m-33 1h2m1 0h3m6 0h4m1 0h3m1 0h3m1 0h3m-28 1h2m1 0h1m2 0h4m1 0h4m1 0h3m4 0h1m1 0h1m2 0h2m2 0h1m-31 1h1m1 0h2m1 0h1m1 0h1m1 0h2m1 0h6m1 0h1m1 0h3m5 0h2m-33 1h2m2 0h3m2 0h2m4 0h1m3 0h3m3 0h3m1 0h1m2 0h1m-32 1h1m1 0h2m2 0h3m2 0h1m1 0h1m1 0h1m2 0h3m3 0h1m1 0h1m1 0h1m1 0h1m-32 1h1m2 0h2m1 0h4m2 0h2m1 0h1m1 0h3m4 0h7m1 0h1m-25 1h3m1 0h4m2 0h1m1 0h3m1 0h1m3 0h2m1 0h2m-33 1h7m2 0h2m5 0h1m4 0h2m1 0h1m1 0h1m1 0h1m-29 1h1m5 0h1m1 0h1m4 0h2m1 0h1m3 0h5m3 0h1m2 0h2m-33 1h1m1 0h3m1 0h1m2 0h2m3 0h1m1 0h1m2 0h2m1 0h1m1 0h5m2 0h2m-33 1h1m1 0h3m1 0h1m1 0h4m2 0h2m3 0h1m1 0h1m1 0h2m1 0h3m1 0h1m-31 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h1m2 0h2m2 0h1m2 0h1m1 0h3m3 0h1m-33 1h1m5 0h1m3 0h2m2 0h9m2 0h2m-27 1h7m1 0h1m1 0h1m6 0h1m6 0h1m1 0h2m1 0h3"/></svg>
+    </div>
   </div>
 
   <div class="channel">
