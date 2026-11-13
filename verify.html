@@ -38,8 +38,9 @@
       "totalTime": "PT2M",
       "step": [
         { "@type": "HowToStep", "position": 1, "name": "Get the official hashes", "url": "https://avbforge.com/SHA256SUMS.txt", "text": "Open the SHA-256 hash list — one hash per tool, the fingerprint of the exact code we shipped." },
-        { "@type": "HowToStep", "position": 2, "name": "Hash the file you downloaded", "text": "Run sha256sum (Linux), shasum -a 256 (macOS), or Get-FileHash -Algorithm SHA256 (Windows PowerShell) on the file." },
-        { "@type": "HowToStep", "position": 3, "name": "Compare", "text": "If your hash matches the list, the file is authentic. If it does not match, do not use it — re-download and check again." }
+        { "@type": "HowToStep", "position": 2, "name": "Hash the file you downloaded", "text": "Unzip amulet-arsenal.zip and check every file at once with sha256sum -c SHA256SUMS.txt (Linux), shasum -a 256 -c SHA256SUMS.txt (macOS), or the PowerShell one-liner (Windows). Or hash a single file with sha256sum, shasum -a 256 or Get-FileHash." },
+        { "@type": "HowToStep", "position": 3, "name": "Compare", "text": "If your hash matches the list, the file is authentic. If it does not match, do not use it — re-download and check again." },
+        { "@type": "HowToStep", "position": 4, "name": "Check the signature (optional)", "url": "https://avbforge.com/SHA256SUMS.txt.asc", "text": "Import the AVBforge PGP key, confirm its fingerprint 8781 57D4 1D9F B9BC D99B 1F81 1B35 6516 AFFC CEFE from a second source, then run gpg --verify SHA256SUMS.txt.asc SHA256SUMS.txt." }
       ]
     }
   ]
@@ -191,7 +192,7 @@
   <h1>Verify the code yourself.</h1>
   <p class="lede">
     Every Amulet tool is one HTML file. <b>Confirm the file you downloaded is exactly what we published</b> —
-    in three steps, no install required.
+    in three steps, no install required. A fourth, optional step checks our PGP signature on the hash list.
   </p>
 
   <div class="cta-row">
@@ -205,8 +206,22 @@
       <p>Open the <a id="hashlist2" href="./SHA256SUMS.txt">SHA-256 hash list</a> — one hash per tool, the fingerprint of the exact code we shipped. You can also browse each tool's individual hash file in the <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">source repository</a>.</p>
     </li>
     <li>
-      <h3>Hash the file you downloaded</h3>
-      <p>Run one command on the file (e.g. <span class="mono">amulet_vault_v1.74.html</span>):</p>
+      <h3>Hash what you downloaded</h3>
+      <p><b>Downloaded the full .zip?</b> Unzip it, open a terminal in the unzipped folder and check every file in one go:</p>
+      <pre><span class="os"># Linux</span>
+sha256sum -c SHA256SUMS.txt
+
+<span class="os"># macOS</span>
+shasum -a 256 -c SHA256SUMS.txt
+
+<span class="os"># Windows (PowerShell)</span>
+Get-Content .\SHA256SUMS.txt | ? { $_ -match '^[0-9a-f]{64}  ' } | % {
+  $h, $f = $_ -split '  ', 2
+  if (-not (Test-Path -LiteralPath $f)) { "MISSING $f"; return }
+  if ((Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash -eq $h) { "OK      $f" } else { "FAILED  $f" }
+}</pre>
+      <p>Every line should say <span class="mono">OK</span>. Lines starting with <span class="mono">#</span> in the list are labels and are skipped.</p>
+      <p><b>Downloaded a single tool?</b> Hash just that file (e.g. <span class="mono">amulet_vault_v1.74.html</span>):</p>
       <pre><span class="os"># Windows (PowerShell)</span>
 Get-FileHash .\amulet_vault_v1.74.html -Algorithm SHA256
 
@@ -219,6 +234,18 @@ sha256sum amulet_vault_v1.74.html</pre>
     <li>
       <h3>Compare</h3>
       <p>If your hash matches the one in the list, the file is authentic and untampered. If it doesn't match, <b>don't use it</b> — re-download from the source and check again.</p>
+    </li>
+    <li>
+      <h3>Check the signature <span style="font-size:13px;color:var(--ink-faint);font-weight:400">· optional</span></h3>
+      <p>A hash only proves the file matches the list. The <a href="./SHA256SUMS.txt.asc">signature</a> proves the list itself came from us, even if this server were compromised.</p>
+      <pre><span class="os"># import our key (also in the .zip as .well-known/pgp-key.txt)</span>
+gpg --import .well-known/pgp-key.txt
+
+<span class="os"># check the signature</span>
+gpg --verify SHA256SUMS.txt.asc SHA256SUMS.txt</pre>
+      <p>Look for <span class="mono">Good signature from "avbforge"</span> and this fingerprint:</p>
+      <pre>8781 57D4 1D9F B9BC D99B  1F81 1B35 6516 AFFC CEFE</pre>
+      <p>Compare that fingerprint against a second source you trust, such as the <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">Codeberg repository</a>, not just this page.</p>
     </li>
   </ol>
 

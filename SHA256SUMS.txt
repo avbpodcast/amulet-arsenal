@@ -3,43 +3,46 @@
 # Verify a file you downloaded matches what we published:
 #   Linux:    sha256sum -c SHA256SUMS.txt          (run from the site root)
 #   macOS:    shasum -a 256 -c SHA256SUMS.txt
-#   Windows:  Get-FileHash "<file>" -Algorithm SHA256   (compare by hand)
+#   Windows:  see the PowerShell one-liner on https://avbforge.com/verify.html
 #
-# Lines starting with "#" are labels and are ignored by sha256sum -c.
+# Lines starting with "#" are labels; sha256sum -c skips them.
+# Every listed file ships in amulet-arsenal.zip, so the check passes with no errors.
 # Full how-to: https://avbforge.com/verify.html
 # Source:      https://codeberg.org/avbforge/pages
-
+#
 # 01 · Amulet Main (launcher)
 e364d2f5eb1499bec0b8acdaefd4b01b3c360e9e2066e9e133b242b753a446f5  Amulet Main/AmuletMain_v1.47.html
-
+#
 # 02 · Amulet Generator (wallet generator)
 69de86d4c8a8d14abbdc5d93f70af6295ee8ceb6268ad6cdc172c9af17a44a92  Amulet Wallet Generator/amulet_1_63.html
-
+#
 # 03 · Amulet Vault
 6d3adc0ea1e2bc27b4dc5fee4f779e4ee4dbdddfeb20af1e36d8c2ae84580797  Amulet Vault/amulet_vault_v1.74.html
-
+#
 # 04 · Amulet Scryer
 0cc1b24b36bac3050db5cd2d2d8a6880f9a8c07a2eb58b19ff9f0faf029560aa  Amulet Scryer/arsenal-scryer_v1.20.html
-
+#
 # 05 · Amulet Transaction Creator
 b4ae03e81531f42ea4b0a5297a04ed48c404fe2190a3139ffc6e8fdef3450baf  Amulet Transaction Creator/amulet_tx_v0.22.html
-
+#
 # 06 · Amulet Broadcaster
 06db6e5544edff5b1736a889d12441bb9f24c2a3737be9d1440baf78b69bb94f  Amulet Broadcaster/amulet_broadcast_v1.01.html
-
+#
 # 07 · Amulet Timelock
 fc790c9f3717cc9b1a731d7f87c2bb0cebea44b1b75b70038828b337021e0cc0  Amulet Timelock/timelockbtc_RC2_002.html
-
+#
 # 08 · Amulet Silent (silent-payment wallet)
 ff4b7fc8462be42f7ca20c7b2c5f807e1d21931b133f88400508d1dadb3f78b9  Amulet Silent/silent_amulet_1_21.html
-
+#
 # 09 · Amulet Shamir Split
 4c89f129a12a9858b50c4d3ed48f959dfa54de8886d8b23013d4edb77014efcc  Amulet Shamir Shared Split/amulet_shamir_shared_split_v0.11.html
-
+#
 # 10 · Amulet Picker (passphrase generator)
 48f85e732f9a6ed1ed8c3393c1aaf56387cc62b5e0d5d103576a1083bb8b5d86  Amulet-passphrase-gen/Amulet Picker v16.html
-
-# 11 · Amulet Relic ships as a Python script in the source repository (amulet_relic.py).
-
+#
+# 11 · Amulet Relic (Python scripts)
+cb57fc2f6aceaefb3efc4d8e628490246574caaaf3384283e50be8617139bc64  amulet_relic.py
+1f828afc8fa478426dc4580e10195427f226fdf506ab4cdb41824dfd9dd7a82c  amulet_shamir_relic.py
+#
 # 12 · AVBforge PGP public key (RFC 9116 Encryption target)
 33912e1e0b17eecf5f059bcbb2b9fa9b2b69c39ba3c3da6d82e49327ce3aff05  .well-known/pgp-key.txt
