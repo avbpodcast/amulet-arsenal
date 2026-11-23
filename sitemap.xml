@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://avbforge.com/</loc><lastmod>2026-06-07</lastmod><priority>1.0</priority></url>
-  <url><loc>https://avbforge.com/about.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
-  <url><loc>https://avbforge.com/verify.html</loc><lastmod>2026-06-07</lastmod><priority>0.8</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Main/AmuletMain_v1.47.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Wallet%20Generator/amulet_1_51.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Vault/amulet_vault_v1.74.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Shamir%20Shared%20Split/amulet_shamir_shared_split_v0.11.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Scryer/arsenal-scryer_v1.20.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Transaction%20Creator/amulet_tx_v0.22.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Broadcaster/amulet_broadcast_v1.01.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Timelock/timelockbtc_RC2_002.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet%20Silent/silent_amulet_1_21.html</loc><priority>0.7</priority></url>
-  <url><loc>https://avbforge.com/Amulet-passphrase-gen/Amulet%20Picker%20v16.html</loc><priority>0.7</priority></url>
+  <!-- Main pages -->
+  <url><loc>https://avbforge.com/</loc><lastmod>2026-11-23</lastmod><priority>1.0</priority></url>
+  <url><loc>https://avbforge.com/about.html</loc><priority>0.8</priority></url>
+  <url><loc>https://avbforge.com/verify.html</loc><priority>0.8</priority></url>
+  <url><loc>https://avbforge.com/recovery.html</loc><priority>0.6</priority></url>
+
+  <!-- Tool intro pages: what each tool does and how to use it -->
+  <url><loc>https://avbforge.com/offline-bitcoin-wallet-generator/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+  <url><loc>https://avbforge.com/encrypted-bitcoin-seed-vault/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+  <url><loc>https://avbforge.com/watch-only-bitcoin-balance-checker/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+  <url><loc>https://avbforge.com/offline-bitcoin-transaction-signer/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+  <url><loc>https://avbforge.com/broadcast-bitcoin-transaction-tor/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+  <url><loc>https://avbforge.com/offline-passphrase-generator/</loc><lastmod>2026-11-23</lastmod><priority>0.9</priority></url>
+
+  <!-- The tools themselves, at their stable short addresses.
+       These do not change when a new version is released, so this list never goes stale. -->
+  <url><loc>https://avbforge.com/main/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/generator/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/vault/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/scryer/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/tx/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/broadcaster/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/timelock/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/silent/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/shamir/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/picker/</loc><priority>0.6</priority></url>
+  <url><loc>https://avbforge.com/thehand/</loc><priority>0.6</priority></url>
+
+  <!-- Other -->
+  <url><loc>https://avbforge.com/donate/</loc><priority>0.4</priority></url>
+  <url><loc>https://avbforge.com/contact/</loc><priority>0.4</priority></url>
 </urlset>

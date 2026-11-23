@@ -14,18 +14,31 @@
 - [Download bundle](https://avbforge.com/amulet-arsenal.zip): the whole Arsenal in one .zip, to run locally.
 - [Source code](https://codeberg.org/avbforge/pages): full source to read, fork or rebuild.
 
+## Guides: what each tool does and how to use it
+
+- [Offline Bitcoin wallet generator](https://avbforge.com/offline-bitcoin-wallet-generator/): create a 12 or 24 word BIP-39 seed offline, with optional dice or card entropy (Amulet Generator).
+- [Encrypted Bitcoin seed vault](https://avbforge.com/encrypted-bitcoin-seed-vault/): store seed phrases in encrypted files you control, AES-GCM-256 + Argon2id (Amulet Vault).
+- [Watch-only Bitcoin balance checker](https://avbforge.com/watch-only-bitcoin-balance-checker/): check balances from an xpub, ypub or zpub without a private key (Amulet Scryer).
+- [Offline Bitcoin transaction signer](https://avbforge.com/offline-bitcoin-transaction-signer/): build and sign a PSBT on an air-gapped machine, no hardware wallet needed (Amulet Transaction Creator, beta).
+- [Broadcast a signed Bitcoin transaction](https://avbforge.com/broadcast-bitcoin-transaction-tor/): send a signed PSBT or raw transaction over clearnet or Tor (Amulet Broadcaster).
+- [Offline passphrase generator](https://avbforge.com/offline-passphrase-generator/): build a strong passphrase from a 10,000-word pool, 13.29 bits per word (Amulet Picker).
+
 ## The tools
 
-- [Amulet Main](https://avbforge.com/Amulet%20Main/AmuletMain_v1.47.html): single-file launcher for the whole Arsenal.
-- [Amulet Generator](https://avbforge.com/Amulet%20Wallet%20Generator/amulet_1_51.html): offline wallet generator with verifiable entropy (dice/cards), Silent Payments, Taproot, Bech32 and legacy support.
-- [Amulet Vault](https://avbforge.com/Amulet%20Vault/amulet_vault_v1.74.html): local encrypted vault for seeds and keys (AES-GCM-256 + Argon2id), with watch-only export.
-- [Amulet Shamir Split](https://avbforge.com/Amulet%20Shamir%20Shared%20Split/amulet_shamir_shared_split_v0.11.html): Vault variant that splits the key into Shamir K-of-N shares. (Beta)
-- [Amulet Scryer](https://avbforge.com/Amulet%20Scryer/arsenal-scryer_v1.20.html): watch-only balance viewer; never sees a private key.
-- [Amulet Transaction Creator](https://avbforge.com/Amulet%20Transaction%20Creator/amulet_tx_v0.22.html): build and sign Bitcoin PSBTs (BIP-174) offline. (Beta)
-- [Amulet Broadcaster](https://avbforge.com/Amulet%20Broadcaster/amulet_broadcast_v1.01.html): broadcast signed transactions via clearnet or Tor behind a gated flow.
-- [Amulet Timelock](https://avbforge.com/Amulet%20Timelock/timelockbtc_RC2_002.html): time-locked redeem scripts (P2SH/P2WSH) with SHA-256 checksums. (Release candidate)
-- [Amulet Silent](https://avbforge.com/Amulet%20Silent/silent_amulet_1_21.html): silent-payment wallet (BIP-352); one static address, fresh output each time. (Beta)
-- [Amulet Picker](https://avbforge.com/Amulet-passphrase-gen/Amulet%20Picker%20v16.html): offline passphrase generator drawing from a 10,000-word pool.
+Each tool lives at a stable short address that always serves the current version.
+Exact file names and hashes for every release are in SHA256SUMS.
+
+- [Amulet Main](https://avbforge.com/main/): single-file launcher for the whole Arsenal.
+- [Amulet Generator](https://avbforge.com/generator/): offline wallet generator with verifiable entropy (dice/cards), Silent Payments, Taproot, Bech32 and legacy support.
+- [Amulet Vault](https://avbforge.com/vault/): local encrypted vault for seeds and keys (AES-GCM-256 + Argon2id), with watch-only export.
+- [Amulet Shamir Split](https://avbforge.com/shamir/): Vault variant that splits the key into Shamir K-of-N shares. (Beta)
+- [Amulet Scryer](https://avbforge.com/scryer/): watch-only balance viewer; never sees a private key.
+- [Amulet Transaction Creator](https://avbforge.com/tx/): build and sign Bitcoin PSBTs (BIP-174) offline. (Beta)
+- [Amulet Broadcaster](https://avbforge.com/broadcaster/): broadcast signed transactions via clearnet or Tor behind a gated flow.
+- [Amulet Timelock](https://avbforge.com/timelock/): time-locked redeem scripts (P2SH/P2WSH) with SHA-256 checksums. (Release candidate)
+- [Amulet Silent](https://avbforge.com/silent/): silent-payment wallet (BIP-352); one static address, fresh output each time. (Beta)
+- [Amulet Picker](https://avbforge.com/picker/): offline passphrase generator drawing from a 10,000-word pool.
+- [Project Meatgrinder · Beyond: the Hand](https://avbforge.com/thehand/): make a Bitcoin seed offline with dice, cards, dominoes or coins; separate release.
 - Amulet Relic: pure-Python recovery script for encrypted .enc files; ships in the source repository (amulet_relic.py).
 
 ## Principles
