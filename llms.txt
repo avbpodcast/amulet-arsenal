@@ -50,7 +50,7 @@ Exact file names and hashes for every release are in SHA256SUMS.
 
 ## Support / contact
 
-- Donate (value-for-value): https://timeseed.io/donate
+- Donate (value-for-value): https://avbforge.com/donate/
 - Email: mr21@coinos.io
 
 ## Also from AVBforge
