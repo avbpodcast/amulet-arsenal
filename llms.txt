@@ -46,6 +46,7 @@ Exact file names and hashes for every release are in SHA256SUMS.
 - Self-custody: your keys, your coins, your rules. No central entity, no trusted third party.
 - Offline-first: everything works air-gapped; only broadcasting a finished, signed transaction needs the internet.
 - Verifiable: read the source and check the SHA-256 of any file before you run it.
+- Security model (which tools go online, what is stored, limits): https://avbforge.com/security/
 - Free and open-source. Support is value-for-value.
 
 ## Support / contact
