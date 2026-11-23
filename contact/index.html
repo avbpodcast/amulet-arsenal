@@ -8,6 +8,7 @@
 <script>if(localStorage.getItem('aa-theme')!=='dark')document.documentElement.setAttribute('data-theme','light');</script>
 
 <link rel="canonical" href="https://avbforge.com/contact/" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Amulet Arsenal · AVBforge" />
 <meta property="og:title" content="Contact — AVBforge" />
@@ -142,7 +143,7 @@
     <p class="kicker">Email</p>
     <h3>Direct line</h3>
     <p>Plain email. Good for anything that is not time-critical, anything with attachments, or anything sensitive.</p>
-    <a class="value" href="mailto:mr21@nodes.be">mr21@nodes.be</a>
+    <a class="value" href="mailto:security@avbforge.com">security@avbforge.com</a>
   </div>
 
   <!-- NOSTR -->
@@ -156,13 +157,15 @@
   <!-- PGP -->
   <div class="channel">
     <p class="kicker">PGP</p>
-    <h3>Encrypted reports + signed releases</h3>
-    <p>Use this key to encrypt sensitive reports, or to verify signatures on anything I publish. Fetch the armored key over <a href="../.well-known/pgp-key.txt">the local copy</a> or from <a href="https://codeberg.org/avbforge.gpg" target="_blank" rel="noopener">Codeberg</a>, then check the fingerprint below against both sources.</p>
+    <h3>Encrypted mail + signed releases</h3>
+    <p>Two keys, each with one job. To encrypt mail to security@avbforge.com, use the <b>security key</b> (<a href="../0xE02F767A48FA7916_public.asc">download</a>):</p>
+    <span class="value">A624 7583 4D0C 4C51 2B96  D852 E02F 767A 48FA 7916</span>
+    <p style="margin-top:16px;">To verify signatures on anything I publish, use the <b>release key</b> (<a href="../.well-known/pgp-key.txt">local copy</a> or <a href="https://codeberg.org/avbforge.gpg" target="_blank" rel="noopener">Codeberg</a>). Check the fingerprint against both sources:</p>
     <span class="value">8781 57D4 1D9F B9BC D99B  1F81 1B35 6516 AFFC CEFE</span>
   </div>
 
   <p class="closer">
-    For a <b>responsible-disclosure</b> security report, the standard contact, this PGP key, and
+    For a <b>responsible-disclosure</b> security report, the standard contact, the PGP keys, and
     the Codeberg mirror are all published at <a href="../.well-known/security.txt">/.well-known/security.txt</a> in RFC 9116 format.
   </p>
 
@@ -172,6 +175,8 @@
     <div class="foot-links">
       <a href="../index.html">Home</a>
       <a href="../verify.html">Verify</a>
+      <a href="../security/">Security</a>
+      <a href="../donate/index.html">Donate</a>
       <a href="https://codeberg.org/avbforge/pages" target="_blank" rel="noopener">Source</a>
     </div>
     <div class="mono">AVBforge · © <span id="year"></span></div>

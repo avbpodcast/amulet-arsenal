@@ -52,7 +52,7 @@ Exact file names and hashes for every release are in SHA256SUMS.
 ## Support / contact
 
 - Donate (value-for-value): https://avbforge.com/donate/
-- Email: mr21@coinos.io
+- Email: security@avbforge.com
 
 ## Also from AVBforge
 
